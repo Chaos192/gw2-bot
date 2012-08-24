@@ -1,4 +1,74 @@
-include("romcode.lua")
+local windowList = findWindowList("*", "Guild Wars 2");
+if( #windowList == 0 ) then
+	print("You need to run GW2 first!");
+	return 0;
+end
+function getWin()
+	if( __WIN == nil ) then
+  		__WIN = windowList[1]
+	end
+
+	return __WIN;
+end	
+function getProc()
+	if( __PROC == nil or not windowValid(__WIN) ) then
+		if( __PROC ) then closeProcess(__PROC) end;
+		__PROC = openProcess( findProcessByWindow(getWin()) );
+	end
+
+	return __PROC;
+end	
+function memoryReadRepeat(_type, proc, address, offset)
+	local readfunc;
+	local ptr = false;
+	local val;
+
+	if( type(proc) ~= "userdata" ) then
+		error("Invalid proc", 2);
+	end
+
+	if( type(address) ~= "number" ) then
+		error("Invalid address", 2);
+	end
+
+	if( _type == "int" ) then
+		readfunc = memoryReadInt;
+	elseif( _type == "uint" ) then
+		readfunc = memoryReadUInt;
+	elseif( _type == "float" ) then
+		readfunc = memoryReadFloat;
+	elseif( _type == "byte" ) then
+		readfunc = memoryReadByte;
+	elseif( _type == "string" ) then
+		readfunc = memoryReadString;
+	elseif( _type == "intptr" ) then
+		readfunc = memoryReadIntPtr;
+		ptr = true;
+	elseif( _type == "uintptr" ) then
+		readfunc = memoryReadUIntPtr;
+		ptr = true;
+	elseif( _type == "byteptr" ) then
+		readfunc = memoryReadBytePtr;
+		ptr = true;
+
+	else
+		return nil;
+	end
+
+	for i = 1, 10 do
+		if( ptr ) then
+			val = readfunc(proc, address, offset);
+		else
+			val = readfunc(proc, address);
+		end
+
+		if( val ~= nil ) then
+			return val;
+		end
+	end
+
+end	
+
 --[[
 	Required:
 	pattern		The pattern, obviously.
@@ -27,7 +97,8 @@ local updatePatterns =
 
 
 -- This function will attempt to automatically find the true addresses
--- even if they have moved.
+-- from RoM, even if they have moved.
+-- Only works on MicroMacro v1.0 or newer.
 function findOffsets()
 	-- Sort names so the output is in order
     local new_patterns = {}
@@ -69,6 +140,7 @@ function findOffsets()
 		local msg = sprintf("Patched addresses.%s\t (value: 0x%X, at: 0x%X)", name, addresses[name], found + offset);
 		printf(msg .. "\n");
 		logMessage(msg);
+
 	end
 
 	printf("\n");
@@ -83,7 +155,7 @@ function findOffsets()
 		end
 
 		if tmp[1] == 0x90 then
-			error("Patch bytes = 0x90. Please restart the game before trying to run th eupdate again.")
+			error("Patch bytes = 0x90. Please restart the game before trying to run \"rom\update\" again.")
 		end
 
 		printf(readBytesUpdateMsg, name, address, bytesString)

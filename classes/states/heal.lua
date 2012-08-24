@@ -8,16 +8,13 @@ HealState = class(State);
 
 function HealState:constructor()
 	self.name = "Heal";
-	self.first = nil
+	self.timeused = 0
+	self.cooldown = 0
 end
 
 function HealState:update()
-	if self.first ~= nil then 
-		print("back at Healing") 
-		self:constructor()	-- easy reset
-	end
-	updatehp()
-	if 98 > playerhp/playermaxhp*100 then
+	Player:update()
+	if player.Heal > Player.HP/Player.MaxHP*100 then
 		keyboardPress(key.VK_6)
 		yrest(2000)
 	else

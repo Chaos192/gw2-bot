@@ -14,7 +14,6 @@ function CombatState:constructor()
 	self.selfskill4cd = 2
 	self.autostarted = nil
 	self.combat = false
-	cprintf(cli.green,"combat constructor\n")
 	if self.timerset == nil then -- to set the timers
 		self.selfskill1used = 0
 		self.selfskill2used = 0
@@ -26,7 +25,7 @@ function CombatState:constructor()
 end
 
 function CombatState:update()
-	updatehp()
+	Player:update()
 	if not playercombat	then stateman:pushEvent("Loot","finished combat"); stateman:popState("combat ended");	end
 	if playertarget ~= 0 then
 		if self.autostarted == nil then

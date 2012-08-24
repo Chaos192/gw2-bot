@@ -11,7 +11,7 @@ function FarmState:constructor()
 end
 
 function FarmState:update()
-	updatehp()
+	Player:update()
 	if playertarget ~= 0 then
 		stateman:pushEvent("Firstattack","farm have target");
 	else
