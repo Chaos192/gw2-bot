@@ -12,7 +12,6 @@ function LootState:constructor()
 	self.prevtime = 0
 	self.first = nil
 	self.timepassed = 0
-	cprintf(cli.green,"loot constructor\n")
 end
 
 function LootState:update()
@@ -20,7 +19,7 @@ function LootState:update()
 	if self.prevtime ~= self.timepassed then print("loot timer: "..self.timepassed) self.prevtime = self.prevtime + 1 end
 	if self.prevtime > 1  then
 		-- End Loot.
-		updatehp()
+		Player:update()
 		if playertarget ~= 0 then
 			keyboardPress(key.VK_ESCAPE)
 			yrest(1000)

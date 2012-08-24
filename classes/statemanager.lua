@@ -40,8 +40,7 @@ end
 
 -- Handle a single event. If we use it, return true. Else, false.
 function StateManager:handleEvent(event)
-	event = string.lower(event); -- Not case sensitive.
-	if( event == "quit" ) then
+	if( event == "Quit" ) then
 		self.running = false;
 		return true;
 	end
@@ -69,7 +68,7 @@ end
 
 -- Push a new state onto the queue. This will be the
 -- state that gets run *next cycle*, not immediately.
-function StateManager:pushState(newState, from)
+function StateManager:pushState(newState)
 	if( type(newState) == nil ) then
 		error("Function expects a parameter.", 2);
 	end
@@ -77,16 +76,13 @@ function StateManager:pushState(newState, from)
 		error("Parameter is not a state object.", 2);
 	end
 
-	from = from or "unknown"
-	logger:log("debug", "statemanager push state from %s.\n", from);
-
 	table.insert(self.stateQueue, newState);
 end
 
 -- Pops the top state off the queue.
 function StateManager:popState(from)
 	from = from or "unknown"
-	logger:log("debug", "statemanager pop state from %s.\n", from);
+	Logger:log("info" ,"statemanager pop state from "..from.."\n") 
 	if( #self.stateQueue > 0 ) then
 		table.remove(self.stateQueue);
 	end
@@ -95,7 +91,7 @@ end
 -- Push a new event
 function StateManager:pushEvent(event, from)
 	from = from or ""
-	logger:log("debug", "statemanager push event \'%s\' from %s.\n", event, from);
+	Logger:log("info" ,"statemanager push event "..event.." from "..from.."\n")
 	table.insert(self.eventQueue, event);
 end
 
