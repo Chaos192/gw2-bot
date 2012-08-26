@@ -16,15 +16,15 @@ end
 
 function LootState:update()
 	self.timepassed = os.difftime(os.time(), self.lasttime)
-	if self.prevtime ~= self.timepassed then print("loot timer: "..self.timepassed) self.prevtime = self.prevtime + 1 end
+	if self.prevtime ~= self.timepassed then Logger:log('info',"loot timer: "..self.timepassed) self.prevtime = self.prevtime + 1 end
 	if self.prevtime > 1  then
 		-- End Loot.
 		Player:update()
-		if playertarget ~= 0 then
+		if Player.TargetMob ~= 0 then
 			keyboardPress(key.VK_ESCAPE)
 			yrest(1000)
 		end
-		print("finished looting, popping") 
+		Logger:log('info',"finished looting, popping") 
 		self.first = true
 		stateman:popState("loot");			
 	end

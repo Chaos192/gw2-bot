@@ -26,7 +26,7 @@ function WaypointState:advance()
 	self.index = self.index + 1;
 	if( self.index > #self.waypoints ) then self.index = 1; end
 
-	printf("Waypoints advanced to #%d\n", self.index);
+	Logger:log('info',"Waypoints advanced to #%d\n", self.index);
 end
 
 table.insert(events,{name = "Waypoint", func = WaypointState()})

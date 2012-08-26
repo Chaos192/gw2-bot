@@ -15,11 +15,11 @@ end
 
 function VendorState:update()
 	if self.first ~= nil then 
-		print("back at Vendoring") 
+		Logger:log('info',"back at Vendoring") 
 		self:constructor()	-- easy reset
 	end
 	local timepassed = os.difftime(os.time(), self.lasttime)
-	if self.prevtime ~= timepassed then print("Vendor timer: "..timepassed) self.prevtime = self.prevtime + 1 end
+	if self.prevtime ~= timepassed then Logger:log('info',"Vendor timer: "..timepassed) self.prevtime = self.prevtime + 1 end
 	if timepassed > 3  then
 		-- End Vendor.
 		self.first = true

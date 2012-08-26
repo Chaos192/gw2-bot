@@ -46,7 +46,7 @@ function StateManager:handleEvent(event)
 	end
 	for k,events in pairs(events) do
 		if( event == events.name and self.stateQueue[#self.stateQueue].name ~= event ) then
-			print("Switching to "..event);
+			Logger:log('info',"Switching to "..event);
 			stateman:pushState(events.func);
 			self.stateQueue[#self.stateQueue]:constructor();
 			return true;

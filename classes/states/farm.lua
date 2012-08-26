@@ -12,13 +12,13 @@ end
 
 function FarmState:update()
 	Player:update()
-	if playertarget ~= 0 then
+	if Player.TargetMob ~= 0 then
 		stateman:pushEvent("Firstattack","farm have target");
 	else
 		for i = 1,10 do
-			keyboardPress(key.VK_Q)
+			keyboardPress(Settings['turnleft'])
 		end
 	end
-	keyboardPress(key.VK_TAB)	
+	keyboardPress(Settings['nexttrarget'])	
 end
 table.insert(events,{name = "Farm" ,func = FarmState()})

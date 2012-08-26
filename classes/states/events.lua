@@ -15,11 +15,11 @@ end
 
 function EventsState:update()
 	if self.first ~= nil then 
-		print("back at Eventing") 
+		Logger:log('info',"back at Eventing") 
 		self:constructor()	-- easy reset
 	end
 	local timepassed = os.difftime(os.time(), self.lasttime)
-	if self.prevtime ~= timepassed then print("Event timer: "..timepassed) self.prevtime = self.prevtime + 1 end
+	if self.prevtime ~= timepassed then Logger:log('info',"Event timer: "..timepassed) self.prevtime = self.prevtime + 1 end
 	if timepassed > 3  then
 		-- End Event.
 		self.first = true

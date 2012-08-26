@@ -26,8 +26,8 @@ end
 
 function CombatState:update()
 	Player:update()
-	if not playercombat	then stateman:pushEvent("Loot","finished combat"); stateman:popState("combat ended");	end
-	if playertarget ~= 0 then
+	if not Player.InCombat	then stateman:pushEvent("Loot","finished combat"); stateman:popState("combat ended");	end
+	if Player.TargetMob ~= 0 then
 		if self.autostarted == nil then
 			keyboardPress(key.VK_1)
 			self.autostarted = true
@@ -55,7 +55,7 @@ end
 -- Handle events
 function CombatState:handleEvent(event)
 	if event == "Heal"  then
-		print("in combat need heals")
+		Logger:log('info',"in combat need heals")
 		self.newbattle = false
 		stateman:pushState(HealState())
 		return true;
