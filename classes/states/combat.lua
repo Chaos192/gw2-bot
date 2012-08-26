@@ -31,20 +31,20 @@ function CombatState:update()
 		if self.autostarted == nil then
 			keyboardPress(key.VK_1)
 			self.autostarted = true
-			cprintf(cli.yellow,"auto attack started\n")
+			cprintf(cli.red,"auto attack started\n")
 		end
 		if os.difftime(os.time(),self.selfskill2used) > self.selfskill2cd then
 			keyboardPress(key.VK_2)
 			self.selfskill2used = os.time()
-			cprintf(cli.yellow,"attack 2\n")
+			cprintf(cli.red,"attack 2\n")
 		elseif os.difftime(os.time(),self.selfskill3used) > self.selfskill3cd then
 			keyboardPress(key.VK_3)	
 			self.selfskill3used = os.time()
-			cprintf(cli.yellow,"attack 3\n")
+			cprintf(cli.red,"attack 3\n")
 		elseif os.difftime(os.time(),self.selfskill4used) > self.selfskill4cd then
 			keyboardPress(key.VK_4)
 			self.selfskill4used = os.time()
-			cprintf(cli.yellow,"attack 4\n")			
+			cprintf(cli.red,"attack 4\n")			
 		end
 		yrest(1000)
 	else
