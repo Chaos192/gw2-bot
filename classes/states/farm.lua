@@ -19,6 +19,6 @@ function FarmState:update()
 			keyboardPress(Settings['turnleft'])
 		end
 	end
-	keyboardPress(Settings['nexttrarget'])	
+	keyboardPress(Settings['nexttarget'])	
 end
 table.insert(events,{name = "Farm" ,func = FarmState()})

@@ -111,8 +111,22 @@ local function update()
 		stateman:pushEvent("Combat","main");
 	end
 end
+function _windowname()
+	Player:update()
+	setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..Player.Dir1.." Dir2: "..Player.Dir2,Player.X,Player.Z,Player.Y))
+end
+registerTimer("setwindow", secondsToTimer(1), _windowname);
 
 function main()
+	for i = 2,#args do
+		if( args[i] == "coords" ) then
+			while(true) do
+				Player:update()
+				setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..Player.Dir1.." Dir2: "..Player.Dir2,Player.X,Player.Z,Player.Y))
+				yrest(10)
+			end
+		end
+	end
 	stateman = StateManager();
 	stateman:pushState(FarmState());
 	print("Version: "..version)
