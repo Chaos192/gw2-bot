@@ -5,13 +5,17 @@
 
 Logger = class();
 
-function Logger:constructor()
+function Logger:constructor(fn)
    self.file = nil;
    self.filename = nil;
    self.dateformat = "%Y/%m/%d %H:%M:%S";
+
+	if( fn ) then
+		self:openFile(fn);
+	end
 end
 
-function Logger:setFile(filename)
+function Logger:openFile(filename)
    if( self.file ) then
       self.file:close();
    end
