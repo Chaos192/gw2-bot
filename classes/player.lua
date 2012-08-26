@@ -21,6 +21,9 @@ function Player:constructor()
 	self.Loot = false
 	self.Interaction = false
 	self.InCombat = false
+
+	self.turnDir = nil; -- Turn left/right
+	self.fbMovement = nil; -- Move forward/backward
 end
 
 function Player:update()
@@ -37,4 +40,100 @@ function Player:update()
 	self.Loot = (memoryReadInt(proc, addresses.lootwindow) ~= 0)
 	self.Interaction = (memoryReadInt(proc, addresses.Finteraction) ~= 0)
 	self.InCombat = (memoryReadInt(proc, addresses.playerInCombat) ~= 0)
+
+
+
+	self.Angle = math.atan2(self.Dir2, self.Dir1) + math.pi;
+end
+
+
+--		self.fbMovement
+function Player:moveForward()
+	if( self.fbMovement == "forward" ) then
+		return; -- If we're already doing it, ignore this call.
+	end
+
+	if( self.fbMovement == "backward" ) then
+		keyboardRelease(key.VK_S); -- Stop turning right
+	end
+
+	self.fbMovement = "forward";
+
+	keyboardHold(key.VK_W);
+end
+
+function Player:moveBackward()
+	if( self.fbMovement == "backward" ) then
+		return; -- If we're already doing it, ignore this call.
+	end
+
+	if( self.fbMovement == "forward" ) then
+		keyboardRelease(key.VK_W); -- Stop turning right
+	end
+
+	self.fbMovement = "backward";
+
+	keyboardHold(key.VK_S);
+end
+
+function Player:stopMoving()
+	if( not self.fbMovement ) then
+		return;
+	end
+
+	if( self.fbMovement == "forward" ) then
+		keyboardRelease(key.VK_W);
+	else
+		keyboardRelease(key.VK_S);
+	end
+
+	self.fbMovement = nil;
+end
+
+function Player:turnLeft()
+	if( self.turnDir == "left" ) then
+		return; -- If we're already doing it, ignore this call.
+	end
+
+	if( self.turnDir == "right" ) then
+		keyboardRelease(key.VK_D); -- Stop turning right
+	end
+
+	self.turnDir = "left";
+
+	keyboardHold(key.VK_A);
+end
+
+function Player:turnRight()
+	if( self.turnDir == "right" ) then
+		return; -- If we're already doing it, ignore this call.
+	end
+
+	if( self.turnDir == "left" ) then
+		keyboardRelease(key.VK_A); -- Stop turning left
+	end
+
+	self.turnDir = "right";
+
+	keyboardHold(key.VK_D);
+end
+
+function Player:stopTurning()
+	if( not self.turnDir ) then
+		return;
+	end
+
+	if( self.turnDir == "left" ) then
+		keyboardRelease(key.VK_A);
+	else
+		keyboardRelease(key.VK_D);
+	end
+
+	self.turnDir = nil;
+end
+
+function Player:moveTo(x, y, z)
+	x = x or 0;
+	y = y or 0;
+	z = z or 0;
 end

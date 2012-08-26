@@ -2,6 +2,8 @@ include("addresses.lua");
 include("/classes/player.lua");
 local version = "rev 4"
 
+player = Player();
+
 local windowList = findWindowList("*","ArenaNet_Dx_Window_Class");
 if( #windowList == 0 ) then
 	print("You need to run GW2 first!");
@@ -174,7 +176,7 @@ function saveWaypoints(list)
 
 end
 
-Player:update()
+player:update()
 function main()
 
 	local running = true;
@@ -251,12 +253,12 @@ function main()
 					break;
 				end;
 
-				Player:update()
+				player:update()
 				
 				local tmp = {}, hf_type;
-				tmp.X = Player.X;
-				tmp.Z = Player.Z;
-				tmp.Y = Player.Y;
+				tmp.X = player.X;
+				tmp.Z = player.Z;
+				tmp.Y = player.Y;
 				hf_type = "";
 
 

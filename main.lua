@@ -1,9 +1,18 @@
-include("classes/statemanager.lua")
-include("addresses.lua")
-include("config_default.lua")
-include("config.lua")
-include("classes/logger.lua")
-include("classes/player.lua")
+BASE_PATH = getExecutionPath();
+
+include("classes/language.lua");
+include("classes/statemanager.lua");
+include("addresses.lua");
+include("config_default.lua");
+include("config.lua");
+include("classes/logger.lua");
+include("classes/player.lua");
+
+language = Language();
+player = Player();
+logger = Logger(BASE_PATH .. "/logs/" .. os.date('%Y-%m-%d') .. ".txt");
+
+
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
@@ -19,6 +28,7 @@ if( #windowList == 0 ) then
 	print("You need to run GW2 first!");
 	return 0;
 end
+
 function getWin()
 	if( __WIN == nil ) then
   		__WIN = windowList[1]
@@ -26,6 +36,7 @@ function getWin()
 
 	return __WIN;
 end	
+
 function getProc()
 	if( __PROC == nil or not windowValid(__WIN) ) then
 		if( __PROC ) then closeProcess(__PROC) end;
@@ -33,7 +44,8 @@ function getProc()
 	end
 
 	return __PROC;
-end	
+end
+
 function memoryReadRepeat(_type, proc, address, offset)
 	local readfunc;
 	local ptr = false;
@@ -101,19 +113,20 @@ local function handleInput()
 	end
 	lastKS = ks;
 end
-Player:constructor()
+
 local function update()
-	Player:update()
-	if Player.Heal > Player.HP/Player.MaxHP*100 then
+	player:update()
+	if player.Heal > player.HP/player.MaxHP*100 then
 		stateman:pushEvent("Heal", "main");
 	end
-	if Player.InCombat then
+	if player.InCombat then
 		stateman:pushEvent("Combat","main");
 	end
 end
+
 function _windowname()
-	Player:update()
-	setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..Player.Dir1.." Dir2: "..Player.Dir2,Player.X,Player.Z,Player.Y))
+	player:update()
+	setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: %0.2f, Dir2: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle))
 end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
 
@@ -121,14 +134,15 @@ function main()
 	for i = 2,#args do
 		if( args[i] == "coords" ) then
 			while(true) do
-				Player:update()
-				setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..Player.Dir1.." Dir2: "..Player.Dir2,Player.X,Player.Z,Player.Y))
+				player:update()
+				setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..player.Dir1.." Dir2: "..player.Dir2,player.X,player.Z,player.Y))
 				yrest(10)
 			end
 		end
 	end
+
 	stateman = StateManager();
-	stateman:pushState(FarmState());
+	stateman:pushState(WaypointState());
 	print("Version: "..version)
 	print("Current state: ", stateman:getState().name);
 
