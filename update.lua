@@ -85,17 +85,24 @@ end
 
 local updatePatterns =
 {
-	base = {
+	--[[base = {
 		pattern = string.char(
 		0xA1, 0xFF, 0xFF, 0xFF, 0xFF, 0x64, 0x8B, 0x0D, 0x2C, 0x00,
 		0x00, 0x00, 0x8B, 0x14, 0x81, 0x8B, 0x82, 0xFF, 0x00, 0x00, 0x00, 0xC3),
 		mask = "x????xxxxxxxxxxxx?xxxx",
 		offset = 1,
 		startloc = 0x880000,
+	},]]
+	playercoords = {
+		pattern = string.char(
+		0x00, 0x00, 0x80, 0x00, 0x89, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xC3, 0xCC, 
+		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
+		mask = "xxxxxx????xxxxxxxxxxxx",
+		offset = 6,
+		startloc = 0x890000,
 	},
 }
-
-
+addresses = {}
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
@@ -204,7 +211,7 @@ function rewriteAddresses()
 
 		-- Index part
 		file:write( sprintf("\t%s = ", v.index))
-
+		
 		-- Value part
 		if type(v.value) == "table" then -- if it's a table of bytes
 			file:write( sprintf("{"))
@@ -216,11 +223,26 @@ function rewriteAddresses()
 		else                             -- if it's an address or offset
 			file:write( sprintf("0x%X,", v.value))
 		end
-
+		if v.index == "playercoords" then
+			file:write("\n\tplayerDir1 = 0x1C,\n")
+			file:write("\tplayerDir2 = 0x20,\n")	
+			file:write("\tplayerX = 0x28,\n")
+			file:write("\tplayerZ = 0x2C,\n")
+			file:write("\tplayerY = 0x30,\n")
+		end
+		
 		-- Comment part
 		file:write( sprintf("%s\n", comment) );
 	end
 
+	
+	file:write("\tplayerbasehp = 0x15a48b0, \n\tplayerHPoffset = {0x150,0x3C,0x10},\n")
+	file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n\tplayerInCombat = 0x15A4718,\n")
+	file:write("\tFinteraction = 0x1674160,\n\tlootwindow = 0x16732FC,\n")
+	file:write("\tTargetMob = 0x1674178,\n\tTargetAll = 0x1674184,\n")
+	file:write("\tTargetunk = 0x1674190,\n")	
+	
+	
 	file:write("}\n");
 
 	file:close();

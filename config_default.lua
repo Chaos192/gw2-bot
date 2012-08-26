@@ -15,4 +15,4 @@ Settings['turnleft'] = key.VK_A
 Settings['turnright'] = key.VK_D
 Settings['forward'] = key.VK_W
 Settings['backward'] = key.VK_S
-Settings['nexttrarget'] = key.VK_TAB
+Settings['nexttarget'] = key.VK_TAB
