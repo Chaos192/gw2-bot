@@ -9,3 +9,10 @@ LOG_MESSAGE_COLOR = {};
 LOG_MESSAGE_COLOR['error'] = cli.red;			-- Color of error messages
 LOG_MESSAGE_COLOR['debug'] = cli.lightblue;		-- Color of debug messages
 LOG_MESSAGE_COLOR['info'] = cli.yellow;			-- Color of info messages
+
+Settings = {}
+Settings['turnleft'] = key.VK_A
+Settings['turnright'] = key.VK_D
+Settings['forward'] = key.VK_W
+Settings['backward'] = key.VK_S
+Settings['nexttrarget'] = key.VK_TAB

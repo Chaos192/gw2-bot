@@ -1,4 +1,4 @@
-local windowList = findWindowList("*", "Guild Wars 2");
+local windowList = findWindowList("Guild Wars 2");
 if( #windowList == 0 ) then
 	print("You need to run GW2 first!");
 	return 0;

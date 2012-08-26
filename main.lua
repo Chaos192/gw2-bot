@@ -1,5 +1,10 @@
 include("classes/statemanager.lua")
 include("addresses.lua")
+include("config_default.lua")
+include("config.lua")
+include("classes/logger.lua")
+include("classes/player.lua")
+
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
 	if string.find(v,".lua") then
@@ -7,9 +12,9 @@ for i,v in pairs(subdir) do
 	end
 end
 
-local version = "V 0.3"
+local version = "rev 4"
 
-local windowList = findWindowList("*", "Guild Wars 2");
+local windowList = findWindowList("*","ArenaNet_Dx_Window_Class");
 if( #windowList == 0 ) then
 	print("You need to run GW2 first!");
 	return 0;
@@ -96,13 +101,13 @@ local function handleInput()
 	end
 	lastKS = ks;
 end
-
+Player:constructor()
 local function update()
 	Player:update()
 	if Player.Heal > Player.HP/Player.MaxHP*100 then
 		stateman:pushEvent("Heal", "main");
 	end
-	if player.InCombat then
+	if Player.InCombat then
 		stateman:pushEvent("Combat","main");
 	end
 end

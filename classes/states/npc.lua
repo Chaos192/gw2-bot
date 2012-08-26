@@ -15,11 +15,11 @@ end
 
 function NpcState:update()
 	if self.first ~= nil then 
-		print("back at Npcing") 
+		Logger:log('info',"back at Npcing") 
 		self:constructor()	-- easy reset
 	end
 	local timepassed = os.difftime(os.time(), self.lasttime)
-	if self.prevtime ~= timepassed then print("Npc timer: "..timepassed) self.prevtime = self.prevtime + 1 end
+	if self.prevtime ~= timepassed then Logger:log('info',"Npc timer: "..timepassed) self.prevtime = self.prevtime + 1 end
 	if timepassed > 3  then
 		-- End Npc.
 		self.first = true

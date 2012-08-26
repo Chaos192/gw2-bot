@@ -9,16 +9,17 @@ HealState = class(State);
 function HealState:constructor()
 	self.name = "Heal";
 	self.timeused = 0
-	self.cooldown = 0
+	self.cooldown = 25
+	self.healCD = Player.HealCD
 end
 
 function HealState:update()
 	Player:update()
-	if player.Heal > Player.HP/Player.MaxHP*100 then
+	if Player.Heal > Player.HP/Player.MaxHP*100 then
 		keyboardPress(key.VK_6)
 		yrest(2000)
 	else
-		print("healed up so popping heal state.")
+		Logger:log('info',"healed up so popping heal state.")
 		stateman:popState("heal");
 	end
 end
@@ -26,7 +27,7 @@ end
 -- Handle events
 function HealState:handleEvent(event)
 	if event == "Combat"  then
-		printf("Ignoring combat event, healing.\n");
+		Logger:log('info',"Ignoring combat event, healing.\n");
 		return true;
 	end
 end

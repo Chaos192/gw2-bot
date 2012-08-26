@@ -13,7 +13,7 @@ end
 
 function FirstattackState:update()
 	Player:update()
-	if playertarget ~= 0 then
+	if Player.TargetMob ~= 0 then
 		keyboardPress(key.VK_1)
 		yrest(1000)
 	else

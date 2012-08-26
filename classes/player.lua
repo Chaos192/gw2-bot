@@ -9,7 +9,7 @@ function Player:constructor()
 	self.name = "playername"
 	self.HP = 1000
 	self.MaxHP = 1000
-	self.Heal = 90
+	self.Heal = 60
 	self.HealCD = 25
 	self.X = 0
 	self.Z = 0
@@ -36,5 +36,5 @@ function Player:update()
 	self.TargetAll = memoryReadInt(proc, addresses.TargetAll) or self.TargetAll;
 	self.Loot = (memoryReadInt(proc, addresses.lootwindow) ~= 0)
 	self.Interaction = (memoryReadInt(proc, addresses.Finteraction) ~= 0)
-	self.InCombat = (memoryReadInt(proc, addresses.playerInCombat) ~= 0)
+	--self.InCombat = (memoryReadInt(proc, addresses.playerInCombat) ~= 0)
 end
