@@ -162,7 +162,7 @@ function findOffsets()
 		end
 
 		if tmp[1] == 0x90 then
-			error("Patch bytes = 0x90. Please restart the game before trying to run \"rom\update\" again.")
+			error("Patch bytes = 0x90. Please restart the game before trying to run \"GW2\update\" again.")
 		end
 
 		printf(readBytesUpdateMsg, name, address, bytesString)
@@ -236,11 +236,11 @@ function rewriteAddresses()
 	end
 
 	
-	file:write("\tplayerbasehp = 0x15A4830, \n\tplayerHPoffset = {0x150,0x3C,0x10},\n")
+	file:write("\tplayerbasehp = 0x15A5870, \n\tplayerHPoffset = {0x150,0x3C,0x10},\n")
 	file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n\tplayerInCombat = 0x15A4698,\n")
-	file:write("\tFinteraction = 0x16740E0,\n\tlootwindow = 0x167327C,\n")
-	file:write("\tTargetMob = 0x16740F8,\n\tTargetAll = 0x1674104,\n")
-	file:write("\tTargetunk = 0x1674110,\n")	
+	file:write("\tFinteraction = 0x1675180,\n\tlootwindow = 0x167431C,\n")
+	file:write("\tTargetMob = 0x1675198,\n\tTargetAll = 0x16751A4,\n")
+	file:write("\tTargetunk = 0x16751B0,\n")	
 	
 	
 	file:write("}\n");
