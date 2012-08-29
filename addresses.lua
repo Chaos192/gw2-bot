@@ -14,7 +14,7 @@ addresses = {
 
 
 	playerInCombat = 0x15A5718,
-	Finteraction = 0x16751C0,
+	Finteraction = 0x167B1C0,
 	lootwindow = 0x167431C,
 	TargetMob = 0x167B1D8,
 	TargetAll = 0x167B1F0,
