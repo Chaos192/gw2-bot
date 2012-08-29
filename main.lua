@@ -8,6 +8,9 @@ include("config.lua");
 include("misc.lua");
 include("classes/logger.lua");
 include("classes/player.lua");
+
+attach(getWin());
+
 player = Player();
 player:update()
 language = Language();
@@ -64,8 +67,10 @@ end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
 
 function main()
+	local defaultState = nil;
+
+
 	stateman = StateManager();
-	stateman:pushState(WaypointState());
 	for i = 2,#args do
 		if( args[i] == "coords" ) then
 			while(true) do
@@ -95,9 +100,17 @@ function main()
 				end
 			until false	
 		elseif ( args[i] == "idle" ) then
-			stateman:pushState(IdleState());
+			defaultState = IdleState();
+		elseif( args[i] == "portal" ) then
+			defaultState = PortalState();
 		end
 		
+	end
+
+	if( defaultState ) then
+		stateman:pushState(defaultState);
+	else
+		stateman:pushState(WaypointState());
 	end
 
 	print("Version: "..version)
