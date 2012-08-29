@@ -101,6 +101,21 @@ local updatePatterns =
 		offset = 6,
 		startloc = 0x890000,
 	},
+	playerbasehp = {
+		pattern = string.char(
+		0x56, 
+		0x8b, 0xf1,
+		0xc7, 0x06, 0xFF, 0xFF, 0xFF, 0xFF, 
+		0xc7, 0x46, 0x04, 0xFF, 0xFF, 0xFF, 0xFF, 
+		0xc7, 0x46, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 
+		0xc7, 0x46, 0x0C, 0xFF, 0xFF, 0xFF, 0xFF,
+		0x57, 
+		0x33, 0xff,
+		0x8d, 0x4e),
+		mask = "xxxxx????xxx????xxx????xxx",
+		offset = 5,
+		startloc = 0x479000,
+	},	
 }
 addresses = {}
 -- This function will attempt to automatically find the true addresses
@@ -142,8 +157,21 @@ function findOffsets()
 		else -- default, assume 4 bytes
 			readFunc = memoryReadUInt;
 		end
-
 		addresses[name] = readFunc(getProc(), found + offset) + adjustment;
+
+		if name == "playerbasehp" then
+			local hexval = string.format('%x',addresses[name])	
+			local str = {} 
+			for w in string.gmatch(hexval,".") do table.insert(str,w) end 
+			num1 = tonumber("0x"..str[6]..str[7])
+			num2 = tonumber("0x"..str[4]..str[5])
+			num3 = tonumber("0x"..str[2]..str[3])
+			num4 = tonumber("0x0"..str[1])
+			local newpattern = string.char(num1,num2,num3,num4)
+			found	= findPatternInProcess(getProc(), newpattern, "xxxx", 0x15A0000, searchlen);
+			addresses[name] = found - 0x8
+		end	
+		
 		local msg = sprintf("Patched addresses.%s\t (value: 0x%X, at: 0x%X)", name, addresses[name], found + offset);
 		printf(msg .. "\n");
 		logMessage(msg);
@@ -228,20 +256,25 @@ function rewriteAddresses()
 			file:write("\tplayerDir2 = 0x20,\n")	
 			file:write("\tplayerX = 0x28,\n")
 			file:write("\tplayerZ = 0x2C,\n")
-			file:write("\tplayerY = 0x30,\n")
+			file:write("\tplayerY = 0x30,\n\n")
 		end
+		if v.index == "playerbasehp" then
+			file:write("\n\tplayerHPoffset = {0x150,0x3C,0x10},\n")	
+			file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n\n")
+		end		
 		
 		-- Comment part
 		file:write( sprintf("%s\n", comment) );
 	end
 
-	
-	file:write("\tplayerbasehp = 0x15A58B0, \n\tplayerHPoffset = {0x150,0x3C,0x10},\n")
-	file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n\tplayerInCombat = 0x15A5718,\n")
-	file:write("\tFinteraction = 0x16751C0,\n\tlootwindow = 0x167431C,\n")
-	file:write("\tTargetMob = 0x16751D8,\n\tTargetAll = 0x16751F0,\n")
-	file:write("\tTargetunk = 0x1675200,\n")	
-	
+	file:write("\tplayerInCombat = 0x15A5718,\n")
+	file:write("\tFinteraction = 0x0167B1C0\n")
+	file:write("\tTargetMob = 0x167B1D8,\n\tTargetAll = 0x167B1F0,\n")	
+	file:write("\tmousewinX = 0x167B1F8,\n")
+	file:write("\tmousewinZ = 0x167B1FC,\n")
+	file:write("\tmousepointX = 0x0167B218,\n")
+	file:write("\tmousepointZ = 0x0167B21C,\n")
+	file:write("\tmousepointY = 0x0167B220,\n")
 	
 	file:write("}\n");
 
