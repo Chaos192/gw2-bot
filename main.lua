@@ -5,13 +5,12 @@ include("classes/statemanager.lua");
 include("addresses.lua");
 include("config_default.lua");
 include("config.lua");
+include("misc.lua");
 include("classes/logger.lua");
 include("classes/player.lua");
-
-language = Language();
 player = Player();
-logger = Logger(BASE_PATH .. "/logs/" .. os.date('%Y-%m-%d') .. ".txt");
-
+player:update()
+language = Language();
 
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
@@ -21,81 +20,9 @@ for i,v in pairs(subdir) do
 	end
 end
 
-local version = "rev 4"
 
-local windowList = findWindowList("*","ArenaNet_Dx_Window_Class");
-if( #windowList == 0 ) then
-	print("You need to run GW2 first!");
-	return 0;
-end
-
-function getWin()
-	if( __WIN == nil ) then
-  		__WIN = windowList[1]
-	end
-
-	return __WIN;
-end	
-
-function getProc()
-	if( __PROC == nil or not windowValid(__WIN) ) then
-		if( __PROC ) then closeProcess(__PROC) end;
-		__PROC = openProcess( findProcessByWindow(getWin()) );
-	end
-
-	return __PROC;
-end
-
-function memoryReadRepeat(_type, proc, address, offset)
-	local readfunc;
-	local ptr = false;
-	local val;
-
-	if( type(proc) ~= "userdata" ) then
-		error("Invalid proc", 2);
-	end
-
-	if( type(address) ~= "number" ) then
-		error("Invalid address", 2);
-	end
-
-	if( _type == "int" ) then
-		readfunc = memoryReadInt;
-	elseif( _type == "uint" ) then
-		readfunc = memoryReadUInt;
-	elseif( _type == "float" ) then
-		readfunc = memoryReadFloat;
-	elseif( _type == "byte" ) then
-		readfunc = memoryReadByte;
-	elseif( _type == "string" ) then
-		readfunc = memoryReadString;
-	elseif( _type == "intptr" ) then
-		readfunc = memoryReadIntPtr;
-		ptr = true;
-	elseif( _type == "uintptr" ) then
-		readfunc = memoryReadUIntPtr;
-		ptr = true;
-	elseif( _type == "byteptr" ) then
-		readfunc = memoryReadBytePtr;
-		ptr = true;
-
-	else
-		return nil;
-	end
-
-	for i = 1, 10 do
-		if( ptr ) then
-			val = readfunc(proc, address, offset);
-		else
-			val = readfunc(proc, address);
-		end
-
-		if( val ~= nil ) then
-			return val;
-		end
-	end
-
-end	
+logger = Logger(BASE_PATH .. "/logs/" .. os.date('%Y-%m-%d') .. ".txt");
+local version = "rev 7"
 
 local lastKS = keyboardState();
 local function handleInput()
@@ -107,7 +34,6 @@ local function handleInput()
 		end
 	end
 	ks = keyboardState();
-
 	if( pressed(key.VK_F8) ) then
 		stateman:pushEvent("Quit", "main");
 	end
@@ -119,10 +45,17 @@ local function update()
 	if player.Heal > player.HP/player.MaxHP*100 then
 		stateman:pushEvent("Heal", "main");
 	end
-	if player.InCombat then
+	--[[if player.InCombat then
 		stateman:pushEvent("Combat","main");
-	end
+	end]]
 end
+print("Get focus on GW2 and press F5")
+local times = 3
+repeat 
+times = times - 1
+	yrest(1000)
+	print(times.." seconds to go")
+until times == 0
 
 function _windowname()
 	player:update()
@@ -131,24 +64,49 @@ end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
 
 function main()
+	stateman = StateManager();
+	stateman:pushState(WaypointState());
 	for i = 2,#args do
 		if( args[i] == "coords" ) then
 			while(true) do
 				player:update()
+				if player.Heal > player.HP/player.MaxHP*100 then
+					keyboardPress(key.VK_6)
+				end				
 				setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..player.Dir1.." Dir2: "..player.Dir2,player.X,player.Z,player.Y))
 				yrest(10)
+				keyboardPress(key.VK_1)
+				yrest(500)
 			end
+		elseif ( args[i] == "com" ) then
+			repeat
+				cprintf(cli.lightblue,"Command> ");
+				local name = io.stdin:read();
+				if string.lower(name) == "q" then error("Exiting commandline.",0) end
+				funct=loadstring(name)
+				if type(funct) == "function" then
+					local status,err = pcall(funct);
+					if status == false then
+						printf("onLoad error: %s\n", err);
+					end
+
+				else
+					print ("Invalid Command")
+				end
+			until false	
+		elseif ( args[i] == "idle" ) then
+			stateman:pushState(IdleState());
 		end
+		
 	end
 
-	stateman = StateManager();
-	stateman:pushState(WaypointState());
 	print("Version: "..version)
 	print("Current state: ", stateman:getState().name);
 
 	while(stateman.running) do
-		update()
-		handleInput();
+		--update()
+		--handleInput();
+		player:update()
 		stateman:handleEvents();
 		stateman:run();
 		yrest(1);

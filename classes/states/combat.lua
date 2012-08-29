@@ -8,10 +8,10 @@ CombatState = class(State);
 
 function CombatState:constructor()
 	self.name = "Combat";
-	self.selfskill1cd = 18
-	self.selfskill2cd = 16
+	self.selfskill1cd = 0
+	self.selfskill2cd = 8
 	self.selfskill3cd = 5
-	self.selfskill4cd = 2
+	self.selfskill4cd = 30
 	self.autostarted = nil
 	self.combat = false
 	if self.timerset == nil then -- to set the timers
@@ -35,6 +35,8 @@ function CombatState:update()
 		end
 		if os.difftime(os.time(),self.selfskill2used) > self.selfskill2cd then
 			keyboardPress(key.VK_2)
+			yrest(100)
+			keyboardPress(key.VK_2) -- target ground skill
 			self.selfskill2used = os.time()
 			cprintf(cli.red,"attack 2\n")
 		elseif os.difftime(os.time(),self.selfskill3used) > self.selfskill3cd then
