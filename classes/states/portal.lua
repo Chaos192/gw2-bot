@@ -17,11 +17,20 @@ function PortalState:constructor()
 	self.selfskill3cd = 11
 	self.selfskill5cd = 31
 	self.selfskill8cd = 61
+
+	self.destX = -11087;
+	self.destZ = -4374;
 end
 
 function PortalState:update()
 	if player.HP > 10 then
-		if player.TargetMob == 0 then
+
+		if distance(self.destX, self.destZ, player.X, player.Z) > 40 then
+			player:moveTo_step(self.destX, self.destZ);
+		elseif( player.fbMovement ) then
+			player:stopMoving();
+
+		elseif player.TargetMob == 0 then
 			local angle = math.atan2(-4421 - player.Z, -11194 - player.X) + math.pi;
 			local anglediff = player.Angle - angle;
 
@@ -63,13 +72,10 @@ end
 function PortalState:useskills()
 	if player.Heal > player.HP/player.MaxHP*100 then
 		keyboardPress(key.VK_6)
-		yrest(2000)
 	end				
 	if os.difftime(os.time(),self.selfskill2used) > self.selfskill2cd then
 		keyboardPress(key.VK_2)
-		yrest(100)
-		keyboardPress(key.VK_2) -- target ground skill
-		yrest(1000)
+		--keyboardPress(key.VK_2) -- target ground skill
 		self.selfskill2used = os.time()
 		cprintf(cli.red,"attack 2\n")
 	end
@@ -80,20 +86,15 @@ function PortalState:useskills()
 	end
 	if os.difftime(os.time(),self.selfskill5used) > self.selfskill5cd then
 		keyboardPress(key.VK_5)
-		yrest(100)
-		keyboardPress(key.VK_5) -- target ground skill
-		yrest(3000)
+		--keyboardPress(key.VK_5) -- target ground skill
 		self.selfskill5used = os.time()
 		cprintf(cli.red,"attack 5\n")	
 	end
 	if os.difftime(os.time(),self.selfskill8used) > self.selfskill8cd then
 		keyboardPress(key.VK_8)
-		yrest(100)
-		keyboardPress(key.VK_8) -- target ground skill
-		yrest(2000)
+		--keyboardPress(key.VK_8) -- target ground skill
 		self.selfskill8used = os.time()		
 		cprintf(cli.red,"attack 8\n")		
 	end
-	keyboardPress(key.VK_1)
-	yrest(500)		
+	keyboardPress(key.VK_1)	
 end

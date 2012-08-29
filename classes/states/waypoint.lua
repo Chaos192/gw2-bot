@@ -48,8 +48,7 @@ function WaypointState:update()
 	local angle = math.atan2(wp.Z - player.Z, wp.X - player.X) + math.pi;
 	local anglediff = player.Angle - angle;
 
-	--print("A:", math.abs(anglediff))
-	if( math.abs(anglediff) > 0.13 ) then -- 0.26 radians is ~15 degrees
+	if( math.abs(anglediff) > 0.13 ) then
 
 		if( player.fbMovement ) then -- Stop running forward.
 			player:stopMoving();

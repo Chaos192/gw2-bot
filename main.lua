@@ -52,13 +52,6 @@ local function update()
 		stateman:pushEvent("Combat","main");
 	end]]
 end
-print("Get focus on GW2 and press F5")
-local times = 3
-repeat 
-times = times - 1
-	yrest(1000)
-	print(times.." seconds to go")
-until times == 0
 
 function _windowname()
 	player:update()
