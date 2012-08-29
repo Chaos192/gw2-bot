@@ -132,8 +132,35 @@ function Player:stopTurning()
 	self.turnDir = nil;
 end
 
-function Player:moveTo(x, y, z)
+function Player:moveTo_step(x, z)
 	x = x or 0;
-	y = y or 0;
 	z = z or 0;
+
+
+	-- Check our angle to the waypoint.
+	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
+	local anglediff = self.Angle - angle;
+
+	if( math.abs(anglediff) > 0.13 ) then
+		if( self.fbMovement ) then -- Stop running forward.
+			self:stopMoving();
+		end
+
+		-- Attempt to face it
+		if( anglediff < 0 or anglediff > math.pi ) then
+			-- Rotate left
+			self:turnLeft();
+		else
+			-- Rotate right
+			self:turnRight();
+		end
+	else
+		-- We're facing the point. Move forward.
+		if( self.turnDir ) then
+			self:stopTurning();
+		end
+
+		self:moveForward();
+	end
+
 end
