@@ -60,7 +60,7 @@ function PortalState:update()
 			local intObj = memoryReadInt(getProc(), addresses.Finteraction);
 			--print("intObj:", intObj);
 			if( intObj and intObj ~= 0 ) then
-				keyboardPress(Settings['interact']);
+				keyboardPress(keySettings['interact']);
 			end
 		else
 			self:useskills()
@@ -69,10 +69,7 @@ function PortalState:update()
 		yrest(10000)
 	end
 end
-function PortalState:useskills()
-	if player.Heal > player.HP/player.MaxHP*100 then
-		keyboardPress(key.VK_6)
-	end				
+function PortalState:useskills()			
 	if os.difftime(os.time(),self.selfskill2used) > self.selfskill2cd then
 		keyboardPress(key.VK_2)
 		--keyboardPress(key.VK_2) -- target ground skill
@@ -97,4 +94,10 @@ function PortalState:useskills()
 		cprintf(cli.red,"attack 8\n")		
 	end
 	keyboardPress(key.VK_1)	
+end
+function HealState:handleEvent(event)
+	if event == "Combat"  then
+		Logger:log('info',"Ignoring combat event, portal state.\n");
+		return true;
+	end
 end

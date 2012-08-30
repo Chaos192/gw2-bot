@@ -89,7 +89,7 @@ local updatePatterns =
 }
 addresses = {}
 -- This function will attempt to automatically find the true addresses
--- from RoM, even if they have moved.
+-- from GW2, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
 function findOffsets()
 	-- Sort names so the output is in order

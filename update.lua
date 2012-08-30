@@ -93,7 +93,7 @@ local updatePatterns =
 		offset = 1,
 		startloc = 0x880000,
 	},]]
-	playercoords = {
+	playerbasecoords = {
 		pattern = string.char(
 		0x00, 0x00, 0x80, 0x00, 0x89, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xC3, 0xCC, 
 		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
@@ -116,10 +116,20 @@ local updatePatterns =
 		offset = 5,
 		startloc = 0x479000,
 	},	
+	playerbaseui = {
+		pattern = string.char(	
+		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 
+		0xB8, 0x60, 0xC1, 0x67, 0x01, 
+		0xC3, 
+		0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
+		mask = "xxxxxx????xxxxxx",
+		offset = 6,
+		startloc = 0xACC000,
+	},
 }
 addresses = {}
 -- This function will attempt to automatically find the true addresses
--- from RoM, even if they have moved.
+-- from GW2, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
 function findOffsets()
 	-- Sort names so the output is in order
@@ -237,44 +247,51 @@ function rewriteAddresses()
 			end
 		end
 
-		-- Index part
-		file:write( sprintf("\t%s = ", v.index))
-		
-		-- Value part
-		if type(v.value) == "table" then -- if it's a table of bytes
-			file:write( sprintf("{"))
-			for i = 1, #v.value do
-				if i ~= 1 then file:write( sprintf(", ")) end
-				file:write( sprintf("0x%02X", v.value[i]))
+			-- Index part
+		if v.index ~= "playerbasecoords" and v.index ~= "playerbaseui" then
+			file:write( sprintf("\t%s = ", v.index))
+
+			-- Value part
+			if type(v.value) == "table" then -- if it's a table of bytes
+				file:write( sprintf("{"))
+				for i = 1, #v.value do
+					if i ~= 1 then file:write( sprintf(", ")) end
+					file:write( sprintf("0x%02X", v.value[i]))
+				end
+				file:write( sprintf("},"))
+			else                             -- if it's an address or offset
+				file:write( sprintf("0x%X,", v.value))
 			end
-			file:write( sprintf("},"))
-		else                             -- if it's an address or offset
-			file:write( sprintf("0x%X,", v.value))
-		end
-		if v.index == "playercoords" then
-			file:write("\n\tplayerDir1 = 0x1C,\n")
-			file:write("\tplayerDir2 = 0x20,\n")	
-			file:write("\tplayerX = 0x28,\n")
-			file:write("\tplayerZ = 0x2C,\n")
-			file:write("\tplayerY = 0x30,\n\n")
+		end		
+		
+		if v.index == "playerbasecoords" then
+			file:write(sprintf("\tplayerDir1 = 0x%X,\n",v.value + 0x1C))
+			file:write(sprintf("\tplayerDir2 = 0x%X,\n", v.value + 0x20))
+			file:write(sprintf("\tplayerX = 0x%X,\n", v.value + 0x28))
+			file:write(sprintf("\tplayerZ = 0x%X,\n", v.value + 0x2C))
+			file:write(sprintf("\tplayerY = 0x%X,\n",v.value + 0x30))
 		end
 		if v.index == "playerbasehp" then
 			file:write("\n\tplayerHPoffset = {0x150,0x3C,0x10},\n")	
-			file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n\n")
-		end		
+			file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n")
+		end	
+		
+		if v.index == "playerbaseui" then
+			file:write(sprintf("\tFinteraction = 0x%X,\n",v.value + 0x60))
+			file:write(sprintf("\tTargetMob = 0x%X,\n", v.value + 0x78))
+			file:write(sprintf("\tTargetAll = 0x%X,\n", v.value + 0x90))	
+			file:write(sprintf("\tmousewinX = 0x%X,\n", v.value + 0x98))
+			file:write(sprintf("\tmousewinZ = 0x%X,\n", v.value + 0x9C))
+			file:write(sprintf("\tmousepointX = 0x%X,\n", v.value + 0xB8))
+			file:write(sprintf("\tmousepointZ = 0x%X,\n", v.value + 0xBC))
+			file:write(sprintf("\tmousepointY = 0x%X,\n", v.value + 0xC0))			
+		end
 		
 		-- Comment part
 		file:write( sprintf("%s\n", comment) );
 	end
 
-	file:write("\tplayerInCombat = 0x15A5718,\n")
-	file:write("\tFinteraction = 0x0167B1C0\n")
-	file:write("\tTargetMob = 0x167B1D8,\n\tTargetAll = 0x167B1F0,\n")	
-	file:write("\tmousewinX = 0x167B1F8,\n")
-	file:write("\tmousewinZ = 0x167B1FC,\n")
-	file:write("\tmousepointX = 0x0167B218,\n")
-	file:write("\tmousepointZ = 0x0167B21C,\n")
-	file:write("\tmousepointY = 0x0167B220,\n")
+	file:write("\tplayerInCombat = 0x15AC710,\n")
 	
 	file:write("}\n");
 
@@ -282,3 +299,14 @@ function rewriteAddresses()
 
 end
 rewriteAddresses();
+--[[in combat 15A5718 updater at 11225680
+	updater 167b160 at acc210
+ 	file:write("\tFinteraction = 0x0167B1C0\n") 	+0x60
+	file:write("\tTargetMob = 0x167B1D8,\n")		+0x78
+	file:write("\tTargetAll = 0x167B1F0,\n")		+0x90	
+	file:write("\tmousewinX = 0x167B1F8,\n")		+0x98
+	file:write("\tmousewinZ = 0x167B1FC,\n")		+0x9C
+	file:write("\tmousepointX = 0x0167B218,\n")		+0xB8
+	file:write("\tmousepointZ = 0x0167B21C,\n")		+0xBC
+	file:write("\tmousepointY = 0x0167B220,\n")		+0xC0
+	]]

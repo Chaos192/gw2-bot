@@ -48,9 +48,9 @@ local function update()
 	if player.Heal > player.HP/player.MaxHP*100 then
 		stateman:pushEvent("Heal", "main");
 	end
-	--[[if player.InCombat then
+	if player.InCombat then
 		stateman:pushEvent("Combat","main");
-	end]]
+	end
 end
 
 function _windowname()
@@ -72,9 +72,6 @@ function main()
 					keyboardPress(key.VK_6)
 				end				
 				setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..player.Dir1.." Dir2: "..player.Dir2,player.X,player.Z,player.Y))
-				yrest(10)
-				keyboardPress(key.VK_1)
-				yrest(500)
 			end
 		elseif ( args[i] == "com" ) then
 			repeat
@@ -87,7 +84,6 @@ function main()
 					if status == false then
 						printf("onLoad error: %s\n", err);
 					end
-
 				else
 					print ("Invalid Command")
 				end
@@ -97,7 +93,6 @@ function main()
 		elseif( args[i] == "portal" ) then
 			defaultState = PortalState();
 		end
-		
 	end
 
 	if( defaultState ) then
@@ -110,9 +105,8 @@ function main()
 	print("Current state: ", stateman:getState().name);
 
 	while(stateman.running) do
-		--update()
-		--handleInput();
-		player:update()
+		update()
+		handleInput();
 		stateman:handleEvents();
 		stateman:run();
 		yrest(1);
