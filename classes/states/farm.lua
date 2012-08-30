@@ -16,9 +16,9 @@ function FarmState:update()
 		stateman:pushEvent("Firstattack","farm have target");
 	else
 		for i = 1,10 do
-			keyboardPress(Settings['turnleft'])
+			keyboardPress(keySettings['turnleft'])
 		end
 	end
-	keyboardPress(Settings['nexttarget'])	
+	keyboardPress(keySettings['nexttarget'])	
 end
 table.insert(events,{name = "Farm" ,func = FarmState()})

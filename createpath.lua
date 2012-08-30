@@ -1,4 +1,4 @@
-
+BASE_PATH = getExecutionPath();
 include("addresses.lua");
 include("classes/player.lua");
 player = Player();
@@ -8,7 +8,7 @@ include("config_default.lua");
 include("config.lua");
 include("classes/logger.lua");
 
-
+language = Language()
 
 
 -- ********************************************************************
@@ -120,27 +120,27 @@ function main()
 	while(running) do
 
 		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
-		print( hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
+		print( hf_wide, hf_high, hf_x, hf_y );	-- GW2 windows size
 		
-		--[[printf(language[502]			-- Insert new waypoint
-			.. language[503]		-- Insert new harvest waypoint
-			.. language[505]		-- Save waypoints and quit
-			.. language[509]		-- Insert merchant command
-			.. language[504]		-- Insert target/dialog NPC command
-			.. language[517]		-- Insert choiceOption command
-			.. language[510]		-- Insert Mouseclick Left command
-			.. language[518]		-- Reset script
-			.. language[506]		-- Save waypoints and restart
-			.. language[519]		-- Insert comment command
-			.. language[522],		-- Insert comment command
+		printf(language:message('WPinsert')		-- Insert new waypoint
+			.. language:message('WPharvest')	-- Insert new harvest waypoint
+			.. language:message('WPsaveend')	-- Save waypoints and quit
+			.. language:message('WPcommand')	-- Insert merchant command
+			.. language:message('WPnpc')		-- Insert target/dialog NPC command
+			.. language:message('WPchoice')		-- Insert choiceOption command
+			.. language:message('WPmouse')		-- Insert Mouseclick Left command
+			.. language:message('WPreset')		-- Reset script
+			.. language:message('WPsavenew')	-- Save waypoints and restart
+			.. language:message('WPcode')		-- Insert comment command
+			.. language:message('WPobj'),		-- Insert comment command
 			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey),
 			getKeyName(merchantKey), getKeyName(targetNPCKey),
 			getKeyName(choiceOptionKey), getKeyName(mouseClickKey),
 			getKeyName(resetKey), getKeyName(restartKey),
-			getKeyName(codeKey), getKeyName(targetObjKey));]]
+			getKeyName(codeKey), getKeyName(targetObjKey));
 
 		attach(getWin())
-		print("RoM waypoint creator")
+		print("GW2 waypoint creator")
 
 		local hf_key_pressed, hf_key;
 		while(true) do
