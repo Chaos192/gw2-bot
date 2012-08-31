@@ -48,7 +48,15 @@ function WaypointState:update()
 		if( fileExists(file) ) then	
 			self.waypoints = include(BASE_PATH .. "/waypoints/" .. waypoint .. ".xml", true);
 		end
-		table.print(self.waypoints)
+		for i = 1,#self.waypoints do
+			local wp = self.waypoints[i];
+			local dist = distance(player.X, player.Z, wp.X, wp.Z)
+			if prevdist > dist then 
+				prevdist = dist 
+				self.index = i 
+			end
+		end
+	end
 		self.tableset = true
 	end
 	local wp = self.waypoints[self.index];
