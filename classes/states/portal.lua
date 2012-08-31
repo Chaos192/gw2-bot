@@ -101,3 +101,4 @@ function HealState:handleEvent(event)
 		return true;
 	end
 end
+table.insert(events,{name = "Portal", func = PortalState()})

@@ -71,6 +71,13 @@ function main()
 			if( var == "path" ) then
 				waypoint = val
 			end
+			if( var == "state" ) then
+				for k,v in pairs(events) do
+					if string.lower(v.name) == string.lower(val) then 
+						defaultState = v.func
+					end
+				end
+			end
 		elseif( args[i] == "coords" ) then
 			while(true) do
 				player:update()
@@ -94,10 +101,6 @@ function main()
 					print ("Invalid Command")
 				end
 			until false	
-		elseif ( args[i] == "idle" ) then
-			defaultState = IdleState();
-		elseif( args[i] == "portal" ) then
-			defaultState = PortalState();
 		end
 	end
 
