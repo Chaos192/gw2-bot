@@ -15,7 +15,6 @@ player = Player();
 player:update()
 language = Language();
 
-
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
 	if string.find(v,".lua") then
@@ -65,7 +64,14 @@ function main()
 
 	stateman = StateManager();
 	for i = 2,#args do
-		if( args[i] == "coords" ) then
+		local foundpos = string.find(args[i], ":", 1, true);
+		if foundpos then
+			local var = string.sub(args[i], 1, foundpos-1);
+			local val = string.sub(args[i], foundpos+1);
+			if( var == "path" ) then
+				waypoint = val
+			end
+		elseif( args[i] == "coords" ) then
 			while(true) do
 				player:update()
 				if player.Heal > player.HP/player.MaxHP*100 then

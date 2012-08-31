@@ -9,6 +9,7 @@ WaypointState = class(State);
 function WaypointState:constructor()
 	self.name = "Waypoint";
 	self.index = 1;
+	self.tableset = false
 	self.waypoints = {
 	{ X=8821, Z=35262, Y=-266},
 	{ X=9238, Z=35976, Y=-369},
@@ -42,6 +43,14 @@ function WaypointState:constructor()
 end
 
 function WaypointState:update()
+	if waypoint and not self.tableset then
+		local file = BASE_PATH .. "/waypoints/" .. waypoint .. ".xml";
+		if( fileExists(file) ) then	
+			self.waypoints = include(BASE_PATH .. "/waypoints/" .. waypoint .. ".xml", true);
+		end
+		table.print(self.waypoints)
+		self.tableset = true
+	end
 	local wp = self.waypoints[self.index];
 
 	-- Check our angle to the waypoint.
