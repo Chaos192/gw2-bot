@@ -28,6 +28,8 @@ end
 
 function Player:update()
 	local proc = getProc()
+	self.Name = memoryReadUString(getProc(),addresses.playerName)
+	self.Account = memoryReadUString(getProc(),addresses.playerAccount)
 	self.HP = memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP;
 	self.MaxHP = memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or self.MaxHP;
 	self.X = memoryReadFloat(proc,  addresses.playerX) or self.X;
@@ -39,7 +41,7 @@ function Player:update()
 	self.TargetAll = memoryReadInt(proc, addresses.TargetAll) or self.TargetAll;
 	self.Interaction = (memoryReadInt(proc, addresses.Finteraction) ~= 0)
 	self.InCombat = (memoryReadInt(proc, addresses.playerInCombat) ~= 0)
-
+	
 	self.Angle = math.atan2(self.Dir2, self.Dir1) + math.pi;
 end
 

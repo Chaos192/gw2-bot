@@ -24,8 +24,8 @@ for i,v in pairs(subdir) do
 end
 
 
-logger = Logger(BASE_PATH .. "/logs/" .. os.date('%Y-%m-%d') .. ".txt");
-local version = "rev 7"
+logger = Logger(BASE_PATH .. "/logs/".. player.Name.."/" .. os.date('%Y-%m-%d') .. ".txt");
+local version = "rev 15"
 
 local lastKS = keyboardState();
 local function handleInput()

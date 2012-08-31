@@ -126,6 +126,18 @@ local updatePatterns =
 		offset = 6,
 		startloc = 0xACC000,
 	},
+	playerName = {
+		pattern = string.char(	
+		0x53, 0x33, 0xDB, 0x33, 0xC0, 
+		0x66, 0xA3, 0xFF, 0xFF, 0xFF, 0xFF,
+		0x89, 0x1D,0xFF, 0xFF, 0xFF, 0xFF,
+		0x89, 0x1D,0xFF, 0xFF, 0xFF, 0xFF,
+		0x89, 0x1D,0xFF, 0xFF, 0xFF, 0xFF,
+		0x89, 0x1D,0xFF, 0xFF, 0xFF, 0xFF),
+		mask = "xxxxxxx????xx????xx????xx????xx????",
+		offset = 7,
+		startloc = 0x403F00,
+	},	
 }
 addresses = {}
 -- This function will attempt to automatically find the true addresses
@@ -275,7 +287,9 @@ function rewriteAddresses()
 			file:write("\n\tplayerHPoffset = {0x150,0x3C,0x10},\n")	
 			file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n")
 		end	
-		
+		if v.index == "playerName" then
+			file:write(sprintf("\n\tplayerAccount = 0x%X,\n",v.value + 0xD0))
+		end
 		if v.index == "playerbaseui" then
 			file:write(sprintf("\tFinteraction = 0x%X,\n",v.value + 0x60))
 			file:write(sprintf("\tTargetMob = 0x%X,\n", v.value + 0x78))
