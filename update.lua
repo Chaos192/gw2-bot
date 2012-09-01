@@ -286,6 +286,8 @@ function rewriteAddresses()
 		if v.index == "playerbasehp" then
 			file:write("\n\tplayerHPoffset = {0x150,0x3C,0x10},\n")	
 			file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n")
+			file:write("\tplayerKarmaoffset = {0x1B0, 0x4, 0x1B4},\n")
+			file:write("\tplayerGoldoffset = {0x154, 0x50},\n")
 		end	
 		if v.index == "playerName" then
 			file:write(sprintf("\n\tplayerAccount = 0x%X,\n",v.value + 0xD0))

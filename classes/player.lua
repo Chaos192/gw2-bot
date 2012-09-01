@@ -7,9 +7,11 @@ Player = class();
 
 function Player:constructor()
 	self.name = "playername"
+	self.Karma = 0
+	self.Gold = 0
 	self.HP = 1000
 	self.MaxHP = 1000
-	self.Heal = 60
+	self.Heal = profile['heal']
 	self.HealCD = 25
 	self.X = 0
 	self.Z = 0
@@ -29,7 +31,10 @@ end
 function Player:update()
 	local proc = getProc()
 	self.Name = memoryReadUString(getProc(),addresses.playerName)
+	self.Name = string.gsub(self.Name,"%s","_")
 	self.Account = memoryReadUString(getProc(),addresses.playerAccount)
+	self.Karma = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma;
+	self.Gold = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
 	self.HP = memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP;
 	self.MaxHP = memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or self.MaxHP;
 	self.X = memoryReadFloat(proc,  addresses.playerX) or self.X;
