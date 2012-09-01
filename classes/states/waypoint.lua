@@ -12,18 +12,10 @@ function WaypointState:constructor()
 	self.tableset = false
 	self.waypoints = {};
 	local prevdist = 100000
-	for i = 1,#self.waypoints do
-		local wp = self.waypoints[i];
-		local dist = distance(player.X, player.Z, wp.X, wp.Z)
-		if prevdist > dist then 
-			prevdist = dist 
-			self.index = i 
-		end
-	end
 end
 
 function WaypointState:update()
-	if waypoint and not self.tableset then
+	if waypoint and not self.waypoints[1] then
 		waypoint = string.find(waypoint,"(.*).xml") or waypoint
 		local file = BASE_PATH .. "/waypoints/" .. waypoint .. ".xml";
 		if( fileExists(file) ) then	

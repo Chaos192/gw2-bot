@@ -1,5 +1,5 @@
 BASE_PATH = getExecutionPath();
-
+profile = include(BASE_PATH .. "/profiles/default.lua", true);
 include("classes/language.lua");
 include("classes/statemanager.lua");
 include("addresses.lua");
@@ -58,6 +58,17 @@ function _windowname()
 end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
 
+--=== update with character profile if it exists ===--
+local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
+if( fileExists(char) ) then	
+	charprofile = include(BASE_PATH .. "/profiles/" .. player.Name .. ".lua", true);
+	for k,v in pairs(charprofile) do
+		profile[k] = v
+	end
+	player:constructor()
+	player:update()
+end	
+
 function main()
 	local defaultState = nil;
 
@@ -77,6 +88,20 @@ function main()
 						defaultState = v.func
 					end
 				end
+			end
+			if var == "profile" then
+				val = string.find(val,"(.*).lua") or val
+				local file = BASE_PATH .. "/profiles/" .. val .. ".lua";
+				if( fileExists(file) ) then	
+					addedprofile = include(BASE_PATH .. "/profiles/" .. val .. ".lua", true);
+					for k,v in pairs(addedprofile) do
+						profile[k] = v
+					end
+					player:constructor()
+					player:update()
+				else
+					logger:log('info',"No such porofile name %s", val)
+				end	
 			end
 		elseif( args[i] == "coords" ) then
 			while(true) do
