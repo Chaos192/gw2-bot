@@ -96,3 +96,22 @@ function distance(x1, z1, y1, x2, z2, y2)
 		return math.sqrt( (z2-z1)*(z2-z1) + (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 	end
 end
+
+-- Checks if a variable is any of the types included.
+-- Returns true if the variable is at least one type, otherwise false
+-- EX: checkType(x, "string", "number")
+function checkType(var, ...)
+	local types = {...};
+
+	for i,v in pairs(types) do
+		if( type(v) ~= "string" ) then
+			error(sprintf("Argument %d is an invalid type: string expected", i), 2);
+		end
+
+		if( type(var) == v ) then
+			return true;
+		end
+	end
+
+	return false;
+end

@@ -68,7 +68,7 @@ function Logger:log(level, msg, ...)
 
 
    if( self.file ) then
-      self.file:write("\t" .. os.date(self.dateformat) .. "\t" .. sprintf(msg, ...));
+      self.file:write("\t" .. '[' .. string.upper(level) .. '] ' .. os.date(self.dateformat) .. "\t" .. sprintf(msg, ...));
       self.file:flush();
    end
 end
