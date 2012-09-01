@@ -10,5 +10,5 @@ return {
 	['WPreset'] = "Reset script\n",
 	['WPsavenew'] = "Save waypoints and restart\n",
 	['WPcode'] = "Insert code command\n",
-	['WPobj'] = "Insert target obj command\n",	
+	['WPobj'] = "Insert target obj command\n",
 }

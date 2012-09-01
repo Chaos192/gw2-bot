@@ -40,7 +40,7 @@ end
 function Player:update()
 	local proc = getProc()
 	self.Name = memoryReadUString(getProc(),addresses.playerName)
-	self.Name = string.gsub(self.Name,"%s","_")
+	--self.Name = string.gsub(self.Name,"%s","_") -- Note: We should keep spaces here. Replace with _ where needed elsewhere.
 	self.Account = memoryReadUString(getProc(),addresses.playerAccount)
 	self.Karma = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma;
 	self.Gold = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
@@ -218,45 +218,45 @@ function Player:useSkills()
 	if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] then
 		keyboardPress(key.VK_6)
 		if profile['skill6ground'] == true then
-			keyboardPress(key.VK_6
+			keyboardPress(key.VK_6)
 		end
-		self.skill6used = os.time()		
+		self.skill6used = os.time()
 		cprintf(cli.red,"attack 6\n")
 		yrest(profile['skill6casttime'])
 	end
 	if profile['skill7use'] == true and os.difftime(os.time(),self.skill7used) > profile['skill7cd'] then
 		keyboardPress(key.VK_7)
 		if profile['skill7ground'] == true then
-			keyboardPress(key.VK_7
+			keyboardPress(key.VK_7)
 		end
-		self.skill7used = os.time()		
+		self.skill7used = os.time()
 		cprintf(cli.red,"attack 7\n")	
 		yrest(profile['skill7casttime'])		
 	end
 	if profile['skill8use'] == true and os.difftime(os.time(),self.skill8used) > profile['skill8cd'] then
 		keyboardPress(key.VK_8)
 		if profile['skill8ground'] == true then
-			keyboardPress(key.VK_8
+			keyboardPress(key.VK_8)
 		end
-		self.skill8used = os.time()		
+		self.skill8used = os.time()
 		cprintf(cli.red,"attack 8\n")
 		yrest(profile['skill8casttime'])		
 	end
 	if profile['skill9use'] == true and os.difftime(os.time(),self.skill9used) > profile['skill9cd'] then
 		keyboardPress(key.VK_9)
 		if profile['skill9ground'] == true then
-			keyboardPress(key.VK_9
+			keyboardPress(key.VK_9)
 		end
-		self.skill9used = os.time()		
+		self.skill9used = os.time()
 		cprintf(cli.red,"attack 9\n")
 		yrest(profile['skill9casttime'])
 	end
 	if profile['skill0use'] == true and os.difftime(os.time(),self.skill0used) > profile['skill0cd'] then
 		keyboardPress(key.VK_0)
 		if profile['skill0ground'] == true then
-			keyboardPress(key.VK_0
+			keyboardPress(key.VK_0)
 		end
-		self.skill0used = os.time()		
+		self.skill0used = os.time()
 		cprintf(cli.red,"attack 0\n")
 		yrest(profile['skill0casttime'])		
 	end

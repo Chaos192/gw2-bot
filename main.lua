@@ -15,16 +15,19 @@ player = Player();
 player:update()
 language = Language();
 
+logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
+local version = "rev 15"
+
+atError(function(script, line, message)
+	logger:log('error', "%s:%d\t%s", script, line, message);
+end);
+
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
 	if string.find(v,".lua") then
 		include("classes/states/"..v)
 	end
 end
-
-
-logger = Logger(BASE_PATH .. "/logs/".. player.Name.."/" .. os.date('%Y-%m-%d') .. ".txt");
-local version = "rev 15"
 
 local lastKS = keyboardState();
 local function handleInput()
@@ -125,7 +128,12 @@ function main()
 				else
 					print ("Invalid Command")
 				end
-			until false	
+			until false
+		elseif( args[i] == "devinfo" ) then
+			-- Just print out some info that might be useful for developers.
+			player:update();
+			printf("Player info for \'%s\', HP: %d/%d, Target: 0x%X\n", player.Name, player.HP, player.MaxHP, player.TargetAll);
+			return;
 		end
 	end
 
