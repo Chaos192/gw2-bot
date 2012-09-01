@@ -9,15 +9,6 @@ PortalState = class(State);
 function PortalState:constructor()
 	self.name = "Portal";
 	self.index = 1;
-	self.selfskill2used = os.time()
-	self.selfskill3used = os.time()
-	self.selfskill5used = os.time()
-	self.selfskill8used = os.time()
-	self.selfskill2cd = 7
-	self.selfskill3cd = 11
-	self.selfskill5cd = 31
-	self.selfskill8cd = 61
-
 	self.destX = -11087;
 	self.destZ = -4374;
 end
@@ -53,7 +44,7 @@ function PortalState:update()
 				if( player.turnDir ) then
 					player:stopTurning();
 				end
-				self:useskills()
+				player:useSkills()
 			end
 
 			-- Check for loot
@@ -63,39 +54,14 @@ function PortalState:update()
 				keyboardPress(keySettings['interact']);
 			end
 		else
-			self:useskills()
+			player:useSkills()
 		end
 	else
 		yrest(10000)
 	end
 end
-function PortalState:useskills()			
-	if os.difftime(os.time(),self.selfskill2used) > self.selfskill2cd then
-		keyboardPress(key.VK_2)
-		--keyboardPress(key.VK_2) -- target ground skill
-		self.selfskill2used = os.time()
-		cprintf(cli.red,"attack 2\n")
-	end
-	if os.difftime(os.time(),self.selfskill3used) > self.selfskill3cd then
-		keyboardPress(key.VK_3)	
-		self.selfskill3used = os.time()
-		cprintf(cli.red,"attack 3\n")
-	end
-	if os.difftime(os.time(),self.selfskill5used) > self.selfskill5cd then
-		keyboardPress(key.VK_5)
-		--keyboardPress(key.VK_5) -- target ground skill
-		self.selfskill5used = os.time()
-		cprintf(cli.red,"attack 5\n")	
-	end
-	if os.difftime(os.time(),self.selfskill8used) > self.selfskill8cd then
-		keyboardPress(key.VK_8)
-		--keyboardPress(key.VK_8) -- target ground skill
-		self.selfskill8used = os.time()		
-		cprintf(cli.red,"attack 8\n")		
-	end
-	keyboardPress(key.VK_1)	
-end
-function HealState:handleEvent(event)
+
+function PortalState:handleEvent(event)
 	if event == "Combat"  then
 		Logger:log('info',"Ignoring combat event, portal state.\n");
 		return true;
