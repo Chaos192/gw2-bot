@@ -103,6 +103,7 @@ local updatePatterns =
 	},
 	playerbasehp = {
 		pattern = string.char(
+		0xCC,
 		0x56, 
 		0x8b, 0xf1,
 		0xc7, 0x06, 0xFF, 0xFF, 0xFF, 0xFF, 
@@ -112,9 +113,9 @@ local updatePatterns =
 		0x57, 
 		0x33, 0xff,
 		0x8d, 0x4e),
-		mask = "xxxxx????xxx????xxx????xxx",
-		offset = 5,
-		startloc = 0x479000,
+		mask = "xxxxxx????xxx????xxx????xxx",
+		offset = 6,
+		startloc = 0x470000,
 	},	
 	playerbaseui = {
 		pattern = string.char(	
@@ -124,7 +125,7 @@ local updatePatterns =
 		0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
 		mask = "xxxxxx????xxxxxx",
 		offset = 6,
-		startloc = 0xACC000,
+		startloc = 0xAC0000,
 	},
 	playerName = {
 		pattern = string.char(	
@@ -136,7 +137,7 @@ local updatePatterns =
 		0x89, 0x1D,0xFF, 0xFF, 0xFF, 0xFF),
 		mask = "xxxxxxx????xx????xx????xx????xx????",
 		offset = 7,
-		startloc = 0x403F00,
+		startloc = 0x400F00,
 	},	
 }
 addresses = {}
@@ -185,13 +186,14 @@ function findOffsets()
 			local hexval = string.format('%x',addresses[name])	
 			local str = {} 
 			for w in string.gmatch(hexval,".") do table.insert(str,w) end 
+			table.print(str)
 			num1 = tonumber("0x"..str[6]..str[7])
 			num2 = tonumber("0x"..str[4]..str[5])
 			num3 = tonumber("0x"..str[2]..str[3])
 			num4 = tonumber("0x0"..str[1])
 			local newpattern = string.char(num1,num2,num3,num4)
 			found	= findPatternInProcess(getProc(), newpattern, "xxxx", 0x15A0000, searchlen);
-			addresses[name] = found - 0x8
+			addresses[name] = found - 0x4
 		end	
 		
 		local msg = sprintf("Patched addresses.%s\t (value: 0x%X, at: 0x%X)", name, addresses[name], found + offset);

@@ -40,7 +40,6 @@ end
 function Player:update()
 	local proc = getProc()
 	self.Name = memoryReadUString(getProc(),addresses.playerName)
-	--self.Name = string.gsub(self.Name,"%s","_") -- Note: We should keep spaces here. Replace with _ where needed elsewhere.
 	self.Account = memoryReadUString(getProc(),addresses.playerAccount)
 	self.Karma = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma;
 	self.Gold = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
@@ -67,12 +66,12 @@ function Player:moveForward()
 	end
 
 	if( self.fbMovement == "backward" ) then
-		keyboardRelease(key.VK_S); -- Stop turning right
+		keyboardRelease(keySettings['backward']); -- Stop turning right
 	end
 
 	self.fbMovement = "forward";
 
-	keyboardHold(key.VK_W);
+	keyboardHold(keySettings['forward']);
 end
 
 function Player:moveBackward()
@@ -81,12 +80,12 @@ function Player:moveBackward()
 	end
 
 	if( self.fbMovement == "forward" ) then
-		keyboardRelease(key.VK_W); -- Stop turning right
+		keyboardRelease(keySettings['forward']); -- Stop turning right
 	end
 
 	self.fbMovement = "backward";
 
-	keyboardHold(key.VK_S);
+	keyboardHold(keySettings['backward']);
 end
 
 function Player:stopMoving()
@@ -95,9 +94,9 @@ function Player:stopMoving()
 	end
 
 	if( self.fbMovement == "forward" ) then
-		keyboardRelease(key.VK_W);
+		keyboardRelease(keySettings['forward']);
 	else
-		keyboardRelease(key.VK_S);
+		keyboardRelease(keySettings['backward']);
 	end
 
 	self.fbMovement = nil;
@@ -109,12 +108,12 @@ function Player:turnLeft()
 	end
 
 	if( self.turnDir == "right" ) then
-		keyboardRelease(key.VK_D); -- Stop turning right
+		keyboardRelease(keySettings['turnright']); -- Stop turning right
 	end
 
 	self.turnDir = "left";
 
-	keyboardHold(key.VK_A);
+	keyboardHold(keySettings['turnleft']);
 end
 
 function Player:turnRight()
@@ -123,12 +122,12 @@ function Player:turnRight()
 	end
 
 	if( self.turnDir == "left" ) then
-		keyboardRelease(key.VK_A); -- Stop turning left
+		keyboardRelease(keySettings['turnleft']); -- Stop turning left
 	end
 
 	self.turnDir = "right";
 
-	keyboardHold(key.VK_D);
+	keyboardHold(keySettings['turnright']);
 end
 
 function Player:stopTurning()
@@ -137,9 +136,9 @@ function Player:stopTurning()
 	end
 
 	if( self.turnDir == "left" ) then
-		keyboardRelease(key.VK_A);
+		keyboardRelease(keySettings['turnleft']);
 	else
-		keyboardRelease(key.VK_D);
+		keyboardRelease(keySettings['turnright']);
 	end
 
 	self.turnDir = nil;
