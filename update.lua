@@ -139,7 +139,7 @@ local updatePatterns =
 		offset = 7,
 		startloc = 0x400F00,
 	},	
-	FtextAddress = {
+	--[[FtextAddress = {
 		pattern = string.char(	
 		0xD9, 0x41, 0x08, 
 		0xD8, 0x48, 0x08,
@@ -152,7 +152,7 @@ local updatePatterns =
 		offset = 16,
 		startloc = 0xBC5000,
 		adjustment = -20
-	},	
+	},]]	
 }
 addresses = {}
 -- This function will attempt to automatically find the true addresses
@@ -304,6 +304,7 @@ function rewriteAddresses()
 			file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n")
 			file:write("\tplayerKarmaoffset = {0x1B0, 0x4, 0x1B4},\n")
 			file:write("\tplayerGoldoffset = {0x154, 0x50},\n")
+			file:write(sprintf("\tplayerInCombat = 0x%X,\n",v.value - 0x1AC))
 		end	
 		if v.index == "playerName" then
 			file:write(sprintf("\n\tplayerAccount = 0x%X,\n",v.value + 0xD0))
@@ -325,8 +326,6 @@ function rewriteAddresses()
 		-- Comment part
 		file:write( sprintf("%s\n", comment) );
 	end
-
-	file:write("\tplayerInCombat = 0x15AC710,\n")
 	
 	file:write("}\n");
 
@@ -334,14 +333,3 @@ function rewriteAddresses()
 
 end
 rewriteAddresses();
---[[in combat 15A5718 updater at 11225680
-	updater 167b160 at acc210
- 	file:write("\tFinteraction = 0x0167B1C0\n") 	+0x60
-	file:write("\tTargetMob = 0x167B1D8,\n")		+0x78
-	file:write("\tTargetAll = 0x167B1F0,\n")		+0x90	
-	file:write("\tmousewinX = 0x167B1F8,\n")		+0x98
-	file:write("\tmousewinZ = 0x167B1FC,\n")		+0x9C
-	file:write("\tmousepointX = 0x0167B218,\n")		+0xB8
-	file:write("\tmousepointZ = 0x0167B21C,\n")		+0xBC
-	file:write("\tmousepointY = 0x0167B220,\n")		+0xC0
-	]]

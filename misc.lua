@@ -115,3 +115,47 @@ function checkType(var, ...)
 
 	return false;
 end
+
+function utf8ToAscii_umlauts(_str)
+
+	-- convert one UTF8 character to his ASCII code
+	-- key is the combined UTF8 code
+	local function replaceUtf8( _str, _key )
+		local tmp = database.utf8_ascii[_key];
+		_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
+		return _str
+	end
+
+	_str = replaceUtf8(_str, 195164);		-- ä
+	_str = replaceUtf8(_str, 195132);		-- Ä
+	_str = replaceUtf8(_str, 195182);		-- ö
+	_str = replaceUtf8(_str, 195150);		-- Ö
+	_str = replaceUtf8(_str, 195188);		-- ü
+	_str = replaceUtf8(_str, 195156);		-- Ü
+	_str = replaceUtf8(_str, 195159);		-- ß
+	return _str;
+end
+
+function convert_utf8_ascii( _str )
+
+	-- local function to convert string (e.g. mob name / player name) from UTF-8 to ASCII
+	local function convert_utf8_ascii_character( _str, _v )
+		local found;
+		_str, found = string.gsub(_str, string.char(_v.utf8_1, _v.utf8_2), string.char(_v.ascii) );
+		return _str, found;
+	end
+
+	local found, found_all;
+	found_all = 0;
+	for i,v in pairs(database.utf8_ascii) do
+--			_str, found = convert_utf8_ascii_character( _str, v.ascii  );	-- replace special characters
+		_str, found = convert_utf8_ascii_character( _str, v  );	-- replace special characters
+		found_all = found_all + found;									-- count replacements
+	end
+
+	if( found_all > 0) then
+		return _str, true;
+	else
+		return _str, false;
+	end
+end
