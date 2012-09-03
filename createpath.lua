@@ -122,22 +122,23 @@ function main()
 		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 		print( hf_wide, hf_high, hf_x, hf_y );	-- GW2 windows size
 		
-		printf(language:message('WPinsert')		-- Insert new waypoint
-			.. language:message('WPharvest')	-- Insert new harvest waypoint
-			.. language:message('WPsaveend')	-- Save waypoints and quit
-			.. language:message('WPcommand')	-- Insert merchant command
-			.. language:message('WPnpc')		-- Insert target/dialog NPC command
-			.. language:message('WPchoice')		-- Insert choiceOption command
-			.. language:message('WPmouse')		-- Insert Mouseclick Left command
-			.. language:message('WPreset')		-- Reset script
-			.. language:message('WPsavenew')	-- Save waypoints and restart
+		printf(language:message('WPinsert') 	-- Insert new waypoint
+			.. language:message('WPharvest') 	-- Insert new harvest waypoint
+			.. language:message('WPsaveend') 	-- Save waypoints and quit
+			.. language:message('WPcommand') 	-- Insert merchant command
+			.. language:message('WPnpc')        -- Insert target/dialog NPC command
+			.. language:message('WPchoice') 	-- Insert choiceOption command
+			.. language:message('WPmouse')  	-- Insert Mouseclick Left command
+			.. language:message('WPreset')   	-- Reset script
+			.. language:message('WPsavenew')  	-- Save waypoints and restart
 			.. language:message('WPcode')		-- Insert comment command
 			.. language:message('WPobj'),		-- Insert comment command
 			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey),
 			getKeyName(merchantKey), getKeyName(targetNPCKey),
 			getKeyName(choiceOptionKey), getKeyName(mouseClickKey),
 			getKeyName(resetKey), getKeyName(restartKey),
-			getKeyName(codeKey), getKeyName(targetObjKey));
+			getKeyName(codeKey), getKeyName(targetObjKey) 
+			);
 
 		attach(getWin())
 		print("GW2 waypoint creator")
@@ -226,8 +227,7 @@ function main()
 					print(tmp.mx, tmp.my, tmp.wide, tmp.high ); -- Mouseclick
 				end
 
-
-				print("Continue to next. Press %s to save and quit",getKeyName(saveKey))
+				printf(language:message('WPcontinue'),getKeyName(saveKey));		-- Continue to next. Press %s to save and quit
 
 				table.insert(wpList, tmp);
 
