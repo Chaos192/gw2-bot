@@ -139,6 +139,20 @@ local updatePatterns =
 		offset = 7,
 		startloc = 0x400F00,
 	},	
+	FtextAddress = {
+		pattern = string.char(	
+		0xD9, 0x41, 0x08, 
+		0xD8, 0x48, 0x08,
+		0xDE, 0xC1,
+		0xD9, 0x5D, 0x08,
+		0xD9, 0x45, 0x08,
+		0xD9, 0x05, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xDE, 0xD9),
+		mask = "xx?xx?xxxx?xx?xx????xx",
+		offset = 16,
+		startloc = 0xBC5000,
+		adjustment = -20
+	},	
 }
 addresses = {}
 -- This function will attempt to automatically find the true addresses
@@ -293,6 +307,9 @@ function rewriteAddresses()
 		end	
 		if v.index == "playerName" then
 			file:write(sprintf("\n\tplayerAccount = 0x%X,\n",v.value + 0xD0))
+		end
+		if v.index == "FtextAddress" then
+			file:write("\n\tFtextOffset = {0x0, 0x94, 0x14, 0x22},\n")
 		end
 		if v.index == "playerbaseui" then
 			file:write(sprintf("\tFinteraction = 0x%X,\n",v.value + 0x60))
