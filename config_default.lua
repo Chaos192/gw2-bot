@@ -1,7 +1,7 @@
 -- Default configurations
 
 SETTINGS = {}
-SETTINGS['langauge'] = "english" -- "russian" "german" "french"
+SETTINGS['language'] = "english" -- "russian" "german" "french"
 
 
 LOG_MESSAGE = {};

@@ -9,7 +9,7 @@ Language = class();
 function Language:constructor()
 	self.messages = {};
 	self.defaultLang = 'english';
-	self.setLang = SETTINGS['langauge'];	
+	self.setLang = SETTINGS['language'];	
 	self:load(self.defaultLang);
 	self:load(self.setLang);	-- load individual language file
 end
