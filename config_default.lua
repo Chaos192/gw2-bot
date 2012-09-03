@@ -1,6 +1,8 @@
 -- Default configurations
 
-CONFIG_LANGUAGE = "english";					-- language for messages
+SETTINGS = {}
+SETTINGS['langauge'] = "english" -- "russian" "german" "french"
+
 
 LOG_MESSAGE = {};
 LOG_MESSAGE['error'] = true;					-- Log error messages (NOTE: Cannot be disabled)
@@ -19,3 +21,5 @@ keySettings['forward'] = key.VK_W
 keySettings['backward'] = key.VK_S
 keySettings['nexttarget'] = key.VK_TAB
 keySettings['interact'] = key.VK_F
+
+

@@ -62,6 +62,11 @@ function Player:update()
 	self.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
 	if self.Interaction == true then
 		self.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
+		if( SETTINGS['langauge'] == "russian" ) then
+			self.Ftext = utf82oem_russian(self.Ftext)
+		else
+			self.Ftext = utf8ToAscii_umlauts(self.Ftext)
+		end
 	end
 end
 
