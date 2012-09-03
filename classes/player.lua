@@ -23,6 +23,7 @@ function Player:constructor()
 	self.Loot = false
 	self.Interaction = false
 	self.InCombat = false
+	self.Ftext = ""
 
 	self.turnDir = nil; -- Turn left/right
 	self.fbMovement = nil; -- Move forward/backward
@@ -38,9 +39,10 @@ function Player:constructor()
 end
 
 function Player:update()
+
 	local proc = getProc()
-	self.Name = memoryReadUString(getProc(),addresses.playerName)
-	self.Account = memoryReadUString(getProc(),addresses.playerAccount)
+	self.Name = memoryReadUString(proc,addresses.playerName)
+	self.Account = memoryReadUString(proc,addresses.playerAccount)
 	self.Karma = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma;
 	self.Gold = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
 	self.HP = memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP;
@@ -56,6 +58,11 @@ function Player:update()
 	self.InCombat = (memoryReadInt(proc, addresses.playerInCombat) ~= 0)
 	
 	self.Angle = math.atan2(self.Dir2, self.Dir1) + math.pi;
+
+	self.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
+	if self.Interaction == true then
+		self.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
+	end
 end
 
 
