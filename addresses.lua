@@ -16,6 +16,8 @@ addresses = {
 	playerGoldoffset = {0x154, 0x50},
 
 	Finteraction = 0x167C440,
+	FtextAddress = 0x167dda4,
+	FtextOffset = {0x0, 0x94, 0x14, 0x22},
 	TargetMob = 0x167C458,
 	TargetAll = 0x167C470,
 	mousewinX = 0x167C478,
