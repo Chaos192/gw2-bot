@@ -5,7 +5,7 @@ return {
 	['WPsaveend'] = "%s: Speichern und Beenden\n",
 	['WPcommand'] = "%s: Händlerinteraktion einfügen\n",
 	['WPnpc'] = "%s: NPC Auswahl/Interaktion einfügen\n",
-	['WPchoice'] = "%s: Insert choiceOption command\n",
+	['WPchoice'] = "%s: Optionsauswahl Befehl einfügen\n",
 	['WPmouse'] = "%s: Mausklick links einfügen\n",
 	['WPreset'] = "%s: Skript neustarten\n",
 	['WPsavenew'] = "%s: Wegepunke speichern und Neustart\n",

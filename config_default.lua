@@ -1,5 +1,7 @@
 -- Default configurations
 
+CONFIG_LANGUAGE = "english";					-- language for messages
+
 LOG_MESSAGE = {};
 LOG_MESSAGE['error'] = true;					-- Log error messages (NOTE: Cannot be disabled)
 LOG_MESSAGE['debug'] = false;					-- Log debug messages

@@ -1,4 +1,5 @@
 BASE_PATH = getExecutionPath();
+profile = include(BASE_PATH .. "/profiles/default.lua", true);
 include("addresses.lua");
 include("classes/player.lua");
 player = Player();
