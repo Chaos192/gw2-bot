@@ -103,7 +103,7 @@ function main()
 					player:constructor()
 					player:update()
 				else
-					logger:log('info',"No such porofile name %s", val)
+					logger:log('info',"No such profile name %s", val)
 				end	
 			end
 		elseif( args[i] == "coords" ) then
