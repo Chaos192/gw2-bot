@@ -113,9 +113,11 @@ function main()
 					keyboardPress(key.VK_6)
 				end				
 				setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: "..player.Dir1.." Dir2: "..player.Dir2,player.X,player.Z,player.Y))
+				yrest(1)
 			end
 		elseif ( args[i] == "com" ) then
 			repeat
+				yrest(1)
 				cprintf(cli.lightblue,"Command> ");
 				local name = io.stdin:read();
 				if string.lower(name) == "q" then error("Exiting commandline.",0) end

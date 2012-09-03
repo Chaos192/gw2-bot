@@ -59,15 +59,15 @@ function Player:update()
 	
 	self.Angle = math.atan2(self.Dir2, self.Dir1) + math.pi;
 
-	self.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
-	if self.Interaction == true then
+	--self.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
+	--[[if self.Interaction == true then
 		self.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
 		if( SETTINGS['language'] == "russian" ) then
 			self.Ftext = utf82oem_russian(self.Ftext)
 		else
 			self.Ftext = utf8ToAscii_umlauts(self.Ftext)
 		end
-	end
+	end]]
 end
 
 
