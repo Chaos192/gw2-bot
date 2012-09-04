@@ -200,7 +200,6 @@ function findOffsets()
 			local hexval = string.format('%x',addresses[name])	
 			local str = {} 
 			for w in string.gmatch(hexval,".") do table.insert(str,w) end 
-			table.print(str)
 			num1 = tonumber("0x"..str[6]..str[7])
 			num2 = tonumber("0x"..str[4]..str[5])
 			num3 = tonumber("0x"..str[2]..str[3])
@@ -333,3 +332,33 @@ function rewriteAddresses()
 
 end
 rewriteAddresses();
+
+--=== Remove this before public release ===--
+cprintf(cli.lightblue, "\n\n\nPrint test for addresses, remove before public release.\n")
+BASE_PATH = getExecutionPath();
+profile = include(BASE_PATH .. "/profiles/default.lua", true);
+include("classes/language.lua");
+include("classes/statemanager.lua");
+include("addresses.lua");
+include("config_default.lua");
+include("config.lua");
+include("misc.lua");
+include("classes/logger.lua");
+include("classes/player.lua");
+player = Player();
+player:update()
+print("name: "..player.Name)
+print("Karma: "..player.Karma)
+print("Gold: "..player.Gold)
+print("HP: "..player.HP)
+print("MaxHP: "..player.MaxHP)
+print("X: "..player.X)
+print("Z: "..player.Z)
+print("Y: "..player.Y)
+print("Dir1: "..player.Dir1)
+print("Dir2: "..player.Dir2)
+print("TargetMob: "..player.TargetMob)
+print("TargetAll: "..player.TargetAll)
+printf("Loot: ") print(player.Loot)
+printf("Interaction: ") print(player.Interaction)
+printf("InCombat: ") print(player.InCombat)

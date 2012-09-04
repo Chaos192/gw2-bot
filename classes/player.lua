@@ -6,7 +6,7 @@
 Player = class();
 
 function Player:constructor()
-	self.name = "playername"
+	self.Name = "playername"
 	self.Karma = 0
 	self.Gold = 0
 	self.HP = 1000
