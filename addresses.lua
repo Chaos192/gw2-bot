@@ -25,4 +25,9 @@ addresses = {
 	mousepointZ = 0x167C49C,
 	mousepointY = 0x167C4A0,
 
+	targetbaseAddress = 0x167DBFC,
+	targetXoffset = {0x30, 0x5C, 0x110},
+	targetZoffset = {0x30, 0x5C, 0x114},
+	targetYoffset = {0x30, 0x5C, 0x118},
+
 }

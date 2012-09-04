@@ -24,6 +24,9 @@ function Player:constructor()
 	self.Interaction = false
 	self.InCombat = false
 	self.Ftext = ""
+	self.TargetX = 0
+	self.TargetZ = 0
+	self.TargetY = 0
 
 	self.turnDir = nil; -- Turn left/right
 	self.fbMovement = nil; -- Move forward/backward
@@ -56,6 +59,16 @@ function Player:update()
 	self.TargetAll = memoryReadInt(proc, addresses.TargetAll) or self.TargetAll;
 	self.Interaction = (memoryReadInt(proc, addresses.Finteraction) ~= 0)
 	self.InCombat = (memoryReadInt(proc, addresses.playerInCombat) ~= 0)
+	
+	if self.TargetAll ~= 0 then
+		self.TargetX = memoryReadFloatPtr(proc, addresses.targetbaseAddress, addresses.targetXoffset) or self.TargetX
+		self.TargetZ =  memoryReadFloatPtr(proc, addresses.targetbaseAddress, addresses.targetZoffset) or self.TargetZ
+		self.TargetY =  memoryReadFloatPtr(proc, addresses.targetbaseAddress, addresses.targetYoffset) or self.TargetY
+	else
+		self.TargetX = 0
+		self.TargetZ = 0
+		self.TargetY = 0		
+	end
 	
 	self.Angle = math.atan2(self.Dir2, self.Dir1) + math.pi;
 
