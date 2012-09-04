@@ -319,7 +319,11 @@ function rewriteAddresses()
 			file:write(sprintf("\tmousewinZ = 0x%X,\n", v.value + 0x9C))
 			file:write(sprintf("\tmousepointX = 0x%X,\n", v.value + 0xB8))
 			file:write(sprintf("\tmousepointZ = 0x%X,\n", v.value + 0xBC))
-			file:write(sprintf("\tmousepointY = 0x%X,\n", v.value + 0xC0))			
+			file:write(sprintf("\tmousepointY = 0x%X,\n\n", v.value + 0xC0))
+			file:write(sprintf("\ttargetbaseAddress = 0x%X,\n", v.value + 0x181C))
+			file:write("\ttargetXoffset = {0x30, 0x5C, 0x110},\n")
+			file:write("\ttargetZoffset = {0x30, 0x5C, 0x114},\n")
+			file:write("\ttargetYoffset = {0x30, 0x5C, 0x118},\n")
 		end
 		
 		-- Comment part
