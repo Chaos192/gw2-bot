@@ -1,8 +1,11 @@
 return {
 	['loot'] = true, -- to loot mobs or not
 	['heal'] = 60, -- what % hp to use heal skill
+	['maxdistance'] = 2000, -- max distance to decide to attack mob
+	['fightdistance'] = 1100, -- distance when start to use skills, melee should be low (50)
 
 	--=== cooldown for the skills ===--
+	['skill1cd'] = 1,
 	['skill2cd'] = 10,
 	['skill3cd'] = 10,
 	['skill4cd'] = 10,
@@ -45,6 +48,4 @@ return {
 	['skill8casttime'] = 1,
 	['skill9casttime'] = 1,
 	['skill0casttime'] = 1,
-
-	
 }

@@ -14,25 +14,21 @@ function CombatState:constructor()
 end
 
 function CombatState:update()
-	Player:update()
-	if not Player.InCombat	then 
+	if not player.InCombat	then 
 		if profile['loot'] == true then
 			stateman:pushEvent("Loot","finished combat"); 
 		end
 		stateman:popState("combat ended");	
 	end
-	if Player.TargetMob ~= 0 then
+	if player.TargetMob ~= 0 then
 		player:useSkills()
-	else
-		stateman:popState("combat no target");
 	end
 end
 
 -- Handle events
 function CombatState:handleEvent(event)
 	if event == "Heal"  then
-		Logger:log('info',"in combat need heals")
-		stateman:pushState(HealState())
+		player:useSkills(_heal)
 		return true;
 	end
 end

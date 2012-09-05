@@ -15,6 +15,23 @@ player = Player();
 player:update()
 language = Language();
 
+--=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
+local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
+if( fileExists(char) ) then	
+	charprofile = include(BASE_PATH .. "/profiles/" .. player.Name .. ".lua", true);
+	for k,v in pairs(charprofile) do
+		profile[k] = v
+	end
+	player:constructor()
+	player:update()
+end	
+
+attach(getWin());
+
+player = Player();
+player:update()
+language = Language();
+
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
 local version = "rev 15"
 
@@ -50,7 +67,7 @@ local function update()
 	if player.Heal > player.HP/player.MaxHP*100 then
 		stateman:pushEvent("Heal", "main");
 	end
-	if player.InCombat then
+	if SETTINGS['combatstate'] == true and player.InCombat then
 		stateman:pushEvent("Combat","main");
 	end
 end
@@ -61,16 +78,6 @@ function _windowname()
 end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
 
---=== update with character profile if it exists ===--
-local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
-if( fileExists(char) ) then	
-	charprofile = include(BASE_PATH .. "/profiles/" .. player.Name .. ".lua", true);
-	for k,v in pairs(charprofile) do
-		profile[k] = v
-	end
-	player:constructor()
-	player:update()
-end	
 
 function main()
 	local defaultState = nil;

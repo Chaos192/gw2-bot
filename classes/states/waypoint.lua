@@ -35,8 +35,12 @@ function WaypointState:update()
 	end
 	local wp = self.waypoints[self.index];
 
+	
+	if player:moveTo_step(wp.X, wp.Z, 40) then
+		self:advance()
+	end
 	-- Check our angle to the waypoint.
-	local angle = math.atan2(wp.Z - player.Z, wp.X - player.X) + math.pi;
+	--[[local angle = math.atan2(wp.Z - player.Z, wp.X - player.X) + math.pi;
 	local anglediff = player.Angle - angle;
 
 	if( math.abs(anglediff) > 0.13 ) then
@@ -63,7 +67,7 @@ function WaypointState:update()
 		else
 			self:advance()
 		end
-	end
+	end]]
 end
 
 -- Advance the waypoint index to the next point.

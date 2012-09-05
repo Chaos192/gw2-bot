@@ -8,17 +8,25 @@ FarmState = class(State);
 
 function FarmState:constructor()
 	self.name = "Farm";
+	self.prevmob = 0
+	self.skipmob = false
 end
 
 function FarmState:update()
-	Player:update()
-	if Player.TargetMob ~= 0 then
+	if self.prevmob == player.TargetMob then
+		self.skipmob = true
+	else
+		self.skipmob = false
+	end
+	keyboardPress(keySettings['nexttarget'])
+	player:targetupdate()
+	self.prevmob = player.TargetMob
+	if self.skipmob ~= true and player.TargetMob ~= 0 then
 		stateman:pushEvent("Firstattack","farm have target");
 	else
 		for i = 1,10 do
 			keyboardPress(keySettings['turnleft'])
 		end
 	end
-	keyboardPress(keySettings['nexttarget'])	
 end
 table.insert(events,{name = "Farm" ,func = FarmState()})

@@ -2,7 +2,6 @@
 	State base class. All other states should inherit from this.
 ]]
 
-
 Player = class();
 
 function Player:constructor()
@@ -30,17 +29,32 @@ function Player:constructor()
 
 	self.turnDir = nil; -- Turn left/right
 	self.fbMovement = nil; -- Move forward/backward
-	self.skill2used = os.time()
-	self.skill3used = os.time()
-	self.skill4used = os.time()
-	self.skill5used = os.time()
-	self.skill6used = os.time()
-	self.skill7used = os.time()
-	self.skill8used = os.time()
-	self.skill9used = os.time()	
-	self.skill0used = os.time()
+	self.skill1used = 0
+	self.skill2used = 0
+	self.skill3used = 0
+	self.skill4used = 0
+	self.skill5used = 0
+	self.skill6used = 0
+	self.skill7used = 0
+	self.skill8used = 0
+	self.skill9used = 0	
+	self.skill0used = 0
 end
+function Player:targetupdate()
+	local proc = getProc()
+	self.TargetMob = memoryReadInt(proc, addresses.TargetMob) or self.TargetMob;
+	self.TargetAll = memoryReadInt(proc, addresses.TargetAll) or self.TargetAll;
+	if self.TargetAll ~= 0 then
+		self.TargetX = memoryReadFloatPtr(proc, addresses.targetbaseAddress, addresses.targetXoffset) or self.TargetX
+		self.TargetZ =  memoryReadFloatPtr(proc, addresses.targetbaseAddress, addresses.targetZoffset) or self.TargetZ
+		self.TargetY =  memoryReadFloatPtr(proc, addresses.targetbaseAddress, addresses.targetYoffset) or self.TargetY
+	else
+		self.TargetX = 0
+		self.TargetZ = 0
+		self.TargetY = 0		
+	end
 
+end
 function Player:update()
 
 	local proc = getProc()
@@ -169,16 +183,15 @@ function Player:stopTurning()
 	self.turnDir = nil;
 end
 
-function Player:moveTo_step(x, z)
+function Player:facedirection(x, z,_angle)
 	x = x or 0;
 	z = z or 0;
-
-
+	_angle = _angle or 0.13
 	-- Check our angle to the waypoint.
 	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
 	local anglediff = self.Angle - angle;
 
-	if( math.abs(anglediff) > 0.13 ) then
+	if( math.abs(anglediff) > _angle ) then
 		if( self.fbMovement ) then -- Stop running forward.
 			self:stopMoving();
 		end
@@ -192,97 +205,117 @@ function Player:moveTo_step(x, z)
 			self:turnRight();
 		end
 	else
-		-- We're facing the point. Move forward.
-		if( self.turnDir ) then
-			self:stopTurning();
-		end
+		self:stopTurning();
+		return true
+	end
+end
 
-		self:moveForward();
+function Player:moveTo_step(x, z,_dist)
+	x = x or 0;
+	z = z or 0;
+
+	-- Check our angle to the waypoint.
+	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
+	local anglediff = self.Angle - angle;
+
+	if player:facedirection(x, z) then
+		if distance(player.X, player.Z, x, z) > _dist then
+			self:moveForward()
+		else
+			self:stopMoving()
+			return true
+		end
 	end
 
 end
 
-function Player:useSkills()
-	if profile['skill2use'] == true and os.difftime(os.time(),self.skill2used) > profile['skill2cd'] then
+function Player:useSkills(_heal)
+	if _heal then
+		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then
+			keyboardPress(key.VK_6)
+			if profile['skill6ground'] == true then
+				keyboardPress(key.VK_6)
+			end
+			self.skill6used = os.time()
+			cprintf(cli.green,"heal key 6\n")
+			yrest(profile['skill6casttime']*1000)
+		end
+		return
+	end
+	if profile['skill2use'] == true and os.difftime(os.time(),self.skill2used) > profile['skill2cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_2)
 		if profile['skill2ground'] == true then
 			keyboardPress(key.VK_2)
 		end
 		self.skill2used = os.time()
 		cprintf(cli.red,"attack 2\n")
-		yrest(profile['skill2casttime'])
+		yrest(profile['skill2casttime']*1000)
 	end
-	if profile['skill3use'] == true and os.difftime(os.time(),self.skill3used) > profile['skill3cd'] then
+	if profile['skill3use'] == true and os.difftime(os.time(),self.skill3used) > profile['skill3cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_3)
 		if profile['skill3ground'] == true then
 			keyboardPress(key.VK_3)
 		end		
 		self.skill3used = os.time()
 		cprintf(cli.red,"attack 3\n")
-		yrest(profile['skill3casttime'])
+		yrest(profile['skill3casttime']*1000)
 	end
-	if profile['skill4use'] == true and os.difftime(os.time(),self.skill4used) > profile['skill4cd'] then
+	if profile['skill4use'] == true and os.difftime(os.time(),self.skill4used) > profile['skill4cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_4)	
 		if profile['skill4ground'] == true then
 			keyboardPress(key.VK_4)
 		end		
 		self.skill3used = os.time()
 		cprintf(cli.red,"attack 4\n")
-		yrest(profile['skill4casttime'])
+		yrest(profile['skill4casttime']*1000)
 	end
-	if profile['skill5use'] == true and os.difftime(os.time(),self.skill5used) > profile['skill5cd'] then
+	if profile['skill5use'] == true and os.difftime(os.time(),self.skill5used) > profile['skill5cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_5)
 		if profile['skill5ground'] == true then
 			keyboardPress(key.VK_5)
 		end
 		self.skill5used = os.time()
 		cprintf(cli.red,"attack 5\n")
-		yrest(profile['skill5casttime'])		
+		yrest(profile['skill5casttime']*1000)		
 	end
-	if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] then
-		keyboardPress(key.VK_6)
-		if profile['skill6ground'] == true then
-			keyboardPress(key.VK_6)
-		end
-		self.skill6used = os.time()
-		cprintf(cli.red,"attack 6\n")
-		yrest(profile['skill6casttime'])
-	end
-	if profile['skill7use'] == true and os.difftime(os.time(),self.skill7used) > profile['skill7cd'] then
+	if profile['skill7use'] == true and os.difftime(os.time(),self.skill7used) > profile['skill7cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_7)
 		if profile['skill7ground'] == true then
 			keyboardPress(key.VK_7)
 		end
 		self.skill7used = os.time()
 		cprintf(cli.red,"attack 7\n")	
-		yrest(profile['skill7casttime'])		
+		yrest(profile['skill7casttime']*1000)		
 	end
-	if profile['skill8use'] == true and os.difftime(os.time(),self.skill8used) > profile['skill8cd'] then
+	if profile['skill8use'] == true and os.difftime(os.time(),self.skill8used) > profile['skill8cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_8)
 		if profile['skill8ground'] == true then
 			keyboardPress(key.VK_8)
 		end
 		self.skill8used = os.time()
 		cprintf(cli.red,"attack 8\n")
-		yrest(profile['skill8casttime'])		
+		yrest(profile['skill8casttime']*1000)		
 	end
-	if profile['skill9use'] == true and os.difftime(os.time(),self.skill9used) > profile['skill9cd'] then
+	if profile['skill9use'] == true and os.difftime(os.time(),self.skill9used) > profile['skill9cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_9)
 		if profile['skill9ground'] == true then
 			keyboardPress(key.VK_9)
 		end
 		self.skill9used = os.time()
 		cprintf(cli.red,"attack 9\n")
-		yrest(profile['skill9casttime'])
+		yrest(profile['skill9casttime']*1000)
 	end
-	if profile['skill0use'] == true and os.difftime(os.time(),self.skill0used) > profile['skill0cd'] then
+	if profile['skill0use'] == true and os.difftime(os.time(),self.skill0used) > profile['skill0cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_0)
 		if profile['skill0ground'] == true then
 			keyboardPress(key.VK_0)
 		end
 		self.skill0used = os.time()
 		cprintf(cli.red,"attack 0\n")
-		yrest(profile['skill0casttime'])		
+		yrest(profile['skill0casttime']*1000)		
 	end
-	keyboardPress(key.VK_1)	
+	if os.difftime(os.time(),self.skill1used) > profile['skill1cd'] then
+		keyboardPress(key.VK_1)
+		self.skill1used = os.time()	
+	end	
 end
