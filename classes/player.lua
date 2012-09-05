@@ -58,21 +58,25 @@ end
 function Player:update()
 
 	local proc = getProc()
-	self.Name = memoryReadUString(proc,addresses.playerName)
-	self.Account = memoryReadUString(proc,addresses.playerAccount)
-	self.Karma = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma;
-	self.Gold = memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
-	self.HP = memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP;
-	self.MaxHP = memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or self.MaxHP;
-	self.X = memoryReadFloat(proc,  addresses.playerX) or self.X;
-	self.Z = memoryReadFloat(proc,  addresses.playerZ) or self.Z;
-	self.Y = memoryReadFloat(proc,  addresses.playerY) or self.Y;
-	self.Dir1 = memoryReadFloat(proc,  addresses.playerDir1) or self.Dir1;
-	self.Dir2 = memoryReadFloat(proc,  addresses.playerDir2) or self.Dir2;
-	self.TargetMob = memoryReadInt(proc, addresses.TargetMob) or self.TargetMob;
-	self.TargetAll = memoryReadInt(proc, addresses.TargetAll) or self.TargetAll;
-	self.Interaction = (memoryReadInt(proc, addresses.Finteraction) ~= 0)
-	self.InCombat = (memoryReadInt(proc, addresses.playerInCombat) ~= 0)
+	--self.Name = memoryReadUString(getProc(),addresses.playerName)
+	self.Name = memoryReadRepeat("ustring", proc, addresses.playerName);
+	--self.Name = string.gsub(self.Name,"%s","_") -- Note: We should keep spaces here. Replace with _ where needed elsewhere.
+	--self.Account = memoryReadUString(getProc(),addresses.playerAccount)
+	self.Account = memoryReadRepeat("ustring", proc, addresses.playerAccount);
+
+	self.Karma = memoryReadRepeat("intptr", proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma; --memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma;
+	self.Gold = memoryReadRepeat("intptr", proc, addresses.playerbasehp, playerGoldoffset) or self.Gold; --memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
+	self.HP = memoryReadRepeat("floatptr", proc, addresses.playerbasehp, playerHPoffset) or self.HP; --memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP;
+	self.MaxHP = memoryReadRepeat("intptr", proc, addresses.playerbasehp, playerMaxHPoffset) or self.MaxHP; --memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or self.MaxHP;
+	self.X = memoryReadRepeat("float", proc, addresses.playerX) or self.X; --memoryReadFloat(proc,  addresses.playerX) or self.X;
+	self.Z = memoryReadRepeat("float", proc, addresses.playerZ) or self.Z; --memoryReadFloat(proc,  addresses.playerZ) or self.Z;
+	self.Y = memoryReadRepeat("float", proc, addresses.playerY) or self.Y; --memoryReadFloat(proc,  addresses.playerY) or self.Y;
+	self.Dir1 = memoryReadRepeat("float", proc, addresses.playerDir1) or self.Dir1; --memoryReadFloat(proc,  addresses.playerDir1) or self.Dir1;
+	self.Dir2 = memoryReadRepeat("float", proc, addresses.playerDir2) or self.Dir2; --memoryReadFloat(proc,  addresses.playerDir2) or self.Dir2;
+	self.TargetMob = memoryReadRepeat("int", proc, addresses.TargetMob) or self.TargetMob; --memoryReadInt(proc, addresses.TargetMob) or self.TargetMob;
+	self.TargetAll = memoryReadRepeat("int", proc, addresses.TargetAll) or self.TargetAll; --memoryReadInt(proc, addresses.TargetAll) or self.TargetAll;
+	self.Interaction = (memoryReadRepeat("int", proc, addresses.Finteraction) ~= 0)
+	self.InCombat = (memoryReadRepeat("int", proc, addresses.playerInCombat) ~= 0)
 	
 	if self.TargetAll ~= 0 then
 		self.TargetX = memoryReadFloatPtr(proc, addresses.targetbaseAddress, addresses.targetXoffset) or self.TargetX

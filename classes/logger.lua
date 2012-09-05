@@ -47,6 +47,7 @@ function Logger:openFile(filename)
 end
 
 function Logger:log(level, msg, ...)
+	if( not msg ) then return; end;
    if( not string.find(msg, "\n$") ) then msg = msg .. "\n"; end;
 
    -- Check if we don't log debug messages

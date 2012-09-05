@@ -44,6 +44,8 @@ function memoryReadRepeat(_type, proc, address, offset)
 		readfunc = memoryReadByte;
 	elseif( _type == "string" ) then
 		readfunc = memoryReadString;
+	elseif( _type == "ustring" ) then
+		readfunc = memoryReadUString;
 	elseif( _type == "intptr" ) then
 		readfunc = memoryReadIntPtr;
 		ptr = true;
@@ -53,21 +55,32 @@ function memoryReadRepeat(_type, proc, address, offset)
 	elseif( _type == "byteptr" ) then
 		readfunc = memoryReadBytePtr;
 		ptr = true;
-
 	else
 		return nil;
 	end
 
 	for i = 1, 10 do
+		showWarnings(false);
 		if( ptr ) then
 			val = readfunc(proc, address, offset);
 		else
 			val = readfunc(proc, address);
 		end
+		showWarnings(true);
 
-		if( val ~= nil ) then
-			return val;
+		if( val == nil ) then
+			local info = debug.getinfo(2);
+			local name;
+			if( info.name ) then
+				name = info.name .. '()';
+			else
+				name = '<unknown>';
+			end
+			logger:log('debug',  "Error reading memory in %s from %s:%d", name, info.short_src, info.currentline or 0);
 		end
+
+		return val
+
 	end
 
 end	

@@ -11,6 +11,8 @@ include("classes/player.lua");
 
 attach(getWin());
 
+logger = Logger();
+
 player = Player();
 player:update()
 language = Language();
@@ -41,7 +43,7 @@ end);
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
-	if string.find(v,".lua") then
+	if string.find(v,".lua$") then
 		include("classes/states/"..v)
 	end
 end
