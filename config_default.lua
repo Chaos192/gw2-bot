@@ -2,7 +2,8 @@
 
 SETTINGS = {}
 SETTINGS['language'] = "english" -- "russian" "german" "french"
-
+SETTINGS['combatstate'] = true
+SETTINGS['lagallowance'] = 1
 
 LOG_MESSAGE = {};
 LOG_MESSAGE['error'] = true;					-- Log error messages (NOTE: Cannot be disabled)
