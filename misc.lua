@@ -63,7 +63,6 @@ function memoryReadRepeat(_type, proc, address, offset)
 	end
 
 	for i = 1, 10 do
-		print(_type)
 		showWarnings(false);
 		if( ptr ) then
 			val = readfunc(proc, address, offset);
