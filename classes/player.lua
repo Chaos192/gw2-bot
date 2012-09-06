@@ -65,9 +65,9 @@ function Player:update()
 	self.Account = memoryReadRepeat("ustring", proc, addresses.playerAccount);
 
 	self.Karma = memoryReadRepeat("intptr", proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma; --memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerKarmaoffset) or self.Karma;
-	self.Gold = memoryReadRepeat("intptr", proc, addresses.playerbasehp, playerGoldoffset) or self.Gold; --memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
-	self.HP = memoryReadRepeat("floatptr", proc, addresses.playerbasehp, playerHPoffset) or self.HP; --memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP;
-	self.MaxHP = memoryReadRepeat("intptr", proc, addresses.playerbasehp, playerMaxHPoffset) or self.MaxHP; --memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or self.MaxHP;
+	self.Gold = memoryReadRepeat("intptr", proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold; --memoryReadIntPtr(proc, addresses.playerbasehp, addresses.playerGoldoffset) or self.Gold;
+	self.HP = memoryReadRepeat("floatptr", proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP; --memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerHPoffset) or self.HP;
+	self.MaxHP = memoryReadRepeat("intptr", proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or self.MaxHP; --memoryReadFloatPtr(proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or self.MaxHP;
 	self.X = memoryReadRepeat("float", proc, addresses.playerX) or self.X; --memoryReadFloat(proc,  addresses.playerX) or self.X;
 	self.Z = memoryReadRepeat("float", proc, addresses.playerZ) or self.Z; --memoryReadFloat(proc,  addresses.playerZ) or self.Z;
 	self.Y = memoryReadRepeat("float", proc, addresses.playerY) or self.Y; --memoryReadFloat(proc,  addresses.playerY) or self.Y;
