@@ -55,11 +55,15 @@ function memoryReadRepeat(_type, proc, address, offset)
 	elseif( _type == "byteptr" ) then
 		readfunc = memoryReadBytePtr;
 		ptr = true;
+	elseif( _type == "floatptr" ) then
+		readfunc = memoryReadFloatPtr;
+		ptr = true;		
 	else
 		return nil;
 	end
 
 	for i = 1, 10 do
+		print(_type)
 		showWarnings(false);
 		if( ptr ) then
 			val = readfunc(proc, address, offset);
