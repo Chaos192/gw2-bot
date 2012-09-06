@@ -233,6 +233,28 @@ function Player:moveTo_step(x, z,_dist)
 
 end
 
+-- look for target by pressing Next Targe Button
+-- optional check distance
+-- _dist = optional distance to look for target within
+function Player:getNextTarget(_dist)
+
+	keyboardPress(keySettings['nexttarget'])
+	
+	self:update()
+
+	if self.TargetMob == 0 then
+		return false
+	end
+
+	if distance( self.X, self.Z, self.TargetX, self.TargetZ) < _dist then	-- target within distances?
+		return true
+	else
+		return false
+	end
+
+end
+
+
 function Player:useSkills(_heal)
 	if _heal then
 		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then

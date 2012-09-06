@@ -17,15 +17,25 @@ player = Player();
 player:update()
 language = Language();
 
+logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
+local version = "rev 15"
+
+atError(function(script, line, message)
+	logger:log('error', "%s:%d\t%s", script, line, message);
+end);
+
 --=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
 local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
 if( fileExists(char) ) then	
 	charprofile = include(BASE_PATH .. "/profiles/" .. player.Name .. ".lua", true);
+	logger:log('info',language:message('start_profile_name'), player.Name)	-- loading player profile 
 	for k,v in pairs(charprofile) do
 		profile[k] = v
 	end
 	player:constructor()
 	player:update()
+else
+	logger:log('info',language:message('start_default_profile'), player.Name)	-- using default profile 
 end	
 
 attach(getWin());
@@ -33,13 +43,6 @@ attach(getWin());
 player = Player();
 player:update()
 language = Language();
-
-logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
-local version = "rev 15"
-
-atError(function(script, line, message)
-	logger:log('error', "%s:%d\t%s", script, line, message);
-end);
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
