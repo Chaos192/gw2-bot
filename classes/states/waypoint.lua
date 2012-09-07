@@ -32,6 +32,12 @@ function WaypointState:update()
 		end
 
 		self.tableset = true
+	elseif not waypoint and not self.waypoints[1] then	-- no wp file in waypoint state
+--		self.waypoints = {								-- use actual position
+--			{ X=player.X, Z=player.Z, Y=player.Y}
+--		};
+		stateman:pushEvent("Idle","waypoint");			-- go to idle state
+		return
 	end
 	local wp = self.waypoints[self.index];
 
