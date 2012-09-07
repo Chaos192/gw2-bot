@@ -12,4 +12,8 @@ end
 
 function IdleState:update()
 
+--	if player.InCombat	then 	-- combat not working at the moment / also need to get a target if aggro
+--		stateman:pushEvent("Combat","idle");
+--	end
+
 end

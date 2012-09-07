@@ -9,11 +9,19 @@ function Logger:constructor(fn)
    self.file = nil;
    self.filename = nil;
    self.dateformat = "%Y/%m/%d %H:%M:%S";
+   self.lastMsgTime = 0;		-- last time we log a message
+   self.lastMsg = "<UNKNOWN>";			-- last mesage we log
+   self.repeatTimer = 10;		-- at least x second until repat same message
 
 	if( fn ) then
 		self:openFile(fn);
 	end
 end
+
+-- constructor above didn't work? It's ok after first use, but then values are nil ???
+LOGGER_lastMsgTime = 0;			-- last time we log a message
+LOGGER_lastMsg = "<UNKNOWN>";	-- last mesage we log
+LOGGER_repeatTimer = 10;		-- at least x second until repat same message
 
 function Logger:openFile(filename)
    if( self.file ) then
@@ -59,6 +67,16 @@ function Logger:log(level, msg, ...)
    if( level == 'info' and not LOG_MESSAGE['info'] ) then
       return;
    end
+   
+--		debug_value(self.lastMsg, 		"self.lastMsg");  		-- *** DEBUG STEPHEN ***	
+--		debug_value(self.lastMsgTime,	"self.lastMsgTime");	-- *** DEBUG STEPHEN ***	
+--		debug_value(self.repeatTimer,	"self.repeatTimer");	-- *** DEBUG STEPHEN ***	
+
+	-- avoid spamming same message
+	if( msg == LOGGER_lastMsg ) and
+	  ( os.difftime(os.time(),LOGGER_lastMsgTime) < LOGGER_repeatTimer )	then
+		return
+	end
 
    local col = LOG_MESSAGE_COLOR[level];
    if( type(col) ~= "number" ) then
@@ -67,6 +85,8 @@ function Logger:log(level, msg, ...)
       cprintf(col, msg, ...);
    end
 
+	LOGGER_lastMsgTime = os.time();		-- remember time we send a message
+	LOGGER_lastMsg = msg;				-- remember last send message
 
    if( self.file ) then
       self.file:write("\t" .. '[' .. string.upper(level) .. '] ' .. os.date(self.dateformat) .. "\t" .. sprintf(msg, ...));
