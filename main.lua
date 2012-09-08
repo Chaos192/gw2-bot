@@ -1,5 +1,6 @@
 BASE_PATH = getExecutionPath();
 profile = include(BASE_PATH .. "/profiles/default.lua", true);
+include("functions.lua");    -- Stephen private functions
 include("classes/language.lua");
 include("classes/statemanager.lua");
 include("addresses.lua");

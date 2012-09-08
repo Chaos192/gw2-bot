@@ -55,6 +55,14 @@ function Logger:openFile(filename)
 end
 
 function Logger:log(level, msg, ...)
+		debug_value(self.lastMsg, 		"self.lastMsg ******");  	-- *** DEBUG STEPHEN ***	
+		debug_value(self.lastMsgTime,	"self.lastMsgTime ******");	-- *** DEBUG STEPHEN ***	
+		debug_value(self.repeatTimer,	"self.repeatTimer ******");	-- *** DEBUG STEPHEN ***	
+		debug_value(logger.lastMsg, 	"logger.lastMsg ******");  	-- *** DEBUG STEPHEN ***	
+		debug_value(logger.lastMsgTime,	"logger.lastMsgTime ******");	-- *** DEBUG STEPHEN ***	
+		debug_value(logger.repeatTimer,	"logger.repeatTimer ******");	-- *** DEBUG STEPHEN ***	
+
+
 	if( not msg ) then return; end;
    if( not string.find(msg, "\n$") ) then msg = msg .. "\n"; end;
 
@@ -68,13 +76,10 @@ function Logger:log(level, msg, ...)
       return;
    end
    
---		debug_value(self.lastMsg, 		"self.lastMsg");  		-- *** DEBUG STEPHEN ***	
---		debug_value(self.lastMsgTime,	"self.lastMsgTime");	-- *** DEBUG STEPHEN ***	
---		debug_value(self.repeatTimer,	"self.repeatTimer");	-- *** DEBUG STEPHEN ***	
 
 	-- avoid spamming same message
-	if( msg == LOGGER_lastMsg ) and
-	  ( os.difftime(os.time(),LOGGER_lastMsgTime) < LOGGER_repeatTimer )	then
+	if( msg == logger.lastMsg ) and
+	  ( os.difftime(os.time(),logger.lastMsgTime) < logger.repeatTimer )	then
 		return
 	end
 
@@ -85,13 +90,14 @@ function Logger:log(level, msg, ...)
       cprintf(col, msg, ...);
    end
 
-	LOGGER_lastMsgTime = os.time();		-- remember time we send a message
-	LOGGER_lastMsg = msg;				-- remember last send message
+	logger.lastMsgTime = os.time();	-- remember time we send a message
+	logger.lastMsg = msg;				-- remember last send message
 
    if( self.file ) then
       self.file:write("\t" .. '[' .. string.upper(level) .. '] ' .. os.date(self.dateformat) .. "\t" .. sprintf(msg, ...));
       self.file:flush();
    end
+   
 end
 
 function Logger:close()
