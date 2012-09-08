@@ -10,8 +10,8 @@ function BridgeState:constructor()
 	self.name = "Bridge";
 	self.destX = -26943;
 	self.destZ = 10246;
-	profile['skill2use'] = true
-	profile['skill5use'] = true
+--	profile['skill2use'] = true		will be global in other states if active
+--	profile['skill5use'] = true
 	self.tabtime = 0
 end
 
