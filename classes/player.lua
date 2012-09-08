@@ -39,6 +39,8 @@ function Player:constructor()
 	self.skill8used = 0
 	self.skill9used = 0	
 	self.skill0used = 0
+
+	self.movementLastUpdate = 0;
 end
 function Player:targetupdate()
 	local proc = getProc()
@@ -56,7 +58,7 @@ function Player:targetupdate()
 
 end
 function Player:update()
-
+	local curtime = getTime();
 	local proc = getProc()
 	--self.Name = memoryReadUString(getProc(),addresses.playerName)
 	self.Name = memoryReadRepeat("ustring", proc, addresses.playerName);
@@ -87,7 +89,18 @@ function Player:update()
 		self.TargetZ = 0
 		self.TargetY = 0		
 	end
-	
+
+	-- Only update movement info occasionally; reduce unnecessary memory reads
+	if( deltaTime(curtime, self.movementLastUpdate) > 1000 ) then
+		if( memoryReadInt(proc, addresses.turnLeft) == 1 ) then
+			self.turnDir = "left";
+		elseif( memoryReadInt(proc, addresses.turnRight) == 1 ) then
+			self.turnDir = "right";
+		end
+
+		self.movementLastUpdate = curtime;
+	end
+
 	self.Angle = math.atan2(self.Dir2, self.Dir1) + math.pi;
 
 	--self.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
@@ -151,12 +164,15 @@ function Player:turnLeft()
 	end
 
 	if( self.turnDir == "right" ) then
-		keyboardRelease(keySettings['turnright']); -- Stop turning right
+		--keyboardRelease(keySettings['turnright']); -- Stop turning right
+		memoryWriteInt(getProc(), addresses.turnRight, 0);
 	end
 
 	self.turnDir = "left";
 
-	keyboardHold(keySettings['turnleft']);
+	--keyboardHold(keySettings['turnleft']);
+	memoryWriteInt(getProc(), addresses.turnLeft, 1);
+	self.movementLastUpdate = getTime();
 end
 
 function Player:turnRight()
@@ -165,12 +181,15 @@ function Player:turnRight()
 	end
 
 	if( self.turnDir == "left" ) then
-		keyboardRelease(keySettings['turnleft']); -- Stop turning left
+		--keyboardRelease(keySettings['turnleft']); -- Stop turning left
+		memoryWriteInt(getProc(), addresses.turnLeft, 0);
 	end
 
 	self.turnDir = "right";
 
-	keyboardHold(keySettings['turnright']);
+	--keyboardHold(keySettings['turnright']);
+	memoryWriteInt(getProc(), addresses.turnRight, 1);
+	self.movementLastUpdate = getTime();
 end
 
 function Player:stopTurning()
@@ -214,9 +233,10 @@ function Player:facedirection(x, z,_angle)
 	end
 end
 
-function Player:moveTo_step(x, z,_dist)
+function Player:moveTo_step(x, z, _dist)
 	x = x or 0;
 	z = z or 0;
+	_dist = _dist or 50;
 
 	-- Check our angle to the waypoint.
 	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;

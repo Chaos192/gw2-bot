@@ -16,6 +16,9 @@ addresses = {
 	playerGoldoffset = {0x154, 0x50},
 	playerInCombat = 0x15AF810,
 
+	turnLeft = 0x1680F38;
+	turnRight = 0x1680F3C;
+
 	Finteraction = 0x167F6A0,
 	TargetMob = 0x167F6B8,
 	TargetAll = 0x167F6D0,
