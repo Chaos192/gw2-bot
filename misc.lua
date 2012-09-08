@@ -175,3 +175,25 @@ function convert_utf8_ascii( _str )
 		return _str, false;
 	end
 end
+
+-- print values also with nil/false/true
+function debug_value(_v, _string)
+
+	local hf_value = "";
+
+	if(_v == true) then
+		hf_value = "<true>";
+	elseif(_v == false) then
+		hf_value = "<false>";
+	elseif(_v == nil) then
+		hf_value  = "<nil>";
+	elseif( type(_v) == "table" ) then
+		hf_value  = "<table>";
+	else
+		hf_value = _v
+	end
+	if(_string) then
+		_string = "(".._string..")";
+	end
+	printf("fieldname=%s %s\n", hf_value, _string);
+end
