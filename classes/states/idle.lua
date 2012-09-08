@@ -17,3 +17,5 @@ function IdleState:update()
 --	end
 
 end
+
+table.insert(events,{name = "Idle", func = IdleState()})
