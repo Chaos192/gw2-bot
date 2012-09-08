@@ -71,20 +71,21 @@ function memoryReadRepeat(_type, proc, address, offset)
 		end
 		showWarnings(true);
 
-		if( val == nil ) then
-			local info = debug.getinfo(2);
-			local name;
-			if( info.name ) then
-				name = info.name .. '()';
-			else
-				name = '<unknown>';
-			end
-			logger:log('debug',  "Error reading memory in %s from %s:%d", name, info.short_src, info.currentline or 0);
-		end
-
-		return val
-
+		if( val ) then i = 11; end; -- Get out of loop
 	end
+
+	if( val == nil ) then
+		local info = debug.getinfo(2);
+		local name;
+		if( info.name ) then
+			name = info.name .. '()';
+		else
+			name = '<unknown>';
+		end
+		logger:log('debug',  "Error reading memory in %s from %s:%d", name, info.short_src, info.currentline or 0);
+	end
+
+	return val
 
 end	
 
