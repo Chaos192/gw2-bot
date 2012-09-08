@@ -63,7 +63,7 @@ end
 
 function PortalState:handleEvent(event)
 	if event == "Combat"  then
-		Logger:log('info',"Ignoring combat event, portal state.\n");
+		logger:log('info',"Ignoring combat event, portal state.\n");
 		return true;
 	end
 end

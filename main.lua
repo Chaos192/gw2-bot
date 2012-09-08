@@ -1,6 +1,5 @@
 BASE_PATH = getExecutionPath();
 profile = include(BASE_PATH .. "/profiles/default.lua", true);
-include("functions.lua");    -- Stephen private functions
 include("classes/language.lua");
 include("classes/statemanager.lua");
 include("addresses.lua");
@@ -12,8 +11,6 @@ include("classes/player.lua");
 
 attach(getWin());
 
-logger = Logger();
-
 player = Player();
 player:update()
 language = Language();
@@ -21,9 +18,9 @@ language = Language();
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
 local version = "rev 15"
 
-atError(function(script, line, message)
+--[[atError(function(script, line, message)
 	logger:log('error', "%s:%d\t%s", script, line, message);
-end);
+end);]]
 
 --=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
 local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
@@ -47,7 +44,7 @@ language = Language();
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
-	if string.find(v,".lua$") then
+	if string.find(v,".lua") then
 		include("classes/states/"..v)
 	end
 end

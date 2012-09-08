@@ -15,11 +15,11 @@ end
 
 function TravelState:update()
 	if self.first ~= nil then 
-		Logger:log('info',"back at Traveling") 
+		logger:log('info',"back at Traveling") 
 		self:constructor()	-- easy reset
 	end
 	local timepassed = os.difftime(os.time(), self.lasttime)
-	if self.prevtime ~= timepassed then Logger:log('info',"Travel timer: "..timepassed) self.prevtime = self.prevtime + 1 end
+	if self.prevtime ~= timepassed then logger:log('info',"Travel timer: "..timepassed) self.prevtime = self.prevtime + 1 end
 	if timepassed > 3  then
 		-- End Travel.
 		self.first = true

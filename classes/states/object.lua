@@ -15,11 +15,11 @@ end
 
 function ObjectState:update()
 	if self.first ~= nil then 
-		Logger:log('info',"back at Objecting") 
+		logger:log('info',"back at Objecting") 
 		self:constructor()	-- easy reset
 	end
 	local timepassed = os.difftime(os.time(), self.lasttime)
-	if self.prevtime ~= timepassed then Logger:log('info',"Object timer: "..timepassed) self.prevtime = self.prevtime + 1 end
+	if self.prevtime ~= timepassed then logger:log('info',"Object timer: "..timepassed) self.prevtime = self.prevtime + 1 end
 	if timepassed > 3  then
 		-- End Object.
 		self.first = true
