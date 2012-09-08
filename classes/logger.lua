@@ -18,11 +18,6 @@ function Logger:constructor(fn)
 	end
 end
 
--- constructor above didn't work? It's ok after first use, but then values are nil ???
-LOGGER_lastMsgTime = 0;			-- last time we log a message
-LOGGER_lastMsg = "<UNKNOWN>";	-- last mesage we log
-LOGGER_repeatTimer = 10;		-- at least x second until repat same message
-
 function Logger:openFile(filename)
    if( self.file ) then
       self.file:close();
@@ -55,13 +50,6 @@ function Logger:openFile(filename)
 end
 
 function Logger:log(level, msg, ...)
-		debug_value(self.lastMsg, 		"self.lastMsg ******");  	-- *** DEBUG STEPHEN ***	
-		debug_value(self.lastMsgTime,	"self.lastMsgTime ******");	-- *** DEBUG STEPHEN ***	
-		debug_value(self.repeatTimer,	"self.repeatTimer ******");	-- *** DEBUG STEPHEN ***	
-		debug_value(logger.lastMsg, 	"logger.lastMsg ******");  	-- *** DEBUG STEPHEN ***	
-		debug_value(logger.lastMsgTime,	"logger.lastMsgTime ******");	-- *** DEBUG STEPHEN ***	
-		debug_value(logger.repeatTimer,	"logger.repeatTimer ******");	-- *** DEBUG STEPHEN ***	
-
 
 	if( not msg ) then return; end;
    if( not string.find(msg, "\n$") ) then msg = msg .. "\n"; end;

@@ -15,7 +15,7 @@ function LootState:update()
 			keyboardPress(key.VK_ESCAPE)
 			yrest(1000)
 		end
-		Logger:log('info',"finished looting, popping")
+		logger:log('info',"finished looting, popping")
 		stateman:popState("loot");
 end
 table.insert(events,{name = "Loot", func = LootState()})

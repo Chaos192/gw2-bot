@@ -46,7 +46,7 @@ function StateManager:handleEvent(event)
 	end
 	for k,events in pairs(events) do
 		if( event == events.name and self.stateQueue[#self.stateQueue].name ~= event ) then
-			Logger:log('info',"Switching to "..event);
+			logger:log('info',"Switching to "..event);
 			stateman:pushState(events.func);
 			self.stateQueue[#self.stateQueue]:constructor();
 			return true;
@@ -82,7 +82,7 @@ end
 -- Pops the top state off the queue.
 function StateManager:popState(from)
 	from = from or "unknown"
-	Logger:log("info" ,"statemanager pop state from "..from.."\n") 
+	logger:log("info" ,"statemanager pop state from "..from.."\n") 
 	if( #self.stateQueue > 0 ) then
 		table.remove(self.stateQueue);
 	end
@@ -91,7 +91,7 @@ end
 -- Push a new event
 function StateManager:pushEvent(event, from)
 	from = from or ""
-	Logger:log("info" ,"statemanager push event "..event.." from "..from.."\n")
+	logger:log("info" ,"statemanager push event "..event.." from "..from.."\n")
 	table.insert(self.eventQueue, event);
 end
 

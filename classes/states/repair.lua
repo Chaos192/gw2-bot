@@ -15,14 +15,14 @@ end
 
 function RepairState:update()
 	if self.first ~= nil then 
-		Logger:log('info',"back at repair") 
+		logger:log('info',"back at repair") 
 		self:constructor() -- easy reset
 	end
 	local timepassed = os.difftime(os.time(), self.lasttime)
-	if self.prevtime ~= timepassed then Logger:log('info',"repair timer: "..timepassed) self.prevtime = self.prevtime + 1 end
+	if self.prevtime ~= timepassed then logger:log('info',"repair timer: "..timepassed) self.prevtime = self.prevtime + 1 end
 	if timepassed > 3  then
 		-- End repairing.
-		Logger:log('info',"Finished repairing.\n");
+		logger:log('info',"Finished repairing.\n");
 		stateman:popState();
 		self.first = true
 	end
