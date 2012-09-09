@@ -19,7 +19,7 @@ function FarmState:update()
 		self.skipmob = false
 	end
 	keyboardPress(keySettings['nexttarget'])
-	player:targetupdate()
+	update:targetupdate()
 	self.prevmob = player.TargetMob
 	if self.skipmob ~= true and player.TargetMob ~= 0 then
 		stateman:pushEvent("Firstattack","farm have target");

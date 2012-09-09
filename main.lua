@@ -8,49 +8,40 @@ include("config.lua");
 include("misc.lua");
 include("classes/logger.lua");
 include("classes/player.lua");
+include("classes/update.lua");
+include("classes/target.lua");
 
 attach(getWin());
-
 player = Player();
-player:update()
+target = Target();
+update = Update();
+
+update:update()
+
 language = Language();
-
+language = Language();
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
-local version = "rev 15"
-
-atError(function(script, line, message)
-	print("\a\a");
-	logger:log('error', "%s:%d\t%s", script, line, message);
-	player:stopMoving();
-	player:stopTurning();
-end);
-
-atPause(function()
-	memoryWriteInt(getProc(), addresses.moveForward, 0);
-	memoryWriteInt(getProc(), addresses.moveBackward, 0);
-	memoryWriteInt(getProc(), addresses.turnLeft, 0);
-	memoryWriteInt(getProc(), addresses.turnRight, 0);
-end);
 
 --=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
 local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
 if( fileExists(char) ) then	
 	charprofile = include(BASE_PATH .. "/profiles/" .. player.Name .. ".lua", true);
-	logger:log('info',language:message('start_profile_name'), player.Name)	-- loading player profile 
 	for k,v in pairs(charprofile) do
 		profile[k] = v
 	end
 	player:constructor()
-	player:update()
-else
-	logger:log('info',language:message('start_default_profile'), player.Name)	-- using default profile 
+	update:update()
 end	
 
 attach(getWin());
 
-player = Player();
-player:update()
-language = Language();
+
+
+local version = "rev 15"
+
+atError(function(script, line, message)
+	logger:log('error', "%s:%d\t%s", script, line, message);
+end);
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
 for i,v in pairs(subdir) do
@@ -59,8 +50,10 @@ for i,v in pairs(subdir) do
 	end
 end
 
+waypoint = WaypointState();
+
 local lastKS = keyboardState();
-local function handleInput()
+function handleInput(_key)
 	local function pressed(vk)
 		if( ks[vk] and not lastKS[vk] ) then
 			return true;
@@ -72,21 +65,21 @@ local function handleInput()
 	if( pressed(key.VK_F8) ) then
 		stateman:pushEvent("Quit", "main");
 	end
+	if( pressed(key.VK_F7) ) then
+		return true
+	end
 	lastKS = ks;
 end
 
-local function update()
-	player:update()
+local function updates()
+	update:update()
 	if player.Heal > player.HP/player.MaxHP*100 then
-		stateman:pushEvent("Heal", "main");
-	end
-	if SETTINGS['combatstate'] == true and player.InCombat then
-		stateman:pushEvent("Combat","main");
+		player:useSkills(true)
 	end
 end
 
 function _windowname()
-	player:update()
+	update:update()
 	setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: %0.2f, Dir2: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle))
 end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
@@ -103,7 +96,7 @@ function main()
 			local var = string.sub(args[i], 1, foundpos-1);
 			local val = string.sub(args[i], foundpos+1);
 			if( var == "path" ) then
-				waypoint = val
+				waypoint.waypointname = val
 			end
 			if( var == "state" ) then
 				for k,v in pairs(events) do
@@ -121,14 +114,14 @@ function main()
 						profile[k] = v
 					end
 					player:constructor()
-					player:update()
+					update:update()
 				else
 					logger:log('info',"No such profile name %s", val)
 				end	
 			end
 		elseif( args[i] == "coords" ) then
 			while(true) do
-				player:update()
+				update:update()
 				if player.Heal > player.HP/player.MaxHP*100 then
 					keyboardPress(key.VK_6)
 				end				
@@ -153,7 +146,7 @@ function main()
 			until false
 		elseif( args[i] == "devinfo" ) then
 			-- Just print out some info that might be useful for developers.
-			player:update();
+			update:update();
 			printf("Player info for \'%s\', HP: %d/%d, Target: 0x%X\n", player.Name, player.HP, player.MaxHP, player.TargetAll);
 			return;
 		end
@@ -169,8 +162,8 @@ function main()
 	print("Current state: ", stateman:getState().name);
 
 	while(stateman.running) do
-		update()
-		handleInput();
+		updates()
+		--handleInput();
 		stateman:handleEvents();
 		stateman:run();
 		yrest(1);

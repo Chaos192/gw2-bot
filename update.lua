@@ -138,7 +138,7 @@ local updatePatterns =
 		mask = "xxxxxxx????xx????xx????xx????xx????",
 		offset = 7,
 		startloc = 0x400F00,
-	},
+	},	
 	--[[FtextAddress = {
 		pattern = string.char(	
 		0xD9, 0x41, 0x08, 
@@ -291,6 +291,10 @@ function rewriteAddresses()
 			end
 		end		
 		
+		
+		--=== assumptions as offsets of other addresses ===--
+		--=== also offsets for pointers ===--
+		
 		if v.index == "playerbasecoords" then
 			file:write(sprintf("\tplayerDir1 = 0x%X,\n",v.value + 0x1C))
 			file:write(sprintf("\tplayerDir2 = 0x%X,\n", v.value + 0x20))
@@ -304,9 +308,13 @@ function rewriteAddresses()
 			file:write("\tplayerKarmaoffset = {0x1B0, 0x4, 0x1B4},\n")
 			file:write("\tplayerGoldoffset = {0x154, 0x50},\n")
 			file:write(sprintf("\tplayerInCombat = 0x%X,\n",v.value - 0x1AC))
+			file:write(sprintf("\tplayerDowned = 0x%X,\n",v.value - 0x6C0))
 		end	
 		if v.index == "playerName" then
 			file:write(sprintf("\n\tplayerAccount = 0x%X,\n",v.value + 0xD0))
+			file:write(sprintf("\tloadingbase = 0x%X,\n",v.value + 0x14A8))
+			file:write("\tloadingOffset = {0xC8, 0x4, 0x0, 0x3BC},\n")
+			
 		end
 		if v.index == "FtextAddress" then
 			file:write("\n\tFtextOffset = {0x0, 0x94, 0x14, 0x22},\n")
@@ -320,17 +328,21 @@ function rewriteAddresses()
 			file:write(sprintf("\tmousepointX = 0x%X,\n", v.value + 0xB8))
 			file:write(sprintf("\tmousepointZ = 0x%X,\n", v.value + 0xBC))
 			file:write(sprintf("\tmousepointY = 0x%X,\n\n", v.value + 0xC0))
+			--file:write(sprintf("\tmonthxpcountbase = 0x%X,\n", v.value + 0xFC))
+			--file:write("\tmonthxpcountoffset = {0x3C, 0x284, 0x1E4, 0x5C, 0x34},\n\n")
 			file:write(sprintf("\ttargetbaseAddress = 0x%X,\n", v.value + 0x181C))
 			file:write("\ttargetXoffset = {0x30, 0x5C, 0x110},\n")
 			file:write("\ttargetZoffset = {0x30, 0x5C, 0x114},\n")
 			file:write("\ttargetYoffset = {0x30, 0x5C, 0x118},\n")
+			
+			file:write(sprintf("\n\tturnLeft = 0x%X,\n", v.value + 0x18F8))
+			file:write(sprintf("\tturnRight = 0x%X,\n", v.value + 0x18FC))
+			
 		end
 		
 		-- Comment part
 		file:write( sprintf("%s\n", comment) );
 	end
-
-	file:write("\tplayerInCombat = 0x15AC7D0,\n")
 	
 	file:write("}\n");
 
@@ -351,8 +363,13 @@ include("config.lua");
 include("misc.lua");
 include("classes/logger.lua");
 include("classes/player.lua");
+include("classes/update.lua");
+include("classes/target.lua");
 player = Player();
-player:update()
+target = Target();
+update = Update();
+update:update()
+
 print("name: "..player.Name)
 print("Karma: "..player.Karma)
 print("Gold: "..player.Gold)
@@ -364,10 +381,13 @@ print("Y: "..player.Y)
 print("Dir1: "..player.Dir1)
 print("Dir2: "..player.Dir2)
 print("TargetMob: "..player.TargetMob)
-print("TargetAll: "..player.TargetAll)
+printf("TargetAll: %x\n",player.TargetAll)
 printf("Loot: ") print(player.Loot)
 printf("Interaction: ") print(player.Interaction)
 printf("InCombat: ") print(player.InCombat)
-print("target X: "..player.TargetX)
-print("target Z: "..player.TargetZ)
-print("target Y: "..player.TargetY)
+printf("Downed: ") print(player.Downed)
+printf("Loading Screen: ") print(player.Loading)
+print("target X: "..target.TargetX)
+print("target Z: "..target.TargetZ)
+print("target Y: "..target.TargetY)
+--print("Monthly Ach XP: "..player.monthlyXP)
