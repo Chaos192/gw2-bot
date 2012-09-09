@@ -16,6 +16,8 @@ addresses = {
 	playerGoldoffset = {0x154, 0x50},
 	playerInCombat = 0x15AF810,
 
+	moveForward = 0x1680F28;
+	moveBackward = 0x1680F2C;
 	turnLeft = 0x1680F38;
 	turnRight = 0x1680F3C;
 

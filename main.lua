@@ -18,9 +18,19 @@ language = Language();
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
 local version = "rev 15"
 
---[[atError(function(script, line, message)
+atError(function(script, line, message)
+	print("\a\a");
 	logger:log('error', "%s:%d\t%s", script, line, message);
-end);]]
+	player:stopMoving();
+	player:stopTurning();
+end);
+
+atPause(function()
+	memoryWriteInt(getProc(), addresses.moveForward, 0);
+	memoryWriteInt(getProc(), addresses.moveBackward, 0);
+	memoryWriteInt(getProc(), addresses.turnLeft, 0);
+	memoryWriteInt(getProc(), addresses.turnRight, 0);
+end);
 
 --=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
 local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
