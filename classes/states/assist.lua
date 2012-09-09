@@ -20,11 +20,11 @@ function AssistState:update()
 
 -- attack or face middle/get target
 	if  player.TargetMob ~= 0	and
-		distance(player.X, player.Z, player.TargetX, player.TargetZ) < profile['fightdistance'] then	
+		distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['fightdistance'] then	
 --		stateman:pushEvent("Combat","mobwait");		-- not working proper atm
 		player:useSkills()
 	elseif ( deltaTime(getTime(), self.tabtime ) > 500 ) then	-- only ever 0.5 second
-			Player:getNextTarget( profile['fightdistance'] );
+			player:getNextTarget();
 			self.tabtime = getTime();
 	end
 

@@ -170,6 +170,33 @@ function Player:moveTo_step(x, z,_dist)
 
 end
 
+-- look for target by pressing Next Target Button
+-- _dist = distance to look for target within
+function Player:getNextTarget(_dist)
+
+	if not _dist then
+		_dist = profile['fightdistance']
+	end
+	
+	keyboardPress(keySettings['nexttarget'])
+	
+	update:update()
+
+	if self.TargetMob == 0 then
+		return false
+	end
+	
+	local hf_dist = distance( self.X, self.Z, target.TargetX, target.TargetZ)
+
+	if  hf_dist < _dist then	-- target within distances?
+		logger:log('info',"choose new target %s in distance %d\n", self.TargetMob, hf_dist);
+		return true
+	else
+		return false
+	end
+
+end
+
 function Player:useSkills(_heal)
 	if _heal then
 		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then
