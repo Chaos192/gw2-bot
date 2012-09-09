@@ -12,10 +12,10 @@ function FirstattackState:constructor()
 end
 
 function FirstattackState:update()
-	--player:targetupdate()
+	--update:targetupdate()
 	if player.TargetMob ~= 0 then
-		if profile['maxdistance'] > distance(player.X, player.Z, player.TargetX, player.TargetZ) then
-			if player:moveTo_step(player.TargetX, player.TargetZ, profile['fightdistance']) then
+		if profile['maxdistance'] > distance(player.X, player.Z, target.TargetX, target.TargetZ) then
+			if player:moveTo_step(target.TargetX, target.TargetZ, profile['fightdistance']) then
 				self.starttime = os.time()
 				keyboardPress(key.VK_1)
 				yrest(1000)
