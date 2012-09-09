@@ -92,10 +92,32 @@ function Player:update()
 
 	-- Only update movement info occasionally; reduce unnecessary memory reads
 	if( deltaTime(curtime, self.movementLastUpdate) > 1000 ) then
-		if( memoryReadInt(proc, addresses.turnLeft) == 1 ) then
-			self.turnDir = "left";
-		elseif( memoryReadInt(proc, addresses.turnRight) == 1 ) then
-			self.turnDir = "right";
+		if( self.turnDir == "left" ) then
+			-- Ensure we're turning left.
+			memoryWriteInt(proc, addresses.turnLeft, 1);
+			memoryWriteInt(proc, addresses.turnRight, 0);
+		elseif( self.turnDir == "right" ) then
+			-- Ensure we're turning right.
+			memoryWriteInt(proc, addresses.turnLeft, 0);
+			memoryWriteInt(proc, addresses.turnRight, 1);
+		else
+			-- Ensure we're not turning
+			memoryWriteInt(proc, addresses.turnLeft, 0);
+			memoryWriteInt(proc, addresses.turnRight, 0);
+		end
+
+		if( self.fbMovement == "forward" ) then
+			-- Ensure we're moving foward
+			memoryWriteInt(proc, addresses.moveForward, 1);
+			memoryWriteInt(proc, addresses.moveBackward, 0);
+		elseif( self.fbMovement == "backward" ) then
+			-- Ensure we're moving backward
+			memoryWriteInt(proc, addresses.moveForward, 0);
+			memoryWriteInt(proc, addresses.moveBackward, 1);
+		else
+			-- Ensure we're not moving
+			memoryWriteInt(proc, addresses.moveForward, 0);
+			memoryWriteInt(proc, addresses.moveBackward, 0);
 		end
 
 		self.movementLastUpdate = curtime;
@@ -122,12 +144,15 @@ function Player:moveForward()
 	end
 
 	if( self.fbMovement == "backward" ) then
-		keyboardRelease(keySettings['backward']); -- Stop turning right
+		--keyboardRelease(keySettings['backward']); -- Stop turning right
+		memoryWriteInt(getProc(), addresses.moveBackward, 0);
 	end
 
 	self.fbMovement = "forward";
 
-	keyboardHold(keySettings['forward']);
+	--keyboardHold(keySettings['forward']);
+	memoryWriteInt(getProc(), addresses.moveForward, 1);
+	self.movementLastUpdate = getTime();
 end
 
 function Player:moveBackward()
@@ -136,25 +161,24 @@ function Player:moveBackward()
 	end
 
 	if( self.fbMovement == "forward" ) then
-		keyboardRelease(keySettings['forward']); -- Stop turning right
+		--keyboardRelease(keySettings['forward']); -- Stop turning right
+		memoryWriteInt(getProc(), addresses.moveForward, 0);
 	end
 
 	self.fbMovement = "backward";
 
-	keyboardHold(keySettings['backward']);
+	--keyboardHold(keySettings['backward']);
+	memoryWriteInt(getProc(), addresses.moveBackward, 0);
+	self.movementLastUpdate = getTime();
 end
 
 function Player:stopMoving()
-	if( not self.fbMovement ) then
-		return;
+	if( self.fbMovement ) then
+		memoryWriteInt(getProc(), addresses.moveForward, 0);
+		memoryWriteInt(getProc(), addresses.moveBackward, 0);
 	end
 
-	if( self.fbMovement == "forward" ) then
-		keyboardRelease(keySettings['forward']);
-	else
-		keyboardRelease(keySettings['backward']);
-	end
-
+	self.movementLastUpdate = getTime();
 	self.fbMovement = nil;
 end
 
@@ -197,10 +221,12 @@ function Player:stopTurning()
 		return;
 	end
 
-	if( self.turnDir == "left" ) then
-		keyboardRelease(keySettings['turnleft']);
-	else
-		keyboardRelease(keySettings['turnright']);
+	if( self.turnDir ) then
+		--keyboardRelease(keySettings['turnleft']);
+		--keyboardRelease(keySettings['turnright']);
+
+		memoryWriteInt(getProc(), addresses.turnLeft, 0);
+		memoryWriteInt(getProc(), addresses.turnRight, 0);
 	end
 
 	self.turnDir = nil;
