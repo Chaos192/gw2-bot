@@ -44,7 +44,7 @@ function WaypointState:update()
 	end
 	
 	local wp = self.waypoints[self.index];
-	if player:moveTo_step(wp.X, wp.Z, 40) then
+	if player:moveTo_step(wp.X, wp.Z, 100) then
 		self:advance()
 	end
 end
