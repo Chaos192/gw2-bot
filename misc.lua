@@ -201,3 +201,11 @@ function debug_value(_v, _comment)
 	end
 	printf("v=%s (%s)\n", hf_value, _comment);
 end
+
+function angleDifference(angle1, angle2)
+  if( math.abs(angle2 - angle1) > math.pi ) then
+    return (math.pi * 2) - math.abs(angle2 - angle1);
+  else
+    return math.abs(angle2 - angle1);
+  end
+end
