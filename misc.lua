@@ -178,7 +178,10 @@ function convert_utf8_ascii( _str )
 end
 
 -- print values also with nil/false/true
-function debug_value(_v, _string)
+function debug_value(_v, _comment)
+
+-- is there a way to get the name of the field, that is giving the value to an function argument?
+-- so one could print the fieldname automaticly
 
 	local hf_value = "";
 
@@ -193,8 +196,8 @@ function debug_value(_v, _string)
 	else
 		hf_value = _v
 	end
-	if(_string) then
-		_string = "(".._string..")";
+	if not _comment then
+		_comment = ""
 	end
-	printf("fieldname=%s %s\n", hf_value, _string);
+	printf("v=%s (%s)\n", hf_value, _comment);
 end
