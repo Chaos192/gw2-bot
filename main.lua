@@ -161,7 +161,7 @@ function main()
 
 	while(stateman.running) do
 		updates()
-		--handleInput();
+		handleInput();			-- reactive it?
 		stateman:handleEvents();
 		stateman:run();
 		yrest(1);

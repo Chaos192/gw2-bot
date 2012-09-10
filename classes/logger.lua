@@ -59,6 +59,11 @@ function Logger:log(level, msg, ...)
       return;
    end
 
+   -- Check if we don't log debug messages
+   if( level == 'debug2' and not LOG_MESSAGE['debug2'] ) then
+      return;
+   end
+
    -- Check if we don't log info messages
    if( level == 'info' and not LOG_MESSAGE['info'] ) then
       return;

@@ -8,6 +8,7 @@ SETTINGS['lagallowance'] = 1
 LOG_MESSAGE = {};
 LOG_MESSAGE['error'] = true;					-- Log error messages (NOTE: Cannot be disabled)
 LOG_MESSAGE['debug'] = false;					-- Log debug messages
+LOG_MESSAGE['debug2'] = false;					-- Log debug messages
 LOG_MESSAGE['info'] = false;					-- Log info messages
 
 LOG_MESSAGE_COLOR = {};
