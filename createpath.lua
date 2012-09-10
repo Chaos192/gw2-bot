@@ -2,7 +2,12 @@ BASE_PATH = getExecutionPath();
 profile = include(BASE_PATH .. "/profiles/default.lua", true);
 include("addresses.lua");
 include("classes/player.lua");
+include("classes/update.lua");
+include("classes/target.lua");
+
 player = Player();
+target = Target();
+
 include("misc.lua");
 include("classes/language.lua");
 include("config_default.lua");
@@ -114,7 +119,7 @@ function saveWaypoints(list)
 
 end
 
-player:update()
+updateall()
 function main()
 
 	local running = true;
@@ -192,8 +197,8 @@ function main()
 					break;
 				end;
 
-				player:update()
-				
+				coordsupdate()
+				print("updated")
 				local tmp = {}, hf_type;
 				tmp.X = player.X;
 				tmp.Z = player.Z;

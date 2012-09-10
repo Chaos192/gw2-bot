@@ -12,7 +12,8 @@ function FirstattackState:constructor()
 end
 
 function FirstattackState:update()
-	--update:targetupdate()
+	targetupdate()
+	coordsupdate()
 	if player.TargetMob ~= 0 then
 		if profile['maxdistance'] > distance(player.X, player.Z, target.TargetX, target.TargetZ) then
 			if player:moveTo_step(target.TargetX, target.TargetZ, profile['fightdistance']) then

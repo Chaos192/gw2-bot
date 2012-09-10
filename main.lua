@@ -14,11 +14,9 @@ include("classes/target.lua");
 attach(getWin());
 player = Player();
 target = Target();
-update = Update();
 
-update:update()
+updateall()
 
-language = Language();
 language = Language();
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
 
@@ -30,14 +28,14 @@ if( fileExists(char) ) then
 		profile[k] = v
 	end
 	player:constructor()
-	update:update()
+	updateall()
 end	
 
 attach(getWin());
 
 
 
-local version = "rev 15"
+local version = "rev 46"
 
 atError(function(script, line, message)
 	logger:log('error', "%s:%d\t%s", script, line, message);
@@ -49,9 +47,7 @@ for i,v in pairs(subdir) do
 		include("classes/states/"..v)
 	end
 end
-
 waypoint = WaypointState();
-
 local lastKS = keyboardState();
 function handleInput(_key)
 	local function pressed(vk)
@@ -72,14 +68,15 @@ function handleInput(_key)
 end
 
 local function updates()
-	update:update()
+	updateall()
 	if player.Heal > player.HP/player.MaxHP*100 then
 		player:useSkills(true)
 	end
 end
 
 function _windowname()
-	update:update()
+	hpupdate()
+	coordsupdate()
 	setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: %0.2f, Dir2: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle))
 end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
@@ -114,14 +111,14 @@ function main()
 						profile[k] = v
 					end
 					player:constructor()
-					update:update()
+					updateall()
 				else
 					logger:log('info',"No such profile name %s", val)
 				end	
 			end
 		elseif( args[i] == "coords" ) then
 			while(true) do
-				update:update()
+				updateall()
 				if player.Heal > player.HP/player.MaxHP*100 then
 					keyboardPress(key.VK_6)
 				end				
@@ -146,7 +143,8 @@ function main()
 			until false
 		elseif( args[i] == "devinfo" ) then
 			-- Just print out some info that might be useful for developers.
-			update:update();
+			hpupdate()
+			targetupdate()
 			printf("Player info for \'%s\', HP: %d/%d, Target: 0x%X\n", player.Name, player.HP, player.MaxHP, player.TargetAll);
 			return;
 		end
