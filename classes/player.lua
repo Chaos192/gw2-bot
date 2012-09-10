@@ -86,14 +86,14 @@ function Player:facedirection(x, z,_angle)
 	_angle = _angle or 0.4
 	-- Check our angle to the waypoint.
 	local angle = math.atan2(z - player.Z, x - player.X) + _pi;
-	local anglediff = player.Angle - angle;
-	if( math.abs(anglediff) > _angle ) then
+	local angleDif = angleDifference(angle, player.Angle);
+	
+	if( angleDif > _angle ) then
 		if( self.fbMovement ) then -- Stop running forward.
 			self:stopMoving();
 		end
-
 		-- Attempt to face it
-		if( 0 > anglediff or anglediff > _pi) then
+		if angleDif > angleDifference(angle, player.Angle+ 0.01) then
 			-- Rotate left
 			self:move("left")
 		else
