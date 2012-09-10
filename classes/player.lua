@@ -38,133 +38,69 @@ function Player:constructor()
 	self.skill8used = 0
 	self.skill9used = 0	
 	self.skill0used = 0
-	self.movementLastUpdate = 0;
+	self.movementLastUpdate = getTime();
 	self.curtime = 0
 end
 
---		self.fbMovement
-function Player:moveForward()
-	coordsupdate()
-	if( self.fbMovement == "forward" ) then
-		return; -- If we're already doing it, ignore this call.
+function Player:move(direction)
+	local proc = getProc()
+	-- Only update movement info occasionally; reduce unnecessary memory reads
+	if( deltaTime(player.curtime, player.movementLastUpdate) > 100 ) then
+		if( direction == "left" ) then
+			-- Ensure we're turning left.
+			memoryWriteInt(proc, addresses.turnLeft, 1);
+			memoryWriteInt(proc, addresses.turnRight, 0);
+		elseif( direction == "right" ) then
+			-- Ensure we're turning right.
+			memoryWriteInt(proc, addresses.turnLeft, 0);
+			memoryWriteInt(proc, addresses.turnRight, 1);
+		else
+			-- Ensure we're not turning
+			memoryWriteInt(proc, addresses.turnLeft, 0);
+			memoryWriteInt(proc, addresses.turnRight, 0);
+		end
+		if( direction == "forward" ) then
+			-- Ensure we're moving foward
+			memoryWriteInt(proc, addresses.moveForward, 1);
+			memoryWriteInt(proc, addresses.moveBackward, 0);
+		elseif( direction == "backward" ) then
+			-- Ensure we're moving backward
+			memoryWriteInt(proc, addresses.moveForward, 0);
+			memoryWriteInt(proc, addresses.moveBackward, 1);
+		else
+			-- Ensure we're not moving
+			memoryWriteInt(proc, addresses.moveForward, 0);
+			memoryWriteInt(proc, addresses.moveBackward, 0);
+		end
+
+		player.movementLastUpdate = player.curtime;
 	end
-
-	if( self.fbMovement == "backward" ) then
-		--keyboardRelease(keySettings['backward']); -- Stop turning right
-		memoryWriteInt(getProc(), addresses.moveBackward, 0);
-	end
-
-	self.fbMovement = "forward";
-
-	--keyboardHold(keySettings['forward']);
-	memoryWriteInt(getProc(), addresses.moveForward, 1);
-	self.movementLastUpdate = getTime();
-end
-
-function Player:moveBackward()
-	coordsupdate()
-	if( self.fbMovement == "backward" ) then
-		return; -- If we're already doing it, ignore this call.
-	end
-
-	if( self.fbMovement == "forward" ) then
-		--keyboardRelease(keySettings['forward']); -- Stop turning right
-		memoryWriteInt(getProc(), addresses.moveForward, 0);
-	end
-
-	self.fbMovement = "backward";
-
-	--keyboardHold(keySettings['backward']);
-	memoryWriteInt(getProc(), addresses.moveBackward, 0);
-	self.movementLastUpdate = getTime();
-end
-
-function Player:stopMoving()
-	if( not self.fbMovement ) then
-		memoryWriteInt(getProc(), addresses.moveForward, 0);
-		memoryWriteInt(getProc(), addresses.moveBackward, 0);
-	end
-
-	self.movementLastUpdate = getTime();
-	self.fbMovement = nil;
-end
-
-function Player:turnLeft()
-	coordsupdate()
-	if( self.turnDir == "left" ) then
-		return; -- If we're already doing it, ignore this call.
-	end
-
-	if( self.turnDir == "right" ) then
-		--keyboardRelease(keySettings['turnright']); -- Stop turning right
-		memoryWriteInt(getProc(), addresses.turnRight, 0);
-	end
-
-	self.turnDir = "left";
-
-	--keyboardHold(keySettings['turnleft']);
-	memoryWriteInt(getProc(), addresses.turnLeft, 1);
-	self.movementLastUpdate = getTime();
-end
-
-function Player:turnRight()
-	coordsupdate()
-	if( self.turnDir == "right" ) then
-		return; -- If we're already doing it, ignore this call.
-	end
-
-	if( self.turnDir == "left" ) then
-		--keyboardRelease(keySettings['turnleft']); -- Stop turning left
-		memoryWriteInt(getProc(), addresses.turnLeft, 0);
-	end
-
-	self.turnDir = "right";
-
-	--keyboardHold(keySettings['turnright']);
-	memoryWriteInt(getProc(), addresses.turnRight, 1);
-	self.movementLastUpdate = getTime();
-end
-
-function Player:stopTurning()
-	if( not self.turnDir ) then
-		return;
-	end
-
-	if( self.turnDir ) then
-		--keyboardRelease(keySettings['turnleft']);
-		--keyboardRelease(keySettings['turnright']);
-
-		memoryWriteInt(getProc(), addresses.turnLeft, 0);
-		memoryWriteInt(getProc(), addresses.turnRight, 0);
-	end
-
-	self.turnDir = nil;
 end
 
 function Player:facedirection(x, z,_angle)
+	local _pi = math.pi
+	self.curtime = getTime()
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
-	_angle = _angle or 0.3
+	_angle = _angle or 0.4
 	-- Check our angle to the waypoint.
-	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
-	local anglediff = self.Angle - angle;
-
+	local angle = math.atan2(z - player.Z, x - player.X) + _pi;
+	local anglediff = player.Angle - angle;
 	if( math.abs(anglediff) > _angle ) then
 		if( self.fbMovement ) then -- Stop running forward.
 			self:stopMoving();
 		end
 
 		-- Attempt to face it
-		if( 0 > anglediff or anglediff > math.pi ) then
+		if( 0 > anglediff or anglediff > _pi) then
 			-- Rotate left
-			self:turnLeft();
+			self:move("left")
 		else
 			-- Rotate right
-			self:turnRight();
+			self:move("right")
 		end
 	else
-		self:stopTurning();
 		return true
 	end
 end
@@ -173,21 +109,16 @@ function Player:moveTo_step(x, z,_dist)
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
-	_dist = _dist or 50;
-
-	-- Check our angle to the waypoint.
-	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
-	local anglediff = self.Angle - angle;
-
+	_dist = _dist or 100;
+	local dist = distance(player.X, player.Z, x, z) 
 	if player:facedirection(x, z) then
-		if distance(player.X, player.Z, x, z) > _dist then
-			self:moveForward()
+		if dist > _dist then
+			self:move("forward")
 		else
-			self:stopMoving()
+			self:move("backward")
 			return true
 		end
 	end
-
 end
 
 -- look for target by pressing Next Target Button

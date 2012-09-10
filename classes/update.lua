@@ -15,6 +15,7 @@ function targetupdate()
 end
 
 function coordsupdate()
+	
 	local proc = getProc()
 	player.X = memoryReadRepeat("float",proc,  addresses.playerX) or player.X;
 	player.Z = memoryReadRepeat("float",proc,  addresses.playerZ) or player.Z;
@@ -23,38 +24,6 @@ function coordsupdate()
 	player.Dir2 = memoryReadRepeat("float",proc,  addresses.playerDir2) or player.Dir2;
 	player.Angle = math.atan2(player.Dir2, player.Dir1) + math.pi;
 	
-	-- Only update movement info occasionally; reduce unnecessary memory reads
-	if( deltaTime(player.curtime, player.movementLastUpdate) > 1000 ) then
-		if( player.turnDir == "left" ) then
-			-- Ensure we're turning left.
-			memoryWriteInt(proc, addresses.turnLeft, 1);
-			memoryWriteInt(proc, addresses.turnRight, 0);
-		elseif( player.turnDir == "right" ) then
-			-- Ensure we're turning right.
-			memoryWriteInt(proc, addresses.turnLeft, 0);
-			memoryWriteInt(proc, addresses.turnRight, 1);
-		else
-			-- Ensure we're not turning
-			memoryWriteInt(proc, addresses.turnLeft, 0);
-			memoryWriteInt(proc, addresses.turnRight, 0);
-		end
-
-		if( player.fbMovement == "forward" ) then
-			-- Ensure we're moving foward
-			memoryWriteInt(proc, addresses.moveForward, 1);
-			memoryWriteInt(proc, addresses.moveBackward, 0);
-		elseif( player.fbMovement == "backward" ) then
-			-- Ensure we're moving backward
-			memoryWriteInt(proc, addresses.moveForward, 0);
-			memoryWriteInt(proc, addresses.moveBackward, 1);
-		else
-			-- Ensure we're not moving
-			memoryWriteInt(proc, addresses.moveForward, 0);
-			memoryWriteInt(proc, addresses.moveBackward, 0);
-		end
-
-		player.movementLastUpdate = player.curtime;
-	end
 end
 
 function hpupdate()
@@ -83,7 +52,6 @@ end
 
 function updateall()
 	local proc = getProc()
-
 	playerinfoupdate()
 	hpupdate()
 	statusupdate()	
