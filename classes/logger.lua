@@ -52,7 +52,11 @@ end
 function Logger:log(level, msg, ...)
 
 	if( not msg ) then return; end;
-   if( not string.find(msg, "\n$") ) then msg = msg .. "\n"; end;
+	
+	local hf_msg = sprintf(msg, ...)
+--debug_value(hf_msg, "msg");
+
+   if( not string.find(hf_msg, "\n$") ) then hf_msg = hf_msg .. "\n"; end;
 
    -- Check if we don't log debug messages
    if( level == 'debug' and not LOG_MESSAGE['debug'] ) then
@@ -71,23 +75,23 @@ function Logger:log(level, msg, ...)
    
 
 	-- avoid spamming same message
-	if( msg == logger.lastMsg ) and
+	if( hf_msg == logger.lastMsg ) and
 	  ( os.difftime(os.time(),logger.lastMsgTime) < logger.repeatTimer )	then
 		return
 	end
 
    local col = LOG_MESSAGE_COLOR[level];
    if( type(col) ~= "number" ) then
-      printf(msg, ...);
+      printf(hf_msg);
    else
-      cprintf(col, msg, ...);
+      cprintf(col, hf_msg);
    end
 
 	logger.lastMsgTime = os.time();	-- remember time we send a message
-	logger.lastMsg = msg;				-- remember last send message
+	logger.lastMsg = hf_msg;				-- remember last send message
 
    if( self.file ) then
-      self.file:write("\t" .. '[' .. string.upper(level) .. '] ' .. os.date(self.dateformat) .. "\t" .. sprintf(msg, ...));
+      self.file:write("\t" .. '[' .. string.upper(level) .. '] ' .. os.date(self.dateformat) .. "\t" .. hf_msg);
       self.file:flush();
    end
    
