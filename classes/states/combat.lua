@@ -11,6 +11,7 @@ function CombatState:constructor()
 	self.autostarted = nil
 	self.combat = false
 	self.startfight = os.time()
+	self.lastTargetTime = getTime();
 end
 
 function CombatState:update()
@@ -20,8 +21,15 @@ function CombatState:update()
 		end
 		stateman:popState("combat ended");	
 	end
+
 	if player.TargetMob ~= 0 then
 		player:useSkills()
+	else
+		-- So we don't target TOO fast.
+		if( deltaTime(getTime(), self.lastTargetTime) > 500 ) then
+			keyboardPress(keySettings['nexttarget']);
+			self.lastTargetTime = getTime();
+		end
 	end
 end
 

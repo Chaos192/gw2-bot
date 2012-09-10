@@ -45,7 +45,18 @@ function WaypointState:update()
 	
 	local wp = self.waypoints[self.index];
 	if player:moveTo_step(wp.X, wp.Z, 100) then
+		if( wp.type == "HARVEST" and player.Interaction ) then
+			printf("Harvesting\n");
+			keyboardPress(key.VK_F);
+		end
 		self:advance()
+	end
+end
+
+function WaypointState:handleEvent(event)
+	if( event == "entercombat" ) then
+		player:stopMoving();
+		stateman:pushState(CombatState());
 	end
 end
 
