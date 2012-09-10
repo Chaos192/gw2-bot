@@ -44,8 +44,8 @@ end
 
 function Player:move(direction)
 	local proc = getProc()
-	-- Only update movement info occasionally; reduce unnecessary memory reads
-	if( deltaTime(player.curtime, player.movementLastUpdate) > 100 ) then
+
+	if( deltaTime(self.curtime, self.movementLastUpdate) > 100 ) then
 		if( direction == "left" ) then
 			-- Ensure we're turning left.
 			memoryWriteInt(proc, addresses.turnLeft, 1);
@@ -73,8 +73,19 @@ function Player:move(direction)
 			memoryWriteInt(proc, addresses.moveBackward, 0);
 		end
 
-		player.movementLastUpdate = player.curtime;
+		self.movementLastUpdate = self.curtime;
 	end
+end
+
+function Player:stopMoving()
+	local proc = getProc();
+	-- Ensure we're not turning
+	memoryWriteInt(proc, addresses.turnLeft, 0);
+	memoryWriteInt(proc, addresses.turnRight, 0);
+
+	-- Ensure we're not moving
+	memoryWriteInt(proc, addresses.moveForward, 0);
+	memoryWriteInt(proc, addresses.moveBackward, 0);
 end
 
 function Player:facedirection(x, z,_angle)
@@ -105,7 +116,7 @@ function Player:facedirection(x, z,_angle)
 	end
 end
 
-function Player:moveTo_step(x, z,_dist)
+function Player:moveTo_step(x, z, _dist)
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;

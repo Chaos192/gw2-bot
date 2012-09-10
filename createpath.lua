@@ -28,7 +28,7 @@ language = Language()
 -- p_hp_type = " type=\"TRAVEL\"";	-- type for harvest waypoints
 p_wp_gtype = "";	-- global type for whole file: e.g. TRAVEL
 p_wp_type = "";		-- type for normal waypoints
-p_hp_type = "";		-- type for harvest waypoints
+p_hp_type = "HARVEST";		-- type for harvest waypoints
 p_harvest_command = "player:harvest();";
 p_merchant_command = "player:merchant(\"%s\");";
 p_targetNPC_command = "player:target_NPC(\"%s\");";
@@ -73,7 +73,7 @@ function saveWaypoints(list)
 		error(err, 0);
 	end
 
-	local openformat = "\t\{ X=%d, Z=%d, Y=%d";
+	local openformat = "\t\{ X=%d, Z=%d, Y=%d, type=\"%s\"";
 	local closeformat = "\},\n";
 
 	file:write("return \{\n");
@@ -85,6 +85,10 @@ function saveWaypoints(list)
 		if( v.wp_type == "WP" ) then -- Waypoint
 			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
 			hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, "");
+			tag_open = true;
+		elseif( v.wp_type == "HARVEST" ) then
+			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
+			hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_hp_type, "");
 			tag_open = true;
 		elseif( v.wp_type == "MC" ) then -- Mouse click (left)
 			if( tag_open ) then
@@ -158,6 +162,10 @@ function main()
 				hf_key_pressed = true;
 				hf_key = "WP";
 			end;
+			if( keyPressed(harvKey) ) then
+				hf_key_pressed = true;
+				hf_key = "HARVEST";
+			end;
 			if( keyPressed(saveKey) ) then	-- save key pressed
 				hf_key_pressed = true;
 				hf_key = "SAVE";
@@ -211,6 +219,9 @@ function main()
 					tmp.wp_type = "WP";
 					hf_type = "WP";
 					--sprintf(language[511], #wpList+1) ; -- waypoint added
+				elseif( hf_key == "HARVEST" ) then
+					tmp.wp_type = "HARVEST";
+					hf_type = "HARVEST";
 				elseif(	hf_key == "COD") then			-- enter code
 					tmp.wp_type = "COD";
 

@@ -39,6 +39,15 @@ local version = "rev 46"
 
 atError(function(script, line, message)
 	logger:log('error', "%s:%d\t%s", script, line, message);
+	player:stopMoving();
+end);
+
+atPause(function()
+	player:stopMoving();
+end);
+
+atExit(function()
+	player:stopMoving();
 end);
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
