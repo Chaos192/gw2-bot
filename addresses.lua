@@ -5,8 +5,8 @@ addresses = {
 	loadingbase = 0x15AD850,
 	loadingOffset = {0xC8, 0x4, 0x0, 0x3BC},
 
-	playerDir1 = 0x163A738,
-	playerDir2 = 0x163A73C,
+	playerDir1 = 0x163A72C,
+	playerDir2 = 0x163A730,
 	playerX = 0x163A744,
 	playerZ = 0x163A748,
 	playerY = 0x163A74C,
@@ -33,6 +33,8 @@ addresses = {
 	targetZoffset = {0x30, 0x5C, 0x114},
 	targetYoffset = {0x30, 0x5C, 0x118},
 
+	moveForward = 0x1681F28,
+	moveBackward = 0x1681F2C,
 	turnLeft = 0x1681F38,
 	turnRight = 0x1681F3C,
 
