@@ -2,13 +2,17 @@ BASE_PATH = getExecutionPath();
 profile = include(BASE_PATH .. "/profiles/default.lua", true);
 include("addresses.lua");
 include("classes/player.lua");
-include("classes/update.lua");
+local subdir = getDirectory(getExecutionPath() .. "/functions/")
+for i,v in pairs(subdir) do
+	if string.find(v,".lua") then
+		include("functions/"..v)
+	end
+end
 include("classes/target.lua");
 
 player = Player();
 target = Target();
 
-include("misc.lua");
 include("classes/language.lua");
 include("config_default.lua");
 include("config.lua");

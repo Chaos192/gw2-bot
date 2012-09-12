@@ -5,16 +5,22 @@ include("classes/statemanager.lua");
 include("addresses.lua");
 include("config_default.lua");
 include("config.lua");
-include("misc.lua");
+local subdir = getDirectory(getExecutionPath() .. "/functions/")
+for i,v in pairs(subdir) do
+	if string.find(v,".lua") then
+		include("functions/"..v)
+	end
+end
 include("classes/logger.lua");
 include("classes/player.lua");
-include("classes/update.lua");
 include("classes/target.lua");
+
 
 attach(getWin());
 player = Player();
 target = Target();
 
+playerinfoupdate()
 language = Language();
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
 
