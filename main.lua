@@ -15,10 +15,10 @@ attach(getWin());
 player = Player();
 target = Target();
 
-updateall()
-
 language = Language();
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
+
+updateall()
 
 --=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
 local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";

@@ -75,8 +75,8 @@ function Logger:log(level, msg, ...)
    
 
 	-- avoid spamming same message
-	if( hf_msg == logger.lastMsg ) and
-	  ( os.difftime(os.time(),logger.lastMsgTime) < logger.repeatTimer )	then
+	if( hf_msg == self.lastMsg ) and
+	  ( os.difftime(os.time(),self.lastMsgTime) < self.repeatTimer )	then
 		return
 	end
 
@@ -87,8 +87,8 @@ function Logger:log(level, msg, ...)
       cprintf(col, hf_msg);
    end
 
-	logger.lastMsgTime = os.time();	-- remember time we send a message
-	logger.lastMsg = hf_msg;				-- remember last send message
+	self.lastMsgTime = os.time();	-- remember time we send a message
+	self.lastMsg = hf_msg;				-- remember last send message
 
    if( self.file ) then
       self.file:write("\t" .. '[' .. string.upper(level) .. '] ' .. os.date(self.dateformat) .. "\t" .. hf_msg);
