@@ -56,11 +56,11 @@ function statusupdate()
 	player.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
 	if player.Interaction == true then
 		player.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
-		if( SETTINGS['language'] == "russian" ) then
-			player.Ftext = utf82oem_russian(player.Ftext)
-		else
-			player.Ftext = utf8ToAscii_umlauts(player.Ftext)
-		end
+--		if( SETTINGS['language'] == "russian" ) then
+--			player.Ftext = utf82oem_russian(player.Ftext)
+--		else
+--			player.Ftext = utf8ToAscii_umlauts(player.Ftext)
+--		end
 	end
 end
 

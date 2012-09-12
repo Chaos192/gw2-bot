@@ -14,4 +14,5 @@ return {
 	['WPcontinue'] = "Continue to next. Press %s to save and quit\n",
 	['start_profile_name'] = "Player profile '%s.lua' is be used.\n",	
 	['start_default_profile'] = "Found no profile for playername '%s'. Using profile default.lua\n",			
+	['InteractGreeting'] = "Greeting [F]",	
 }

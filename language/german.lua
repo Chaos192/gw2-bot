@@ -14,5 +14,5 @@ return {
 	['WPcontinue'] = "Weiter zum nächsten Punkt. Drücke %s zum Speichern und Beenden\n",
 	['start_profile_name'] = "Spieler Profile '%s.lua' wird benutzt.\n",	
 	['start_default_profile'] = "Kein Profile für den Namen '%s' gefunden. Profile default.lua wird benutzt.\n",	
-	
+	['InteractGreeting'] = "Begrüßen [F]",	
 }
