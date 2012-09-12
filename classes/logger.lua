@@ -49,13 +49,34 @@ function Logger:openFile(filename)
    self.file:flush();
 end
 
-function Logger:log(level, msg, ...)
+function Logger:log(level, msg, _val1, _val2, _val3, _val4, _val5, _val6 )
+
+	local function make_printable(_v)
+
+		if(_v == true) then
+			_v = "<true>";
+		elseif(_v == false) then
+			_v = "<false>";
+		elseif( type(_v) == "table" ) then
+			_v  = "<table>";
+		end
+		return _v
+	end
 
 	if( not msg ) then return; end;
-	
-	local hf_msg = sprintf(msg, ...)
---debug_value(hf_msg, "msg");
 
+	local hf_val1, hf_val2, hf_val3, hf_val4, hf_val5, hf_val6= "","","","","","";
+	
+	if(_val1) then hf_val1 = make_printable(_val1); end;
+	if(_val2) then hf_val2 = make_printable(_val2); end;
+	if(_val3) then hf_val3 = make_printable(_val3); end;
+	if(_val4) then hf_val4 = make_printable(_val4); end;
+	if(_val5) then hf_val5 = make_printable(_val5); end;
+	if(_val6) then hf_val6 = make_printable(_val6); end;
+
+	local hf_msg = sprintf(msg, hf_val1, hf_val2, hf_val3, hf_val4, hf_val5, hf_val6 )
+
+	
    if( not string.find(hf_msg, "\n$") ) then hf_msg = hf_msg .. "\n"; end;
 
    -- Check if we don't log debug messages
@@ -73,7 +94,6 @@ function Logger:log(level, msg, ...)
       return;
    end
    
-
 	-- avoid spamming same message
 	if( hf_msg == self.lastMsg ) and
 	  ( os.difftime(os.time(),self.lastMsgTime) < self.repeatTimer )	then
