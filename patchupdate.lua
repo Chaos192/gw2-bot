@@ -340,6 +340,10 @@ function rewriteAddresses()
 			file:write(sprintf("\tturnLeft = 0x%X,\n", v.value + 0x18F8))
 			file:write(sprintf("\tturnRight = 0x%X,\n", v.value + 0x18FC))
 			
+			file:write(sprintf("\n\tFtextAddress = 0x%X,\n", v.value + 0x19C4))
+			file:write("\tFtextOffset = {0x0, 0xC4, 0x22},\n")
+			
+			
 		end
 		
 		-- Comment part

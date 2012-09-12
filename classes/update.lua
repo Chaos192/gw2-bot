@@ -54,6 +54,15 @@ function statusupdate()
 		local n = debug.getinfo(2);
 		stateman:pushEvent("entercombat", n.name);
 	end
+	player.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
+	if player.Interaction == true then
+		player.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
+		--[[if( SETTINGS['language'] == "russian" ) then
+			player.Ftext = utf82oem_russian(player.Ftext)
+		else
+			player.Ftext = utf8ToAscii_umlauts(player.Ftext)
+		end]]
+	end
 end
 
 function updateall()
@@ -64,15 +73,7 @@ function updateall()
 	coordsupdate()
 	targetupdate()
 
-	--self.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
-	--[[if self.Interaction == true then
-		self.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
-		if( SETTINGS['language'] == "russian" ) then
-			self.Ftext = utf82oem_russian(self.Ftext)
-		else
-			self.Ftext = utf8ToAscii_umlauts(self.Ftext)
-		end
-	end]]
+
 end
 
 

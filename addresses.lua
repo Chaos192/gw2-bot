@@ -38,4 +38,7 @@ addresses = {
 	turnLeft = 0x1681F38,
 	turnRight = 0x1681F3C,
 
+	FtextAddress = 0x1682004,
+	FtextOffset = {0x0, 0xC4, 0x22},
+
 }
