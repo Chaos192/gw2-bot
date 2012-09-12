@@ -88,7 +88,7 @@ function _windowname()
 	coordsupdate()
 	setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: %0.2f, Dir2: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle))
 end
---registerTimer("setwindow", secondsToTimer(1), _windowname);
+registerTimer("setwindow", secondsToTimer(1), _windowname);
 
 
 function main()
@@ -126,6 +126,7 @@ function main()
 				end	
 			end
 		elseif( args[i] == "coords" ) then
+			unregisterTimer("setwindow");
 			while(true) do
 				updateall()
 				if player.Heal > player.HP/player.MaxHP*100 then
@@ -136,6 +137,13 @@ function main()
 				local angle = math.atan2(-4294 - player.Z, -16379 - player.X) + math.pi;
 				local anglediff = math.abs(player.Angle - angle);
 				setWindowName(getHwnd(),sprintf("Dir1: %0.2f, Dir2: %0.2f, PA: %0.2f, A: %0.2f", player.Dir1, player.Dir2, player.Angle, angle))
+				yrest(100)
+			end
+		elseif( args[i] == "ftext" ) then
+			unregisterTimer("setwindow");
+			while(true) do
+				statusupdate()
+				setWindowName(getHwnd(),sprintf("Text: "..player.Ftext))
 				yrest(100)
 			end
 		elseif ( args[i] == "com" ) then
