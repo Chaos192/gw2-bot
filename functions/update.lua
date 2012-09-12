@@ -1,4 +1,3 @@
-
 function targetupdate()
 	local proc = getProc()
 	player.TargetMob = memoryReadRepeat("int", proc, addresses.TargetMob) or player.TargetMob;
@@ -57,11 +56,11 @@ function statusupdate()
 	player.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
 	if player.Interaction == true then
 		player.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
-		--[[if( SETTINGS['language'] == "russian" ) then
+		if( SETTINGS['language'] == "russian" ) then
 			player.Ftext = utf82oem_russian(player.Ftext)
 		else
 			player.Ftext = utf8ToAscii_umlauts(player.Ftext)
-		end]]
+		end
 	end
 end
 
@@ -72,8 +71,6 @@ function updateall()
 	statusupdate()	
 	coordsupdate()
 	targetupdate()
-
-
 end
 
 
