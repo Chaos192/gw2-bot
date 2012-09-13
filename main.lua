@@ -85,6 +85,7 @@ end
 local function updates()
 	updateall()
 	if player.Heal > player.HP/player.MaxHP*100 then
+		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
 		player:useSkills(true)
 	end
 end

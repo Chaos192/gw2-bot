@@ -134,10 +134,13 @@ end
 
 -- look for target by pressing Next Target Button
 -- _dist = distance to look for target within (default value = profile setting)
+--	['maxdistance'] = 2000, -- max distance to decide to attack mob
+--	['fightdistance'] = 1100, -- distance when start to use skills, melee should be low (50)
+
 function Player:getNextTarget(_dist)
 
 	if not _dist then
-		_dist = profile['fightdistance']
+		_dist = profile['maxdistance']
 	end
 	
 	keyboardPress(keySettings['nexttarget'])
@@ -154,10 +157,12 @@ function Player:getNextTarget(_dist)
 		logger:log('info',"choose new target %s in distance %d\n", self.TargetMob, hf_dist);
 		return true
 	else
-		logger:log('debug',"Target %s is to fare. distance=%d > fightdistance=%d\n", self.TargetMob, hf_dist, _dist);
+		logger:log('debug',"Target %s is to fare. distance=%d > maxdistance=%d\n", self.TargetMob, hf_dist, _dist);
 		keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+		targetupdate()
 		return false
 	end
+
 
 end
 
