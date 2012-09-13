@@ -110,10 +110,9 @@ function WaypointState:advance()
 -- count the laps
 	if ( self.index == self.StartIndex ) then
 		self.LapCounter = self.LapCounter + 1
-		debug_value(self.LapCounter, "self.LapCounter2");
-		debug_value(waypoint.laps, "waypoint.laps2");
-		if( self.LapCounter == waypoint.laps ) then	-- only x rounds
+		if( waypoint.laps == self.LapCounter ) then		-- only x rounds 
 			logger:log('info',"Finished waypoint state after %d rounds", waypoint.laps)
+			self.LapCounter = 0;
 			stateman:popState("Waypoint");
 		end
 	end
