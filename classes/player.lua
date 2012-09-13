@@ -133,7 +133,7 @@ function Player:moveTo_step(x, z, _dist)
 end
 
 -- look for target by pressing Next Target Button
--- _dist = distance to look for target within
+-- _dist = distance to look for target within (default value = profile setting)
 function Player:getNextTarget(_dist)
 
 	if not _dist then
@@ -154,6 +154,8 @@ function Player:getNextTarget(_dist)
 		logger:log('info',"choose new target %s in distance %d\n", self.TargetMob, hf_dist);
 		return true
 	else
+		logger:log('debug',"Target %s is to fare. distance=%d > fightdistance=%d\n", self.TargetMob, hf_dist, _dist);
+		keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
 		return false
 	end
 
