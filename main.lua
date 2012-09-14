@@ -63,7 +63,7 @@ for i,v in pairs(subdir) do
 		include("classes/states/"..v)
 	end
 end
-waypoint = WaypointState();
+--waypoint = WaypointState();
 local lastKS = keyboardState();
 function handleInput(_key)
 	local function pressed(vk)
@@ -101,7 +101,7 @@ registerTimer("setwindow", secondsToTimer(1), _windowname);
 
 function main()
 	local defaultState = nil;
-
+	local wpName = nil;
 
 	stateman = StateManager();
 	for i = 2,#args do
@@ -110,7 +110,8 @@ function main()
 			local var = string.sub(args[i], 1, foundpos-1);
 			local val = string.sub(args[i], foundpos+1);
 			if( var == "path" ) then
-				waypoint.waypointname = val
+				--waypoint.waypointname = val
+				wpName = val;
 			end
 			if( var == "state" ) then
 				for k,v in pairs(events) do
@@ -183,7 +184,7 @@ function main()
 	if( defaultState ) then
 		stateman:pushState(defaultState);
 	else
-		stateman:pushState(WaypointState());
+		stateman:pushState(WaypointState(wpName));
 	end
 
 	print("Version: "..version)

@@ -6,13 +6,13 @@ include("../state.lua");
 
 WaypointState = class(State);
 
-function WaypointState:constructor()
+function WaypointState:constructor(name)
 	self.name = "Waypoint";
 -- parameters
 	self.index = 1;
 	self.tableset = false
 	self.waypoints = {};
-	self.waypointname = ""
+	self.waypointname = name or "";
 	self.lootwalk = false;	-- loot/interaction during walk
 	self.laps = 0;			-- how often circle the wp file / 0=infinite 
 -- help fields
