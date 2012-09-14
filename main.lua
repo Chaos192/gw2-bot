@@ -27,9 +27,10 @@ logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/"
 updateall()
 
 --=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
-local char = BASE_PATH .. "/profiles/" .. player.Name .. ".lua";
+local char = BASE_PATH .. "/profiles/" .. string.gsub(player.Name,"%s","_") .. ".lua";
 if( fileExists(char) ) then	
-	charprofile = include(BASE_PATH .. "/profiles/" .. player.Name .. ".lua", true);
+	charprofile = include(BASE_PATH .. "/profiles/" .. string.gsub(player.Name,"%s","_") .. ".lua", true);
+
 	for k,v in pairs(charprofile) do
 		profile[k] = v
 	end
@@ -174,6 +175,7 @@ function main()
 			hpupdate()
 			targetupdate()
 			printf("Player info for \'%s\', HP: %d/%d, Target: 0x%X\n", player.Name, player.HP, player.MaxHP, player.TargetAll);
+			printf("Interaction: %s, ID: %d (0x%X)\n", player.Interaction, player.InteractionId, player.InteractionId);
 			return;
 		end
 	end

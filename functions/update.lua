@@ -45,6 +45,7 @@ function statusupdate()
 	local last_combat = player.InCombat;
 	local proc = getProc()
 	player.Interaction = (memoryReadRepeat("int", proc, addresses.Finteraction) ~= 0)
+	--player.InteractionId = memoryReadRepeat("int", proc, 0x1103EFD8);
 	player.InCombat = (memoryReadRepeat("int", proc, addresses.playerInCombat) ~= 0)
 	player.Downed = (memoryReadRepeat("int", proc, addresses.playerDowned) ~= 0)
 	player.Loading = (memoryReadRepeat("intptr", proc, addresses.loadingbase,addresses.loadingOffset) ~= 0)
