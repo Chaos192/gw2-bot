@@ -15,9 +15,10 @@ function CombatState:constructor()
 end
 
 function CombatState:update()
-	if not player.InCombat	then 
+	if not player.InCombat	then
+		statusupdate();
 		if profile['loot'] == true then
-			stateman:pushEvent("Loot","finished combat"); 
+			stateman:pushEvent("Loot", "finished combat"); 
 		end
 		stateman:popState("combat ended");	
 	end

@@ -23,6 +23,8 @@ function WaypointState:constructor()
 	self.interactionZ = 0;	
 	self.LapCounter = 0;		-- how often we have circled the wp file
 	self.StartIndex = 0;		-- the WP index we start with
+
+	self.lastTargetTime = getTime();
 end
 
 function WaypointState:update()
@@ -61,7 +63,7 @@ function WaypointState:update()
 	local wp = self.waypoints[self.index];
 	if player:moveTo_step(wp.X, wp.Z, 100) then
 		if( wp.type == "HARVEST" and player.Interaction ) then
-			printf("Harvesting\n");
+					print("Harvesting");
 			keyboardPress(key.VK_F);
 		end
 		self:advance()
@@ -92,9 +94,26 @@ function WaypointState:update()
 		else
 			logger:log('info',"no more interaction at that place (%d, %d)\n", player.X, player.Z);
 		end
-	end			
+	end
 
-	
+	if( player.Interaction and player.InteractionId == 0x1403F ) then
+		stateman:pushState(LootState(), "Walked over lootable.");
+	end
+
+
+	if( deltaTime(getTime(), self.lastTargetTime) > 500 ) then
+		player:getNextTarget();
+		
+		if( player.TargetMob ) then
+			targetupdate();
+			if( distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['maxdistance'] ) then
+				player:stopMoving();
+				stateman:pushState(CombatState());
+			end
+		end
+
+		self.lastTargetTime = getTime();
+	end
 end
 
 function WaypointState:handleEvent(event)

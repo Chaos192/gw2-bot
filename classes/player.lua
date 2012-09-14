@@ -23,6 +23,7 @@ function Player:constructor()
 	self.TargetAll = 0
 	self.Loot = false
 	self.Interaction = false
+	self.InteractionId = 0;
 	self.InCombat = false
 	self.Ftext = ""
 
@@ -96,15 +97,15 @@ function Player:facedirection(x, z,_angle)
 	z = z or 0;
 	_angle = _angle or 0.4
 	-- Check our angle to the waypoint.
-	local angle = math.atan2(z - player.Z, x - player.X) + _pi;
-	local angleDif = angleDifference(angle, player.Angle);
+	local angle = math.atan2(z - self.Z, x - self.X) + _pi;
+	local angleDif = angleDifference(angle, self.Angle);
 	
 	if( angleDif > _angle ) then
 		if( self.fbMovement ) then -- Stop running forward.
 			self:stopMoving();
 		end
 		-- Attempt to face it
-		if angleDif > angleDifference(angle, player.Angle+ 0.01) then
+		if angleDif > angleDifference(angle, self.Angle+ 0.01) then
 			-- Rotate left
 			self:move("left")
 		else
@@ -121,8 +122,8 @@ function Player:moveTo_step(x, z, _dist)
 	x = x or 0;
 	z = z or 0;
 	_dist = _dist or 100;
-	local dist = distance(player.X, player.Z, x, z) 
-	if player:facedirection(x, z) then
+	local dist = distance(self.X, self.Z, x, z) 
+	if self:facedirection(x, z) then
 		if dist > _dist then
 			self:move("forward")
 		else
@@ -167,6 +168,7 @@ function Player:getNextTarget(_dist)
 end
 
 function Player:useSkills(_heal)
+	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)
 	if _heal then
 		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then
 			keyboardPress(key.VK_6)
@@ -179,6 +181,11 @@ function Player:useSkills(_heal)
 		end
 		return
 	end
+
+	if( dist > profile['fightdistance'] ) then
+		return; -- Too far; don't use skills
+	end
+
 	if profile['skill2use'] == true and os.difftime(os.time(),self.skill2used) > profile['skill2cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_2)
 		if profile['skill2ground'] == true then

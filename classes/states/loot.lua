@@ -15,6 +15,11 @@ function LootState:update()
 			keyboardPress(key.VK_ESCAPE)
 			yrest(1000)
 		end
+
+		if( player.Interaction and player.InteractionId == 0x1403F ) then
+			keyboardPress(keySettings['interact']);
+		end
+
 		logger:log('info',"finished looting, popping")
 		stateman:popState("loot");
 end
