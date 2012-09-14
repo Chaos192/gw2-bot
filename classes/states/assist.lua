@@ -12,7 +12,10 @@ AssistState = class(State);
 
 function AssistState:constructor()
 	self.name = "Assist";
-	self.InteractTime = getTime();	-- last time we loot/interact
+	self.interactionX = 0;		-- remember interaction place to avoid being sticked
+	self.interactionZ = 0;
+	self.interactionCount = 0;
+	self.InteractTime = getTime();	-- last time we do an F-Interaction
 	self.tabtime = getTime();		-- last time nexttarget
 end
 
@@ -29,12 +32,31 @@ function AssistState:update()
 	end
 
 -- Loot/Harvest if Interaction available
+--debug_value(player.Ftext, "player.Ftext")
+--debug_value(language:message('InteractTalk'), "language:message('InteractTalk')")
+-- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
 	if player.Interaction == true and 
+	   ( player.Ftext ~= language:message('InteractGreeting') or
+	     player.Ftext ~= language:message('InteractTalk') ) and		-- not if only greeting
 	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
-			logger:log('info',"Interaction available: doing loot/harvest");
+		if( self.interactionX == player.X) and	-- count interactions at the same spot
+		  ( self.interactionZ == player.Z) then
+			self.interactionCount = self.interactionCount + 1;
+		else
+			self.interactionCount = 0;		-- interaction at new place, clear counter
+		end
+
+		if( self.interactionCount < 2 ) then		-- only 3 times at the same place
+			self.interactionX = player.X;
+			self.interactionZ = player.Z;
 			keyboardPress(keySettings['interact']);		-- loot
+			logger:log('info',"Interaction at (%d, %d)\n", player.X, player.Z);
 			self.InteractTime = getTime();
+		else
+			logger:log('info',"no more interaction at that place (%d, %d)\n", player.X, player.Z);
+		end
 	end			
+
 
 end
 

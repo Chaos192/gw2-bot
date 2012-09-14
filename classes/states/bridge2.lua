@@ -24,6 +24,7 @@ function Bridge2State:constructor()
 	self.moveafter_rnd = 20;		-- random add to the time after that we change place
 	self.FaceWait = 10;				-- wait until next face (so one has time to do something by hand)
 	self.UseLootrun = true;			-- should we do a loot run at the end of the event (looks more like a bot)
+	self.LootrunWPname = "kessex-bridge-lootrun1";	-- WP file for the lootrun at end of event
 	self.destX = -27103;		-- middle of fight area
 	self.destZ = 10181;
 	self.nextX = -27236;		-- first place of circle around middle point to run
@@ -57,10 +58,10 @@ function Bridge2State:constructor()
 	self.interactionX = 0;		-- remember interaction place to avoid being sticked
 	self.interactionZ = 0;
 	self.interactionCount = 0;
+	self.InteractTime = getTime();	-- last time we do an F-Interaction
 	self.nextMoveafter = 0;
 	self.EventRunning = false;
 	self.lastTargetTime = getTime();-- last time we use nextTarget Tab
-	self.InteractTime = getTime();	-- last time we do an F-Interaction
 	self.LastFaceTime = os.time();	-- last time we try to face middle
 	self.LastMoveTime = os.time();	-- last time we moved the place
 	self.LastCombatTime = 0;		-- last time we use skills in combat
@@ -100,6 +101,8 @@ function Bridge2State:update()
 
 -- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
 	if player.Interaction == true and 
+	   ( player.Ftext ~= language:message('InteractGreeting') or
+	     player.Ftext ~= language:message('InteractTalk') ) and		-- not if only greeting
 	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
 		if( self.interactionX == player.X) and	-- count interactions at the same spot
 		  ( self.interactionZ == player.Z) then
@@ -199,7 +202,7 @@ function Bridge2State:handleEvent(event)
 		self.needlootrun = false;	-- clear need lootrun flag
 		waypoint.lootwalk = true	-- loot while running
 		waypoint.laps = 1			-- only one round
-		waypoint.waypointname = "kessex-bridge-loot"
+		waypoint.waypointname = self.LootrunWPname
 		logger:log('info',"Change to loot run\n");		
 		stateman:pushState(WaypointState())
 		return true;
