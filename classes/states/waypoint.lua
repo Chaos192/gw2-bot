@@ -26,14 +26,14 @@ function WaypointState:constructor()
 end
 
 function WaypointState:update()
-	if waypoint.waypointname and not self.waypoints[1] then
+	if self.waypointname and not self.waypoints[1] then
 		print("using name")
-		waypoint.waypointname = string.find(waypoint.waypointname,"(.*).xml") or waypoint.waypointname
-		local file = BASE_PATH .. "/waypoints/" .. waypoint.waypointname .. ".xml";
+		self.waypointname = string.find(self.waypointname,"(.*).xml") or self.waypointname
+		local file = BASE_PATH .. "/waypoints/" .. self.waypointname .. ".xml";
 		print(file)
 		if( fileExists(file) ) then	
 			print("exists")
-			self.waypoints = include(BASE_PATH .. "/waypoints/" .. waypoint.waypointname .. ".xml", true);
+			self.waypoints = include(BASE_PATH .. "/waypoints/" .. self.waypointname .. ".xml", true);
 		else
 			logger:log('error',"Waypointfile %s not found", file);
 			error("Waypointfile not found",1)
@@ -46,6 +46,7 @@ function WaypointState:update()
 				self.index = i 
 			end
 		end
+
 		self.StartIndex = self.index	-- remeber WP we start with
 
 		self.tableset = true
@@ -70,9 +71,9 @@ function WaypointState:update()
 	
 -- loot/interact during whole walking
 -- usable at the end of events
-	if waypoint.lootwalk == true and	
+	if self.lootwalk == true and	
 	   player.Interaction == true and 
-	   deltaTime(getTime(), self.InteractTime ) > 300 then	-- only ever 0.3 second
+	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
 		if( self.interactionX == player.X) and	-- count interactions at the same spot
 		  ( self.interactionZ == player.Z) then
 			self.interactionCount = self.interactionCount + 1;
@@ -106,20 +107,18 @@ end
 -- Advance the waypoint index to the next point.
 function WaypointState:advance()
 	self.index = self.index + 1;
+	if( self.index > #self.waypoints ) then self.index = 1; end
 
 -- count the laps
 	if ( self.index == self.StartIndex ) then
 		self.LapCounter = self.LapCounter + 1
-		if( waypoint.laps == self.LapCounter ) then		-- only x rounds 
-			logger:log('info',"Finished waypoint state after %d rounds", waypoint.laps)
+		if( self.laps == self.LapCounter ) then		-- only x rounds 
+			logger:log('info',"Finished waypoint state after %d rounds", self.laps)
 			self.LapCounter = 0;
 			stateman:popState("Waypoint");
 		end
 	end
-
 	
-	if( self.index > #self.waypoints ) then self.index = 1; end
-
 	logger:log('info',"Waypoints advanced to #%d\n", self.index);
 end
 
