@@ -158,7 +158,7 @@ function Player:getNextTarget(_dist)
 		logger:log('info',"choose new target %s in distance %d\n", self.TargetMob, hf_dist);
 		return true
 	else
-		logger:log('debug',"Target %s is to fare. distance=%d > maxdistance=%d\n", self.TargetMob, hf_dist, _dist);
+		logger:log('debug', "Target %s is too far. distance=%d > maxdistance=%d\n", self.TargetMob, hf_dist, _dist);
 		keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
 		targetupdate()
 		return false
