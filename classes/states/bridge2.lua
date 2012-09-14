@@ -68,6 +68,7 @@ function Bridge2State:constructor()
 	self.moving = false;			-- mark if we are moving to avoid facing during move
 	self.facing = false;			-- mark if we are during facing
 	self.needlootrun = false;		-- mark if we need to trigger a lootrun / cleared after triggering
+	self.LastKarma = 0				-- Karma before end of event
 end
 
 
@@ -76,27 +77,39 @@ function Bridge2State:update()
 
 	if SETTINGS['combatstate'] == true then SETTINGS['combatstate'] = false end -- stops combat being pushed
 
+	if( self.LastKarma == 0 ) then
+		self.LastKarma = player.Karma
+	end
+
 	if player.HP < 10 then
 		logger:log('debug',"HP = %d < 10 wait for 10 seconds", player.HP);
 		yrest(10000)
 		return
 	end
 
--- check if event is running depending from last combat time / TODO: real event flag or Karma update?
+-- Check end of Event by Karma / 
+	if ( player.Karma > self.LastKarma ) then
+		logger:log('info',"Event finished. Karma update from %d to %d", self.LastKarma, player.Karma );
+		self.EventRunning = false;	
+		self.needlootrun = true;		-- Lootrun only at end of Event
+		self.LastKarma = player.Karma
+	end
+
+-- check if event is running depending from last combat time / TODO: real event flag for start of Event?
 	if os.difftime(os.time(),self.LastCombatTime) > self.OutOfCombatTimer then
-		logger:log('info',"state bridge: no event running (out of combat timer > %d sec", self.OutOfCombatTimer );
+		logger:log('info',"no combat since > %d sec. Stop moving", self.OutOfCombatTimer );
 		self.EventRunning = false;	
 	else
 		self.EventRunning = true;
-		self.needlootrun = true;
 	end
 
 -- start loot run after end of combat/event
 	if ( self.UseLootrun == true ) and
-	   ( self.EventRunning == false ) and
+--	   ( self.EventRunning == false ) and
 	   ( self.needlootrun == true ) then
 		self.needlootrun = false;	-- clear need lootrun flag
 		stateman:pushEvent("Lootrun", "Bridge2");
+		player:stopMoving();	-- FIX for movements after reaching wp
 	end
 
 -- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
@@ -111,13 +124,13 @@ function Bridge2State:update()
 			self.interactionCount = 0;		-- interaction at new place, clear counter
 		end
 
-		if( self.interactionCount < 4 ) then		-- only 3 times at the same place
+		if( self.interactionCount < 3 ) then		-- only 2 times at the same place
 			self.interactionX = player.X;
 			self.interactionZ = player.Z;
 			keyboardPress(keySettings['interact']);		-- loot
 			logger:log('info',"Interaction at (%d, %d)\n", player.X, player.Z);
 			self.InteractTime = getTime();
-		else
+		elseif( self.interactionCount == 3 ) then	-- only one message
 			logger:log('info',"no more interaction at that place (%d, %d)\n", player.X, player.Z);
 		end
 	end			
@@ -129,7 +142,7 @@ function Bridge2State:update()
 		logger:log('info',"try to move to #%d (%d, %d) Lastmovetime %d \n", self.index, self.nextX, self.nextZ, self.LastMoveTime);
 		if not player:moveTo_step(self.nextX, self.nextZ, 100 ) then
 			self.moving = true;
-			logger:log('debug2',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
+--			logger:log('debug2',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
 --			return  -- activate to avoid fighting during moving
 		else
 			player:stopMoving();	-- FIX for movements after reaching wp
@@ -188,7 +201,7 @@ function Bridge2State:advance()
 	self.nextX = wp.X+math.random(self.WPadd_rnd);
 	self.nextZ = wp.Z+math.random(self.WPadd_rnd);
 	self.nextMoveafter = self.moveafter+math.random(self.moveafter_rnd)	-- set time for next move
-	logger:log('info',"Waypoints advanced to #%d (%d, %d) next move in %d sec\n", self.index, wp.X, wp.Z, self.nextMoveafter);
+	logger:log('info',"Waypoints randomly move to #%d (%d, %d) next move in %d sec\n", self.index, wp.X, wp.Z, self.nextMoveafter);
 end
 
 
@@ -200,11 +213,12 @@ function Bridge2State:handleEvent(event)
 --		stateman:pushEvent("Waypoint", "Bridge2");
 
 		self.needlootrun = false;	-- clear need lootrun flag
-		waypoint.lootwalk = true	-- loot while running
-		waypoint.laps = 1			-- only one round
-		waypoint.waypointname = self.LootrunWPname
+		local lootrunWP = WaypointState()
+		lootrunWP.lootwalk = true	-- loot while running
+		lootrunWP.laps = 1			-- only one round
+		lootrunWP.waypointname = self.LootrunWPname
 		logger:log('info',"Change to loot run\n");		
-		stateman:pushState(WaypointState())
+		stateman:pushState(lootrunWP)
 		return true;
 	end
 
