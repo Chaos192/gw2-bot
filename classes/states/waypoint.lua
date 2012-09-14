@@ -74,8 +74,10 @@ function WaypointState:update()
 -- loot/interact during whole walking
 -- usable at the end of events
 	if self.lootwalk == true and	
-	   player.Interaction == true and 
-	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
+		player.Interaction == true and
+		player.InteractionId == 0x1403F and -- Make sure it is actually loot
+		deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
+
 		if( self.interactionX == player.X) and	-- count interactions at the same spot
 		  ( self.interactionZ == player.Z) then
 			self.interactionCount = self.interactionCount + 1;
@@ -88,16 +90,12 @@ function WaypointState:update()
 		if( self.interactionCount < 3 ) then		-- only 2 times at the same place
 			self.interactionX = player.X;
 			self.interactionZ = player.Z;
-			keyboardPress(keySettings['interact']);		-- loot
+			stateman:pushState(LootState(), "Walked over lootable.");		-- loot
 			logger:log('info',"interaction/loot at (%d, %d)\n", player.X, player.Z);
 			self.InteractTime = getTime();
 		else
 			logger:log('info',"no more interaction at that place (%d, %d)\n", player.X, player.Z);
 		end
-	end
-
-	if( player.Interaction and player.InteractionId == 0x1403F ) then
-		stateman:pushState(LootState(), "Walked over lootable.");
 	end
 
 

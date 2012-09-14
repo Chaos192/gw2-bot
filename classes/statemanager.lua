@@ -45,10 +45,6 @@ function StateManager:handleEvent(event)
 		return true;
 	end
 
-	if( event == "Loot" ) then
-		self:pushState(LootState());
-	end
-
 	for k,events in pairs(events) do
 		if( event == events.name and self.stateQueue[#self.stateQueue].name ~= event ) then
 			logger:log('info',"Switching to "..event);

@@ -10,14 +10,15 @@ function CombatState:constructor()
 	self.name = "Combat";
 	self.autostarted = nil
 	self.combat = false
-	self.startfight = os.time()
+	--self.startfight = os.time() -- DEPRECATED
+	self.startfighttime = getTime();
 	self.lastTargetTime = getTime();
 end
 
 function CombatState:update()
 	if not player.InCombat	then
 		statusupdate();
-		if profile['loot'] == true then
+		if profile['loot'] == true and deltaTime(getTime(), self.startfighttime) > 1000 then
 			stateman:pushEvent("Loot", "finished combat"); 
 		end
 		stateman:popState("combat ended");	
