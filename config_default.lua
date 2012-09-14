@@ -2,7 +2,7 @@
 
 SETTINGS = {}
 SETTINGS['language'] = "english" -- "russian" "german" "french"
-SETTINGS['combatstate'] = true
+SETTINGS['combatstate'] = true					--  entercombat state pushed automaticly if incombat (used by working with waypoint files)
 SETTINGS['lagallowance'] = 1
 
 LOG_MESSAGE = {};

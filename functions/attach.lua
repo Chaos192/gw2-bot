@@ -82,7 +82,11 @@ function memoryReadRepeat(_type, proc, address, offset)
 		else
 			name = '<unknown>';
 		end
-		logger:log('debug',  "Error reading memory in %s from %s:%d", name, info.short_src, info.currentline or 0);
+--		logger:log('debug',  "Error reading memory in %s from %s:%d", name, info.short_src, info.currentline or 0);
+--	no logger available at the time of using that
+		local msg = sprintf("Error reading memory in %s from %s:%d", name, info.short_src, info.currentline or 0);
+		error(msg)
+
 	end
 
 	return val

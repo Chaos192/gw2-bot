@@ -49,7 +49,8 @@ function statusupdate()
 	player.Downed = (memoryReadRepeat("int", proc, addresses.playerDowned) ~= 0)
 	player.Loading = (memoryReadRepeat("intptr", proc, addresses.loadingbase,addresses.loadingOffset) ~= 0)
 
-	if( stateman and player.InCombat and not last_combat ) then
+	if( stateman and player.InCombat and not last_combat  and
+	  SETTINGS['combatstate'] == true) then		-- allow entercombat state pushed automaticly if incombat
 		local n = debug.getinfo(2);
 		stateman:pushEvent("entercombat", n.name);
 	end
