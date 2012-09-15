@@ -12,6 +12,7 @@ function FirstattackState:constructor()
 end
 
 function FirstattackState:update()
+	logger:log('debug-states',"Coming to FirstattackState:update()");
 	targetupdate()
 	coordsupdate()
 	if player.TargetMob ~= 0 then

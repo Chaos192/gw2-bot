@@ -89,6 +89,16 @@ function Logger:log(level, msg, _val1, _val2, _val3, _val4, _val5, _val6 )
       return;
    end
 
+   -- Check if we don't log debug messages
+   if( level == 'debug-states' and not LOG_MESSAGE['debug-states'] ) then
+      return;
+   end
+
+   -- Check if we don't log debug messages
+   if( level == 'debug-moving' and not LOG_MESSAGE['debug-moving'] ) then
+      return;
+   end
+
    -- Check if we don't log info messages
    if( level == 'info' and not LOG_MESSAGE['info'] ) then
       return;

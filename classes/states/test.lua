@@ -20,6 +20,7 @@ function TestState:update()
 		if (self.MoveFinished == true ) then
 			logger:log('debug',"MoveFinished = true (nothing more to do => return to main");
 --			error("Move finished")
+			player:stopMoving();
 			return
 		end
 

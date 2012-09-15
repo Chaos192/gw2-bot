@@ -11,6 +11,7 @@ function HealState:constructor()
 end
 
 function HealState:update()
+	logger:log('debug-states',"Coming to HealState:update()");
 	if player.Heal > player.HP/player.MaxHP*100 then
 		player:useSkills(true)
 	else
