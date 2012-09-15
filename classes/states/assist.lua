@@ -31,6 +31,16 @@ function AssistState:update()
 			self.tabtime = getTime();
 	end
 
+--debug_value(player.Interaction, "player.Interaction")
+--debug_value(player.InteractionId, "player.InteractionId")
+--	if player.Interaction == true and 
+--	   player.InteractionId == 0x1403F and -- Make sure it is actually loot
+--	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
+--			stateman:pushState(LootState(), "Walked over lootable.");		-- loot
+--			logger:log('info',"Interaction at (%d, %d)\n", player.X, player.Z);
+--	end			
+
+
 -- Loot/Harvest if Interaction available
 --debug_value(player.Ftext, "player.Ftext")
 --debug_value(language:message('InteractTalk'), "language:message('InteractTalk')")
@@ -49,7 +59,8 @@ function AssistState:update()
 		if( self.interactionCount < 2 ) then		-- only 3 times at the same place
 			self.interactionX = player.X;
 			self.interactionZ = player.Z;
-			keyboardPress(keySettings['interact']);		-- loot
+--			keyboardPress(keySettings['interact']);		-- loot
+			stateman:pushState(LootState(), "Walked over lootable.");		-- loot
 			logger:log('info',"Interaction at (%d, %d)\n", player.X, player.Z);
 			self.InteractTime = getTime();
 		else

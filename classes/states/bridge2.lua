@@ -73,11 +73,11 @@ end
 
 
 function Bridge2State:update()
---	logger:log('debug',"Coming to Bridge2State:update()");
+	logger:log('debug-states',"Coming to Bridge2State:update()");
 
 	if SETTINGS['combatstate'] == true then SETTINGS['combatstate'] = false end -- stops combat being pushed
 
-	if( self.LastKarma == 0 ) then
+	if( self.LastKarma == 0 ) then		-- remeber Karma at beginning
 		self.LastKarma = player.Karma
 	end
 
@@ -97,7 +97,7 @@ function Bridge2State:update()
 
 -- check if event is running depending from last combat time / TODO: real event flag for start of Event?
 	if os.difftime(os.time(),self.LastCombatTime) > self.OutOfCombatTimer then
-		logger:log('info',"no combat since > %d sec. Stop moving", self.OutOfCombatTimer );
+		logger:log('info',"Last combat at %s more then %d sec ago. No moving anymore", os.date("%H:%M:%S") , self.OutOfCombatTimer );
 		self.EventRunning = false;	
 	else
 		self.EventRunning = true;
@@ -109,7 +109,7 @@ function Bridge2State:update()
 	   ( self.needlootrun == true ) then
 		self.needlootrun = false;	-- clear need lootrun flag
 		stateman:pushEvent("Lootrun", "Bridge2");
-		player:stopMoving();	-- FIX for movements after reaching wp
+--		player:stopMoving();	-- FIX for movements after reaching wp
 	end
 
 -- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
@@ -135,18 +135,24 @@ function Bridge2State:update()
 		end
 	end			
 
--- move around at the fight place
+-- initiate move around the fight place
+-- we use a flag to initiate move to avoid endless move if event stops during move unfinished
 	if player.TargetMob == 0 and
 	    ( os.difftime(os.time(),self.LastMoveTime) > self.moveafter+math.random(self.moveafter_rnd) ) and
 		( 	self.EventRunning == true )	then		-- moving only during/close to combat
-		logger:log('info',"try to move to #%d (%d, %d) Lastmovetime %d \n", self.index, self.nextX, self.nextZ, self.LastMoveTime);
+		self.moving = true;
+	end
+
+
+-- move around at the fight place
+	if self.moving == true then
+		logger:log('debug-moving',"try to move to #%d (%d, %d) Lastmovetime %d \n", self.index, self.nextX, self.nextZ, self.LastMoveTime);
 		if not player:moveTo_step(self.nextX, self.nextZ, 100 ) then
 			self.moving = true;
---			logger:log('debug2',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
---			return  -- activate to avoid fighting during moving
+			logger:log('debug2',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
 		else
-			player:stopMoving();	-- FIX for movements after reaching wp
-			logger:log('debug',"move finished");
+--			player:stopMoving();	-- FIX for movements after reaching wp
+			logger:log('debug-moving',"move finished");
 			self.moving = false;
 			self.LastMoveTime = os.time();
 			self:advance()		
@@ -155,7 +161,7 @@ function Bridge2State:update()
 
 -- face to middle of fighting area
 	if player.TargetMob == 0 and	-- only face if no target / TODO how to avoid not visible targets
-	   ( os.difftime(os.time(),self.LastFaceTime ) > self.FaceWait ) and
+	   ( os.difftime(os.time(),self.LastFaceTime ) > self.FaceWait ) and	-- only face after every x seconds
 	   self.moving == false  then 	-- no facing during moving
 		local angle = math.atan2(self.destZ - player.Z, self.destX - player.X) + math.pi;	-- *** DEBUG
 		local anglediff = player.Angle - angle;												-- *** DEBUG
@@ -163,7 +169,7 @@ function Bridge2State:update()
 		if not player:facedirection(self.destX, self.destZ, 0.5) then		-- turn if angel more then x  of from waypoint
 			self.facing = true;
 		else
-			player:stopMoving();	-- FIX for movements after reaching wp
+--			player:stopMoving();	-- FIX for movements after reaching wp
 			self.facing = false;
 			self.LastFaceTime = os.time();
 		end

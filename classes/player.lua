@@ -80,13 +80,17 @@ end
 
 function Player:stopMoving()
 	local proc = getProc();
+	-- Ensure we're not moving
+	memoryWriteInt(proc, addresses.moveForward, 0);
+	memoryWriteInt(proc, addresses.moveBackward, 0);
+end
+
+function Player:stopTurning()
+	local proc = getProc();
 	-- Ensure we're not turning
 	memoryWriteInt(proc, addresses.turnLeft, 0);
 	memoryWriteInt(proc, addresses.turnRight, 0);
 
-	-- Ensure we're not moving
-	memoryWriteInt(proc, addresses.moveForward, 0);
-	memoryWriteInt(proc, addresses.moveBackward, 0);
 end
 
 function Player:facedirection(x, z,_angle)
@@ -101,18 +105,22 @@ function Player:facedirection(x, z,_angle)
 	local angleDif = angleDifference(angle, self.Angle);
 	
 	if( angleDif > _angle ) then
-		if( self.fbMovement ) then -- Stop running forward.
-			self:stopMoving();
-		end
+--		if( self.fbMovement ) then -- Stop running forward.  / FIX: fbMovement is never set, so we can delete it
+--			self:stopMoving();
+--		end
 		-- Attempt to face it
 		if angleDif > angleDifference(angle, self.Angle+ 0.01) then
 			-- Rotate left
+			logger:log('debug-moving','at Player:facedirection: move left %f.2 > angleDifference: %f.2', angleDif, angleDifference(angle, self.Angle+ 0.01));
 			self:move("left")
 		else
 			-- Rotate right
+			logger:log('debug-moving','at Player:facedirection: move right %f.2 <= angleDifference: %f.2', angleDif, angleDifference(angle, self.Angle+ 0.01));
 			self:move("right")
 		end
 	else
+		logger:log('debug-moving','at Player:facedirection: facing ok, angleDif: %f.2 < _angle: %f.2', angleDif, _angle);
+		self:stopTurning();		-- no turning after looking in right direction 
 		return true
 	end
 end
@@ -123,13 +131,17 @@ function Player:moveTo_step(x, z, _dist)
 	z = z or 0;
 	_dist = _dist or 100;
 	local dist = distance(self.X, self.Z, x, z) 
+	logger:log('debug-moving',"at Player:moveTo_step: Distance %d from WP (%d,%d)", dist, x, z);
 	if self:facedirection(x, z) then
 		if dist > _dist then
 			self:move("forward")
 		else
-			self:move("backward")
+--			self:move("backward")  / FIX: why move Backwards if already there ???
+			self:stopMoving();		-- no moving after being there 
 			return true
 		end
+	else
+		logger:log('debug-moving','at Player:moveTo_step: not moving because self:facedirection() = false');
 	end
 end
 

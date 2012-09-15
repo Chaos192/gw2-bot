@@ -47,14 +47,17 @@ local version = "rev 46"
 atError(function(script, line, message)
 	logger:log('error', "%s:%d\t%s", script, line, message);
 	player:stopMoving();
+	player:stopTurning();
 end);
 
 atPause(function()
 	player:stopMoving();
+	player:stopTurning();
 end);
 
 atExit(function()
 	player:stopMoving();
+	player:stopTurning();
 end);
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
@@ -196,6 +199,9 @@ function main()
 		stateman:handleEvents();
 		stateman:run();
 		yrest(1);
+	 	if( os.difftime(os.time(),logger.lastMsgTime) > logger.repeatTimer+1 )	then
+	 		logger:log('debug',"we are still alive here in main.lua at %s", os.date("%H:%M:%S") );
+	 	end
 	end
 end
 startMacro(main, true);

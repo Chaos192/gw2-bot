@@ -19,6 +19,7 @@ function PortalState:update()
 		if distance(self.destX, self.destZ, player.X, player.Z) > 40 then
 			player:moveTo_step(self.destX, self.destZ);
 		elseif( player.fbMovement ) then
+			player:stopTurning();
 			player:stopMoving();
 
 		elseif player.TargetMob == 0 then

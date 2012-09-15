@@ -28,6 +28,7 @@ function WaypointState:constructor(name)
 end
 
 function WaypointState:update()
+	logger:log('debug-states',"WaypointState:update()");
 	if self.waypointname and not self.waypoints[1] then
 		print("using name")
 		self.waypointname = string.find(self.waypointname,"(.*).xml") or self.waypointname
@@ -75,7 +76,7 @@ function WaypointState:update()
 -- usable at the end of events
 	if self.lootwalk == true and	
 		player.Interaction == true and
-		player.InteractionId == 0x1403F and -- Make sure it is actually loot
+--		player.InteractionId == 0x1403F and -- Make sure it is actually loot  / NOT WORKING ATM
 		deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
 
 		if( self.interactionX == player.X) and	-- count interactions at the same spot
@@ -106,6 +107,7 @@ function WaypointState:update()
 			targetupdate();
 			if( distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['maxdistance'] ) then
 				player:stopMoving();
+				player:stopTurning();
 				stateman:pushState(CombatState());
 			end
 		end
@@ -117,6 +119,7 @@ end
 function WaypointState:handleEvent(event)
 	if( event == "entercombat" ) then
 		player:stopMoving();
+		player:stopTurning();
 		stateman:pushState(CombatState());
 	end
 end

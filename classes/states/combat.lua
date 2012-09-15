@@ -16,6 +16,7 @@ function CombatState:constructor()
 end
 
 function CombatState:update()
+	logger:log('debug-states',"Coming to CombatState:update()");
 	if not player.InCombat	then
 		statusupdate();
 		if profile['loot'] == true and deltaTime(getTime(), self.startfighttime) > 1000 then

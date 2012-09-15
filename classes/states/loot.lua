@@ -11,17 +11,19 @@ function LootState:constructor()
 end
 
 function LootState:update()
-		if player.TargetMob ~= 0 then
-			keyboardPress(key.VK_ESCAPE)
-			yrest(1000)
-		end
+	logger:log('debug-states',"Coming to LootState:update()");
+	if player.TargetMob ~= 0 then
+		keyboardPress(key.VK_ESCAPE)
+		yrest(1000)
+	end
 
-		if( player.Interaction and player.InteractionId == 0x1403F ) then
-			keyboardPress(keySettings['interact']);
-		end
+	if( player.Interaction ) then
+--	    player.InteractionId == 0x1403F ) then		-- FIX not working ATM
+		keyboardPress(keySettings['interact']);
+	end
 
-		logger:log('info',"finished looting, popping")
-		stateman:popState("loot");
-		statusupdate();
+	logger:log('info',"finished looting, popping")
+	stateman:popState("loot");
+	statusupdate();
 end
 table.insert(events,{name = "Loot", func = LootState()})
