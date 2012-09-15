@@ -93,7 +93,8 @@ function Player:stopTurning()
 
 end
 
-function Player:facedirection(x, z,_angle)
+-- _singlemove: for single facing, Stops after facing
+function Player:facedirection(x, z, _angle, _singlemove)
 	local _pi = math.pi
 	self.curtime = getTime()
 	coordsupdate()
@@ -111,33 +112,38 @@ function Player:facedirection(x, z,_angle)
 		-- Attempt to face it
 		if angleDif > angleDifference(angle, self.Angle+ 0.01) then
 			-- Rotate left
-			logger:log('debug-moving','at Player:facedirection: move left %f.2 > angleDifference: %f.2', angleDif, angleDifference(angle, self.Angle+ 0.01));
+			logger:log('debug-moving','at Player:facedirection: move left %.2f > angleDifference: %.2f', angleDif, angleDifference(angle, self.Angle+ 0.01));
 			self:move("left")
 		else
 			-- Rotate right
-			logger:log('debug-moving','at Player:facedirection: move right %f.2 <= angleDifference: %f.2', angleDif, angleDifference(angle, self.Angle+ 0.01));
+			logger:log('debug-moving','at Player:facedirection: move right %.2f <= angleDifference: %.2f', angleDif, angleDifference(angle, self.Angle+ 0.01));
 			self:move("right")
 		end
 	else
-		logger:log('debug-moving','at Player:facedirection: facing ok, angleDif: %f.2 < _angle: %f.2', angleDif, _angle);
-		self:stopTurning();		-- no turning after looking in right direction 
+		logger:log('debug-moving','at Player:facedirection: facing ok, angleDif: %.2f < _angle: %.2f', angleDif, _angle);
+		if _singlemove then
+			self:stopTurning();		-- no turning after looking in right direction 
+		end
 		return true
 	end
 end
 
-function Player:moveTo_step(x, z, _dist)
+-- _singlemove: for single WP move. Stop moving after reaching WP
+function Player:moveTo_step(x, z, _dist, _singlemove)
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
 	_dist = _dist or 100;
 	local dist = distance(self.X, self.Z, x, z) 
 	logger:log('debug-moving',"at Player:moveTo_step: Distance %d from WP (%d,%d)", dist, x, z);
-	if self:facedirection(x, z) then
+	if self:facedirection(x, z, nil, _singlemove) then
 		if dist > _dist then
 			self:move("forward")
 		else
 --			self:move("backward")  / FIX: why move Backwards if already there ???
-			self:stopMoving();		-- no moving after being there 
+			if _singlemove then
+				self:stopMoving();		-- no moving after being there 
+			end
 			return true
 		end
 	else

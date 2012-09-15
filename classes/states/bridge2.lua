@@ -97,7 +97,7 @@ function Bridge2State:update()
 
 -- check if event is running depending from last combat time / TODO: real event flag for start of Event?
 	if os.difftime(os.time(),self.LastCombatTime) > self.OutOfCombatTimer then
-		logger:log('info',"Last combat at %s more then %d sec ago. No moving anymore", os.date("%H:%M:%S") , self.OutOfCombatTimer );
+		logger:log('info',"Last combat at %s more then %d sec ago. No moving anymore", os.date("%H:%M:%S", self.LastCombatTime) , self.OutOfCombatTimer );
 		self.EventRunning = false;	
 	else
 		self.EventRunning = true;
@@ -147,7 +147,7 @@ function Bridge2State:update()
 -- move around at the fight place
 	if self.moving == true then
 		logger:log('debug-moving',"try to move to #%d (%d, %d) Lastmovetime %d \n", self.index, self.nextX, self.nextZ, self.LastMoveTime);
-		if not player:moveTo_step(self.nextX, self.nextZ, 100 ) then
+		if not player:moveTo_step(self.nextX, self.nextZ, 100, true ) then
 			self.moving = true;
 			logger:log('debug2',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
 		else
@@ -166,7 +166,7 @@ function Bridge2State:update()
 		local angle = math.atan2(self.destZ - player.Z, self.destX - player.X) + math.pi;	-- *** DEBUG
 		local anglediff = player.Angle - angle;												-- *** DEBUG
 --		logger:log('debug2',"Bridge2.lua: face middle player.Angle %.2f (anglediff %.2f) max 0.5", player.Angle, anglediff );
-		if not player:facedirection(self.destX, self.destZ, 0.5) then		-- turn if angel more then x  of from waypoint
+		if not player:facedirection(self.destX, self.destZ, 0.5, true) then		-- turn if angel more then x  of from waypoint
 			self.facing = true;
 		else
 --			player:stopMoving();	-- FIX for movements after reaching wp
