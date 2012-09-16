@@ -47,17 +47,17 @@ p_mouseClickL_command = "player:mouseclickL(%d, %d, %d, %d);";
 setStartKey(key.VK_F5);
 setStopKey(key.VK_F6);
 
-wpKey = key.VK_NUMPAD1;			-- insert a movement point
-harvKey = key.VK_NUMPAD2;		-- insert a harvest point
-saveKey = key.VK_NUMPAD3;		-- save the waypoints
-merchantKey = key.VK_NUMPAD4;	-- target merchant, repair and buy stuff
-targetNPCKey = key.VK_NUMPAD5;	-- target NPC and open dialog waypoint
+wpKey 			= key.VK_NUMPAD1;	-- insert a movement point
+harvKey 		= key.VK_NUMPAD2;	-- insert a harvest point
+saveKey 		= key.VK_NUMPAD3;	-- save the waypoints
+merchantKey 	= key.VK_NUMPAD4;	-- target merchant, repair and buy stuff
+targetNPCKey 	= key.VK_NUMPAD5;	-- target NPC and open dialog waypoint
 choiceOptionKey = key.VK_NUMPAD6; 	-- insert choiceOption
-mouseClickKey = key.VK_NUMPAD7; -- Save MouseClick
-restartKey = key.VK_NUMPAD9;	-- restart waypoints script
-resetKey = key.VK_NUMPAD8;	-- restart waypoints script and discard changes
-codeKey = key.VK_NUMPAD0;		-- add comment to last WP.
-targetObjKey = key.VK_DECIMAL;	-- target an object and action it.
+mouseClickKey 	= key.VK_NUMPAD7; 	-- Save MouseClick
+restartKey 		= key.VK_NUMPAD9;	-- restart waypoints script
+resetKey	 	= key.VK_NUMPAD8;	-- restart waypoints script and discard changes
+codeKey 		= key.VK_NUMPAD0;	-- add comment to last WP.
+targetObjKey 	= key.VK_DECIMAL;	-- target an object and action it.
 
 
 -- read arguments / forced profile perhaps
@@ -77,28 +77,29 @@ function saveWaypoints(list)
 		error(err, 0);
 	end
 
-	local openformat = "\t\<!-- #%3d -->{ X=%d, Z=%d, Y=%d, type=\"%s\"";
-	local closeformat = "\},\n";
+	local openformat = "\t\{ X=%d, Z=%d, Y=%d, type=\"%s\"";
+	local closeformat = "\},\t\t-- #%3d \n";
 
 	file:write("return \{\n");
 	local str = sprintf("<waypoints%s>\n", p_wp_gtype);	-- create first tag
 	--file:write(str);					-- write first tag
 
 	local hf_line, tag_open = "", false;
+	local hf_nr = 0;	-- remember last WP#
 	for i,v in pairs(list) do
 		if( v.wp_type == "WP" ) then -- Waypoint
-			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type, "");
+			if( tag_open ) then hf_line = hf_line .. "" .. sprintf(closeformat, hf_nr); end;
+			hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, "");
 			tag_open = true;
 		elseif( v.wp_type == "HARVEST" ) then
-			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_hp_type, "");
+			if( tag_open ) then hf_line = hf_line .. "" .. sprintf(closeformat, hf_nr); end;
+			hf_line = hf_line .. sprintf(openformat,  v.X, v.Z, v.Y, p_hp_type, "", hf_nr);
 			tag_open = true;
 		elseif( v.wp_type == "MC" ) then -- Mouse click (left)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, hf_nr,
 				"\n\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) ) .. "\n";
 				tag_open = true;
 			end
@@ -106,16 +107,17 @@ function saveWaypoints(list)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. v.com .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, hf_nr,
 				"\n\t\t" .. v.com ) .. "\n";
 				tag_open = true;
 			end
 		end
+		hf_nr = v.nr		-- remember WP# to put it later into the closeformat
 	end
 
 	-- If we left a tag open, close it.
 	if( tag_open ) then
-		hf_line = hf_line .. "" .. closeformat;
+		hf_line = hf_line .. "" .. sprintf(closeformat, hf_nr);
 	end
 
 	file:write(hf_line);
@@ -130,7 +132,9 @@ end
 updateall()
 function main()
 
-	local running = true;
+	local running = true
+	local hf_counter = 0;	-- count WPs 
+	
 	while(running) do
 
 		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
@@ -211,16 +215,19 @@ function main()
 					clearScreen();
 					wpList = {}; -- DON'T save clear table
 					hf_key = " ";	-- clear last pressed key
+					hf_counter = 0;	
 					running = true; -- restart
 					break;
 				end;
 
+				hf_counter = hf_counter + 1;
 				coordsupdate()
-				print("updated")
 				local tmp = {}, hf_type;
+				tmp.nr = hf_counter;
 				tmp.X = player.X;
 				tmp.Z = player.Z;
 				tmp.Y = player.Y;
+				tmp.wp_type = "";
 				hf_type = "";
 
 
@@ -243,6 +250,7 @@ function main()
 					hf_type = tmp.com;
 					--sprintf(language[521], tmp.com ) ; -- code
 				elseif( hf_key == "MC" ) then 	-- is's a mouseclick?
+					hf_counter = hf_counter - 1;	-- don't count as WP
 					tmp.wp_type = "MC";			-- it is a mouseclick
 					local x, y = mouseGetPos();
 					local wx, wy, hf_wide, hf_high = windowRect(getWin());
@@ -254,13 +262,14 @@ function main()
 					print(tmp.mx, tmp.my, tmp.wide, tmp.high ); -- Mouseclick
 				end
 
-				printf(language:message('WPcontinue'),getKeyName(saveKey));		-- Continue to next. Press %s to save and quit
+				printf(language:message('WPcontinue'),hf_counter, tmp.X,tmp.Z, tmp.wp_type, getKeyName(saveKey));		-- Continue to next. Press %s to save and quit
 
 				table.insert(wpList, tmp);
 
 				if( hf_key == "RESTART" ) then
 					saveWaypoints(wpList);
 					hf_key = " ";	-- clear last pressed key
+					hf_counter = 0;
 					running = true; -- restart
 					break;
 				end;

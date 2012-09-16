@@ -11,7 +11,7 @@ return {
 	['WPsavenew'] = "%s: Save waypoints and restart\n",
 	['WPcode'] = "%s: Insert code command\n",
 	['WPobj'] = "%s: Insert target obj command\n",
-	['WPcontinue'] = "Continue to next. Press %s to save and quit\n",
+	['WPcontinue'] = "Point #%d: %d,%d %7s. Press %s to save and quit\n",	
 	['start_profile_name'] = "Player profile '%s.lua' is be used.\n",	
 	['start_default_profile'] = "Found no profile for playername '%s'. Using profile default.lua\n",			
 	['InteractGreeting'] = "Greet [F]",	

@@ -11,7 +11,7 @@ return {
 	['WPsavenew'] = "%s: Wegepunke speichern und Neustart\n",
 	['WPcode'] = "%s: Coding Befehl einfügen\n",
 	['WPobj'] = "%s: Objekt auswählen Befehl einfügen\n",
-	['WPcontinue'] = "Weiter zum nächsten Punkt. Drücke %s zum Speichern und Beenden\n",
+	['WPcontinue'] = "Punkt #%d: %d,%d %7s. Drücke %s zum Speichern.\n",
 	['start_profile_name'] = "Spieler Profile '%s.lua' wird benutzt.\n",	
 	['start_default_profile'] = "Kein Profile für den Namen '%s' gefunden. Profile default.lua wird benutzt.\n",	
 	['InteractGreeting'] = "Begrüßen [F]",	
