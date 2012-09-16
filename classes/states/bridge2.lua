@@ -24,7 +24,11 @@ function Bridge2State:constructor()
 	self.moveafter_rnd = 20;		-- random add to the time after that we change place
 	self.FaceWait = 10;				-- wait until next face (so one has time to do something by hand)
 	self.UseLootrun = true;			-- should we do a loot run at the end of the event (looks more like a bot)
-	self.LootrunWPname = "kessex-bridge-lootrun1";	-- WP file for the lootrun at end of event
+	self.LootrunWPname = {};		-- WP file(s) for the lootrun at end of event
+	  self.LootrunWPname[1]="kessex-bridge-lootrun1"	-- randomly choose a filename
+--	  self.LootrunWPname[2]="kessex-bridge-lootrun2"
+--	  self.LootrunWPname[3]="kessex-bridge-lootrun3"
+--	  self.LootrunWPname[4]="kessex-bridge-lootrun4"
 	self.destX = -27103;		-- middle of fight area
 	self.destZ = 10181;
 	self.nextX = -27236;		-- first place of circle around middle point to run
@@ -105,11 +109,9 @@ function Bridge2State:update()
 
 -- start loot run after end of combat/event
 	if ( self.UseLootrun == true ) and
---	   ( self.EventRunning == false ) and
 	   ( self.needlootrun == true ) then
 		self.needlootrun = false;	-- clear need lootrun flag
 		stateman:pushEvent("Lootrun", "Bridge2");
---		player:stopMoving();	-- FIX for movements after reaching wp
 	end
 
 -- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
@@ -151,7 +153,6 @@ function Bridge2State:update()
 			self.moving = true;
 			logger:log('debug-moving',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
 		else
---			player:stopMoving();	-- FIX for movements after reaching wp
 			logger:log('debug-moving',"move finished");
 			self.moving = false;
 			self.LastMoveTime = os.time();
@@ -169,7 +170,6 @@ function Bridge2State:update()
 		if not player:facedirection(self.destX, self.destZ, 0.5, true) then		-- turn if angel more then x  of from waypoint
 			self.facing = true;
 		else
---			player:stopMoving();	-- FIX for movements after reaching wp
 			self.facing = false;
 			self.LastFaceTime = os.time();
 		end
@@ -223,8 +223,8 @@ function Bridge2State:handleEvent(event)
 		lootrunWP.lootwalk = true	-- loot while running
 		lootrunWP.laps = 1			-- only one round
 		lootrunWP.getTarget = false		-- don't look for targets during lootrun
-		lootrunWP.waypointname = self.LootrunWPname
-		logger:log('info',"Change to loot run using waypointfile '%s'\n", self.LootrunWPname);		
+		lootrunWP.waypointname = self.LootrunWPname[math.random(#self.LootrunWPname)]
+		logger:log('info',"Change to loot run using waypointfile '%s'\n", lootrunWP.waypointname);		
 		stateman:pushState(lootrunWP)
 		return true;
 	end
