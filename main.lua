@@ -42,7 +42,7 @@ attach(getWin());
 
 
 
-local version = "rev 46"
+local version = "rev 71"
 
 atError(function(script, line, message)
 	logger:log('error', "%s:%d\t%s", script, line, message);
@@ -148,7 +148,7 @@ function main()
 				coordsupdate()
 				local angle = math.atan2(-4294 - player.Z, -16379 - player.X) + math.pi;
 				local anglediff = math.abs(player.Angle - angle);
-				setWindowName(getHwnd(),sprintf("Dir1: %0.2f, Dir2: %0.2f, PA: %0.2f, A: %0.2f", player.Dir1, player.Dir2, player.Angle, angle))
+				setWindowName(getHwnd(),sprintf("P.X: %d, P.Z: %d, P.Y: %d, Dir1: %0.2f, Dir2: %0.2f, PA: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle, angle))
 				yrest(100)
 			end
 		elseif( args[i] == "ftext" ) then
@@ -179,6 +179,7 @@ function main()
 			hpupdate()
 			targetupdate()
 			printf("Player info for \'%s\', HP: %d/%d, Target: 0x%X\n", player.Name, player.HP, player.MaxHP, player.TargetAll);
+			printf("Player position: P.X: %d, P.Z: %d, P.Y: %d, Angle: %.2f\n", player.X, player.Z, player.Y, player.Angle );
 			printf("Interaction: %s, ID: %d (0x%X)\n", player.Interaction, player.InteractionId, player.InteractionId);
 			return;
 		end

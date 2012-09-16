@@ -64,7 +64,7 @@ function Bridge2State:constructor()
 	self.lastTargetTime = getTime();-- last time we use nextTarget Tab
 	self.LastFaceTime = os.time();	-- last time we try to face middle
 	self.LastMoveTime = os.time();	-- last time we moved the place
-	self.LastCombatTime = 0;		-- last time we use skills in combat
+	self.LastCombatTime = os.time()-self.OutOfCombatTimer;		-- last time we use skills in combat
 	self.moving = false;			-- mark if we are moving to avoid facing during move
 	self.facing = false;			-- mark if we are during facing
 	self.needlootrun = false;		-- mark if we need to trigger a lootrun / cleared after triggering
@@ -149,7 +149,7 @@ function Bridge2State:update()
 		logger:log('debug-moving',"try to move to #%d (%d, %d) Lastmovetime %d \n", self.index, self.nextX, self.nextZ, self.LastMoveTime);
 		if not player:moveTo_step(self.nextX, self.nextZ, 100, true ) then
 			self.moving = true;
-			logger:log('debug2',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
+			logger:log('debug-moving',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
 		else
 --			player:stopMoving();	-- FIX for movements after reaching wp
 			logger:log('debug-moving',"move finished");
@@ -222,8 +222,9 @@ function Bridge2State:handleEvent(event)
 		local lootrunWP = WaypointState()
 		lootrunWP.lootwalk = true	-- loot while running
 		lootrunWP.laps = 1			-- only one round
+		lootrunWP.getTarget = false		-- don't look for targets during lootrun
 		lootrunWP.waypointname = self.LootrunWPname
-		logger:log('info',"Change to loot run\n");		
+		logger:log('info',"Change to loot run using waypointfile '%s'\n", self.LootrunWPname);		
 		stateman:pushState(lootrunWP)
 		return true;
 	end

@@ -15,6 +15,8 @@ function WaypointState:constructor(name)
 	self.waypointname = name or "";
 	self.lootwalk = false;	-- loot/interaction during walk
 	self.laps = 0;			-- how often circle the wp file / 0=infinite 
+	self.getTarget = true	-- active looking for new targets
+	self.stopAtEnd = false	-- stop Waypointfile at end of Waypoints (usabel for going from A -> B )
 -- help fields
 	self.prevdist = 100000
 	self.InteractTime = getTime();	-- last time we interact/loot
@@ -100,7 +102,8 @@ function WaypointState:update()
 	end
 
 
-	if( deltaTime(getTime(), self.lastTargetTime) > 500 ) then
+	if( deltaTime(getTime(), self.lastTargetTime) > 500 ) and
+	  ( self.getTarget == true ) then	-- active looking for new targets
 		player:getNextTarget();
 		
 		if( player.TargetMob ) then
@@ -127,7 +130,18 @@ end
 -- Advance the waypoint index to the next point.
 function WaypointState:advance()
 	self.index = self.index + 1;
-	if( self.index > #self.waypoints ) then self.index = 1; end
+
+	if( self.index > #self.waypoints ) then 	-- we are at the last waypoint 
+
+		-- stop at end of waypoint file
+		if( self.stopAtEnd == true )  and		-- should stop at last waypoint
+		  ( self.LapCounter == self.laps ) then	-- after x rounds ( could also be 0, means directly at last WP) 
+			logger:log('info',"Finished waypoint file at the last waypoint")
+			stateman:popState("Waypoint");
+		end
+
+		self.index = 1; 		-- go back to wp #1
+	end
 
 -- count the laps
 	if ( self.index == self.StartIndex ) then
