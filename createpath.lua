@@ -77,29 +77,29 @@ function saveWaypoints(list)
 		error(err, 0);
 	end
 
-	local openformat = "\t\{ X=%d, Z=%d, Y=%d, type=\"%s\"";
-	local closeformat = "\},\t\t-- #%3d \n";
+	local openformat = "\t\{ X=%d, Z=%d, Y=%d, type=\"%s\", comment=\"#%d\"";
+	local closeformat = "\},\n";
 
 	file:write("return \{\n");
 	local str = sprintf("<waypoints%s>\n", p_wp_gtype);	-- create first tag
 	--file:write(str);					-- write first tag
 
 	local hf_line, tag_open = "", false;
-	local hf_nr = 0;	-- remember last WP#
+
 	for i,v in pairs(list) do
 		if( v.wp_type == "WP" ) then -- Waypoint
-			if( tag_open ) then hf_line = hf_line .. "" .. sprintf(closeformat, hf_nr); end;
-			hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, "");
+			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
+			hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, v.nr);
 			tag_open = true;
 		elseif( v.wp_type == "HARVEST" ) then
-			if( tag_open ) then hf_line = hf_line .. "" .. sprintf(closeformat, hf_nr); end;
-			hf_line = hf_line .. sprintf(openformat,  v.X, v.Z, v.Y, p_hp_type, "", hf_nr);
+			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
+			hf_line = hf_line .. sprintf(openformat,  v.X, v.Z, v.Y, p_wp_type, v.nr);
 			tag_open = true;
 		elseif( v.wp_type == "MC" ) then -- Mouse click (left)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, hf_nr,
+				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, v.nr,
 				"\n\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) ) .. "\n";
 				tag_open = true;
 			end
@@ -107,17 +107,16 @@ function saveWaypoints(list)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. v.com .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, hf_nr,
+				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, v.nr,
 				"\n\t\t" .. v.com ) .. "\n";
 				tag_open = true;
 			end
 		end
-		hf_nr = v.nr		-- remember WP# to put it later into the closeformat
 	end
 
 	-- If we left a tag open, close it.
 	if( tag_open ) then
-		hf_line = hf_line .. "" .. sprintf(closeformat, hf_nr);
+		hf_line = hf_line .. "" .. closeformat;
 	end
 
 	file:write(hf_line);

@@ -66,7 +66,7 @@ function WaypointState:update()
 	local wp = self.waypoints[self.index];
 	if player:moveTo_step(wp.X, wp.Z, 100) then
 		if( wp.type == "HARVEST" and player.Interaction ) then
-					print("Harvesting");
+			print("Harvesting");
 			keyboardPress(key.VK_F);
 		end
 		self:advance()
@@ -153,7 +153,11 @@ function WaypointState:advance()
 		end
 	end
 	
-	logger:log('info',"Waypoints advanced to #%d\n", self.index);
+	local hf_comment = "";			
+	local wp = self.waypoints[self.index];
+	if wp.comment then hf_comment = "("..wp.comment..")"; end;	-- print comment from WP / helps to match file with wp run
+	
+	logger:log('info',"Waypoints advanced to #%d %s\n", self.index, hf_comment);
 end
 
 table.insert(events,{name = "Waypoint", func = WaypointState()})
