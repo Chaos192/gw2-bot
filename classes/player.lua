@@ -94,6 +94,7 @@ function Player:stopTurning()
 end
 
 -- _singlemove: for single facing, Stops after facing
+-- self.Angle: 0 (2*Pi) = West, 1,57 (Pi/2) = South, 3,14(Pi) = East, 4,71 (Pi+Pi/2) = North
 function Player:facedirection(x, z, _angle, _singlemove)
 	local _pi = math.pi
 	self.curtime = getTime()

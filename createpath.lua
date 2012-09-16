@@ -77,7 +77,7 @@ function saveWaypoints(list)
 		error(err, 0);
 	end
 
-	local openformat = "\t\{ X=%d, Z=%d, Y=%d, type=\"%s\"";
+	local openformat = "\t\<!-- #%3d -->{ X=%d, Z=%d, Y=%d, type=\"%s\"";
 	local closeformat = "\},\n";
 
 	file:write("return \{\n");
@@ -88,17 +88,17 @@ function saveWaypoints(list)
 	for i,v in pairs(list) do
 		if( v.wp_type == "WP" ) then -- Waypoint
 			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type, "");
+			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type, "");
 			tag_open = true;
 		elseif( v.wp_type == "HARVEST" ) then
 			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_hp_type, "");
+			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_hp_type, "");
 			tag_open = true;
 		elseif( v.wp_type == "MC" ) then -- Mouse click (left)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) ) .. "\n";
 				tag_open = true;
 			end
@@ -106,7 +106,7 @@ function saveWaypoints(list)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. v.com .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. v.com ) .. "\n";
 				tag_open = true;
 			end
@@ -159,6 +159,12 @@ function main()
 
 		local hf_key_pressed, hf_key;
 		while(true) do
+
+			coordsupdate()
+			local angle = math.atan2(-4294 - player.Z, -16379 - player.X) + math.pi;
+			local anglediff = math.abs(player.Angle - angle);
+			setWindowName(getHwnd(),sprintf("P.X: %d, P.Z: %d, P.Y: %d, Dir1: %0.2f, Dir2: %0.2f, PA: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle, angle))
+			yrest(100)
 
 			hf_key_pressed = false;
 
