@@ -128,7 +128,8 @@ function saveWaypoints(list)
 
 end
 
-updateall()
+--updateall()
+coordsupdate()
 function main()
 
 	local running = true

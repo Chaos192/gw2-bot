@@ -11,6 +11,10 @@ function Player:constructor()
 	--self.monthlyXP = 0
 	self.HP = 1000
 	self.MaxHP = 1000
+	self.XP = 1
+	self.XPnextlvl = 1
+	self.actlvl = 1
+	self.adjlvl = 1
 	self.Heal = profile['heal'] or 60
 	self.HealCD = 25
 	self.X = 0
@@ -41,41 +45,8 @@ function Player:constructor()
 	self.skill0used = 0
 	self.movementLastUpdate = getTime();
 	self.curtime = 0
-end
-
-function Player:move(direction)
-	local proc = getProc()
-
-	if( deltaTime(self.curtime, self.movementLastUpdate) > 100 ) then
-		if( direction == "left" ) then
-			-- Ensure we're turning left.
-			memoryWriteInt(proc, addresses.turnLeft, 1);
-			memoryWriteInt(proc, addresses.turnRight, 0);
-		elseif( direction == "right" ) then
-			-- Ensure we're turning right.
-			memoryWriteInt(proc, addresses.turnLeft, 0);
-			memoryWriteInt(proc, addresses.turnRight, 1);
-		else
-			-- Ensure we're not turning
-			memoryWriteInt(proc, addresses.turnLeft, 0);
-			memoryWriteInt(proc, addresses.turnRight, 0);
-		end
-		if( direction == "forward" ) then
-			-- Ensure we're moving foward
-			memoryWriteInt(proc, addresses.moveForward, 1);
-			memoryWriteInt(proc, addresses.moveBackward, 0);
-		elseif( direction == "backward" ) then
-			-- Ensure we're moving backward
-			memoryWriteInt(proc, addresses.moveForward, 0);
-			memoryWriteInt(proc, addresses.moveBackward, 1);
-		else
-			-- Ensure we're not moving
-			memoryWriteInt(proc, addresses.moveForward, 0);
-			memoryWriteInt(proc, addresses.moveBackward, 0);
-		end
-
-		self.movementLastUpdate = self.curtime;
-	end
+	self.LastX = 0
+	self.LastZ = 0
 end
 
 function Player:stopMoving()
@@ -93,58 +64,93 @@ function Player:stopTurning()
 
 end
 
--- _singlemove: for single facing, Stops after facing
+function Player:move(direction, dist)
+	local stop = false
+	local proc = getProc()
+	dist = dist or 100
+	
+	local deltatime
+	if direction == "left" or direction == "right" then
+		deltatime = 100
+	else
+		deltatime = 200
+	end	
+	
+	if deltaTime(self.curtime, self.movementLastUpdate) > deltatime then
+		memoryWriteInt(proc, addresses.turnRight, 0);	
+		memoryWriteInt(proc, addresses.turnLeft, 0);
+		if 200 > dist then 
+			memoryWriteInt(proc, addresses.moveForward, 0);
+			memoryWriteInt(proc, addresses.moveBackward, 0);
+		end
+		if direction == "left" then
+			-- Ensure we're turning left.
+			memoryWriteInt(proc, addresses.turnLeft, 1);
+		elseif( direction == "right" ) then
+			-- Ensure we're turning right.
+			memoryWriteInt(proc, addresses.turnRight, 1);
+		end
+		if( direction == "forward" ) then
+			if 20 > distance(self.LastX,self.LastZ,self.X,self.Z) then
+				print("not moving")
+				-- deal with not moving here.
+			end
+			self.LastX = self.X
+			self.LastZ = self.Z
+			-- Ensure we're moving foward
+			memoryWriteInt(proc, addresses.moveForward, 1);
+		elseif( direction == "backward" ) then
+			-- Ensure we're moving backward
+			memoryWriteInt(proc, addresses.moveBackward, 1);
+		end
+		self.movementLastUpdate = self.curtime;
+	end
+end
+
 -- self.Angle: 0 (2*Pi) = West, 1,57 (Pi/2) = South, 3,14(Pi) = East, 4,71 (Pi+Pi/2) = North
-function Player:facedirection(x, z, _angle, _singlemove)
-	local _pi = math.pi
+function Player:facedirection(x, z, _angle, dist)
 	self.curtime = getTime()
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
 	_angle = _angle or 0.4
 	-- Check our angle to the waypoint.
-	local angle = math.atan2(z - self.Z, x - self.X) + _pi;
+	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
 	local angleDif = angleDifference(angle, self.Angle);
 	
 	if( angleDif > _angle ) then
---		if( self.fbMovement ) then -- Stop running forward.  / FIX: fbMovement is never set, so we can delete it
---			self:stopMoving();
---		end
 		-- Attempt to face it
 		if angleDif > angleDifference(angle, self.Angle+ 0.01) then
 			-- Rotate left
 			logger:log('debug-moving','at Player:facedirection: move left %.2f > angleDifference: %.2f', angleDif, angleDifference(angle, self.Angle+ 0.01));
-			self:move("left")
+			self:move("left", dist)
 		else
 			-- Rotate right
 			logger:log('debug-moving','at Player:facedirection: move right %.2f <= angleDifference: %.2f', angleDif, angleDifference(angle, self.Angle+ 0.01));
-			self:move("right")
+			self:move("right",dist)
 		end
 	else
 		logger:log('debug-moving','at Player:facedirection: facing ok, angleDif: %.2f < _angle: %.2f', angleDif, _angle);
-		if _singlemove then
-			self:stopTurning();		-- no turning after looking in right direction 
-		end
+		self:stopTurning()		-- no turning after looking in right direction 
 		return true
 	end
 end
 
--- _singlemove: for single WP move. Stop moving after reaching WP
-function Player:moveTo_step(x, z, _dist, _singlemove)
+function Player:moveTo_step(x, z, _dist)
+	_dist = _dist or 100;
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
-	_dist = _dist or 100;
-	local dist = distance(self.X, self.Z, x, z) 
+	local angle
+	local dist = distance(self.X, self.Z, x, z)
+	
+	if 400 > dist then angle = 0.5 else angle = 0.2 end
 	logger:log('debug-moving',"at Player:moveTo_step: Distance %d from WP (%d,%d)", dist, x, z);
-	if self:facedirection(x, z, nil, _singlemove) then
+	if self:facedirection(x, z, angle, dist) then
 		if dist > _dist then
 			self:move("forward")
 		else
---			self:move("backward")  / FIX: why move Backwards if already there ???
-			if _singlemove then
-				self:stopMoving();		-- no moving after being there 
-			end
+			self:stopMoving()		-- no moving after being there 
 			return true
 		end
 	else

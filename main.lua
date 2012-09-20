@@ -47,17 +47,17 @@ local version = "rev 71"
 atError(function(script, line, message)
 	logger:log('error', "%s:%d\t%s", script, line, message);
 	player:stopMoving();
-	player:stopTurning();
+	player:stopTurning()
 end);
 
 atPause(function()
 	player:stopMoving();
-	player:stopTurning();
+	player:stopTurning()
 end);
 
 atExit(function()
 	player:stopMoving();
-	player:stopTurning();
+	player:stopTurning()
 end);
 
 local subdir = getDirectory(getExecutionPath() .. "/classes/states/")
@@ -87,7 +87,7 @@ function handleInput(_key)
 end
 
 local function updates()
-	updateall()
+	hpupdate()
 	if player.Heal > player.HP/player.MaxHP*100 then
 		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
 		player:useSkills(true)

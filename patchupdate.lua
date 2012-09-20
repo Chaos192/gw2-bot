@@ -85,14 +85,25 @@ end
 
 local updatePatterns =
 {
-	--[[base = {
+	base = {
 		pattern = string.char(
-		0xA1, 0xFF, 0xFF, 0xFF, 0xFF, 0x64, 0x8B, 0x0D, 0x2C, 0x00,
+		0xA1, 0xFF, 0xFF, 0xFF, 0xFF, 0x64, 0x8B, 0x0D, 0xFF, 0x00,
 		0x00, 0x00, 0x8B, 0x14, 0x81, 0x8B, 0x82, 0xFF, 0x00, 0x00, 0x00, 0xC3),
-		mask = "x????xxxxxxxxxxxx?xxxx",
+		mask = "x????xxx?xxxxxxxx?xxxx",
 		offset = 1,
-		startloc = 0x880000,
-	},]]
+		startloc = 0x630000,
+	},
+	statbase = {
+		pattern = string.char(
+		0x5F, 0x5E, 0x5D, 0xC2, 0x04, 0x00,
+		0xCC,
+		0xB8, 0xFF, 0xFF, 0xFF, 0xFF, 
+		0xC3, 0xCC, 0xCC, 0xCC, 0xCC),
+		mask = "xxxxxxxx????xxxxx",
+		offset = 8,
+		startloc = 0xC00000,
+		adjustment = 0x10,
+	},
 	playerbasecoords = {
 		pattern = string.char(
 		0x00, 0x00, 0x80, 0x00, 0x89, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xC3, 0xCC, 
@@ -330,6 +341,10 @@ function rewriteAddresses()
 			file:write(sprintf("\tmousepointY = 0x%X,\n\n", v.value + 0xC0))
 			--file:write(sprintf("\tmonthxpcountbase = 0x%X,\n", v.value + 0xFC))
 			--file:write("\tmonthxpcountoffset = {0x3C, 0x284, 0x1E4, 0x5C, 0x34},\n\n")
+			file:write(sprintf("\n\tXPbase = 0x%X,\n", v.value - 0x89C))
+			file:write("\txpOffset = {0x80, 0x120, 0x14, 0x4},\n")
+			file:write("\txpnextlvlOffset = {0x80, 0x120, 0x14, 0xC},\n\n")	
+			
 			file:write(sprintf("\ttargetbaseAddress = 0x%X,\n", v.value + 0x181C))
 			file:write("\ttargetXoffset = {0x30, 0x5C, 0x110},\n")
 			file:write("\ttargetZoffset = {0x30, 0x5C, 0x114},\n")
@@ -342,10 +357,15 @@ function rewriteAddresses()
 			
 			file:write(sprintf("\n\tFtextAddress = 0x%X,\n", v.value + 0x19C4))
 			file:write("\tFtextOffset = {0x0, 0xC4, 0x22},\n")
-			
-			
+		
+		
 		end
 		
+		if v.index == "statbase" then
+			file:write("\n\tactlvlOffset = 0x7C,\n")
+			file:write("\tadjlvlOffset = 0xA0,\n")
+
+		end
 		-- Comment part
 		file:write( sprintf("%s\n", comment) );
 	end
@@ -366,11 +386,16 @@ include("classes/statemanager.lua");
 include("addresses.lua");
 include("config_default.lua");
 include("config.lua");
-include("functions/misc.lua");  
+local subdir = getDirectory(getExecutionPath() .. "/functions/")
+for i,v in pairs(subdir) do
+	if string.find(v,".lua") then
+		include("functions/"..v)
+	end
+end
 include("classes/logger.lua");
 include("classes/player.lua");
-include("functions/update.lua");
 include("classes/target.lua");
+language = Language();
 player = Player();
 target = Target();
 updateall()
@@ -378,14 +403,18 @@ updateall()
 print("name: "..player.Name)
 print("Karma: "..player.Karma)
 print("Gold: "..player.Gold)
+print("Level: "..player.actlvl)
+print("Adjusted Level: "..player.adjlvl)
 print("HP: "..player.HP)
 print("MaxHP: "..player.MaxHP)
+print("XP: "..player.XP)
+print("XP next lvl: "..player.XPnextlvl)
 print("X: "..player.X)
 print("Z: "..player.Z)
 print("Y: "..player.Y)
 print("Dir1: "..player.Dir1)
 print("Dir2: "..player.Dir2)
-print("TargetMob: "..player.TargetMob)
+printf("TargetMob: %x\n",player.TargetMob)
 printf("TargetAll: %x\n",player.TargetAll)
 printf("Loot: ") print(player.Loot)
 printf("Interaction: ") print(player.Interaction)
