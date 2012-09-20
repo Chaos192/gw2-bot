@@ -1,5 +1,5 @@
+local proc = getProc()
 function targetupdate()
-	local proc = getProc()
 	player.TargetMob = memoryReadRepeat("int", proc, addresses.TargetMob) or player.TargetMob;
 	player.TargetAll = memoryReadRepeat("int", proc, addresses.TargetAll) or player.TargetAll;
 	if player.TargetAll ~= 0 then
@@ -14,36 +14,36 @@ function targetupdate()
 end
 
 function coordsupdate()
-	
-	local proc = getProc()
 	player.X = memoryReadRepeat("float", proc, addresses.playerX) or player.X;
 	player.Z = memoryReadRepeat("float", proc, addresses.playerZ) or player.Z;
 	player.Y = memoryReadRepeat("float", proc, addresses.playerY) or player.Y;
 	player.Dir1 = memoryReadRepeat("float", proc, addresses.playerDir1) or player.Dir1;
 	player.Dir2 = memoryReadRepeat("float", proc, addresses.playerDir2) or player.Dir2;
 	player.Angle = math.atan2(player.Dir2, player.Dir1) + math.pi;
-	
 end
 
 function hpupdate()
-	local proc = getProc()
 	player.HP = memoryReadRepeat("floatptr", proc, addresses.playerbasehp, addresses.playerHPoffset) or player.HP;
 	player.MaxHP = memoryReadRepeat("floatptr", proc, addresses.playerbasehp, addresses.playerMaxHPoffset) or player.MaxHP;
 end
 
 function playerinfoupdate()
-	local proc = getProc()
 	player.Name = memoryReadRepeat("ustring", proc,addresses.playerName) or player.Name
 	player.Account = memoryReadRepeat("ustring", proc,addresses.playerAccount) or player.Account
 	player.Karma = memoryReadRepeat("intptr", proc, addresses.playerbasehp, addresses.playerKarmaoffset) or player.Karma;
 	player.Gold = memoryReadRepeat("intptr", proc, addresses.playerbasehp, addresses.playerGoldoffset) or player.Gold;
 	--player.monthlyXP = memoryReadRepeat("intptr",proc, addresses.monthxpcountbase, addresses.monthxpcountoffset) or player.monthlyXP
-
-	end
+end
+	
+function playerstatsupdate()
+	player.actlvl = memoryReadRepeat("intptr", proc, addresses.statbase, addresses.actlvlOffset) or player.actlvl;
+	player.adjlvl = memoryReadRepeat("intptr", proc, addresses.statbase, addresses.adjlvlOffset) or player.adjlvl;
+	--player.XP = memoryReadRepeat("intptr", proc,  addresses.XPbase, addresses.xpOffset) or player.XP;	
+	--player.XPnextlvl = memoryReadRepeat("intptr", proc, addresses.XPbase, addresses.xpnextlvlOffset) or player.XPnextlvl;
+end
 
 function statusupdate()
 	local last_combat = player.InCombat;
-	local proc = getProc()
 	player.Interaction = (memoryReadRepeat("int", proc, addresses.Finteraction) ~= 0)
 	--player.InteractionId = memoryReadRepeat("int", proc, 0x1103EFD8);
 	player.InCombat = (memoryReadRepeat("int", proc, addresses.playerInCombat) ~= 0)
@@ -67,12 +67,12 @@ function statusupdate()
 end
 
 function updateall()
-	local proc = getProc()
 	playerinfoupdate()
 	hpupdate()
 	statusupdate()	
 	coordsupdate()
 	targetupdate()
+	playerstatsupdate()
 end
 
 
