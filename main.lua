@@ -30,12 +30,15 @@ updateall()
 local char = BASE_PATH .. "/profiles/" .. string.gsub(player.Name,"%s","_") .. ".lua";
 if( fileExists(char) ) then	
 	charprofile = include(BASE_PATH .. "/profiles/" .. string.gsub(player.Name,"%s","_") .. ".lua", true);
+	logger:log('info',language:message('start_profile_name'), player.Name)	-- loading player profile 
 
 	for k,v in pairs(charprofile) do
 		profile[k] = v
 	end
 	player:constructor()
 	updateall()
+else
+	logger:log('info',language:message('start_default_profile'), player.Name)	-- using default profile 
 end	
 
 attach(getWin());
