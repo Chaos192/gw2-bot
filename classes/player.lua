@@ -291,6 +291,46 @@ function Player:useSkills(_heal)
 		self.skill0used = os.time()
 		return		
 	end
+	if profile['skillF1use'] == true and os.difftime(os.time(),self.skillF1used) > profile['skillF1cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F1)
+		if profile['skillF1ground'] == true then
+			keyboardPress(key.VK_F1)
+		end
+		cprintf(cli.red,"attack F1\n")
+		yrest(profile['skillF1casttime']*1000)
+		self.skillF1used = os.time()
+		return		
+	end
+	if profile['skillF2use'] == true and os.difftime(os.time(),self.skillF2used) > profile['skillF2cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F2)
+		if profile['skillF2ground'] == true then
+			keyboardPress(key.VK_F2)
+		end
+		cprintf(cli.red,"attack F2\n")
+		yrest(profile['skillF2casttime']*1000)
+		self.skillF2used = os.time()
+		return		
+	end
+	if profile['skillF3use'] == true and os.difftime(os.time(),self.skillF3used) > profile['skillF3cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F3)
+		if profile['skillF3ground'] == true then
+			keyboardPress(key.VK_F3)
+		end
+		cprintf(cli.red,"attack F3\n")
+		yrest(profile['skillF3casttime']*1000)
+		self.skillF3used = os.time()
+		return		
+	end
+	if profile['skillF4use'] == true and os.difftime(os.time(),self.skillF4used) > profile['skillF4cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F4)
+		if profile['skillF4ground'] == true then
+			keyboardPress(key.VK_F4)
+		end
+		cprintf(cli.red,"attack F4\n")
+		yrest(profile['skillF4casttime']*1000)
+		self.skillF4used = os.time()
+		return		
+	end
 	if os.difftime(os.time(),self.skill1used) > profile['skill1cd'] then
 		keyboardPress(key.VK_1)
 		self.skill1used = os.time()	

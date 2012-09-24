@@ -12,9 +12,13 @@ return {
 	['skill5cd'] = 10,
 	['skill6cd'] = 10,
 	['skill7cd'] = 10,
-	['skill8cd'] = 10,	
+	['skill8cd'] = 10,
 	['skill9cd'] = 10,
 	['skill0cd'] = 10,
+	['skillF1cd'] = 10,
+	['skillF2cd'] = 10,
+	['skillF3cd'] = 10,
+	['skillF4cd'] = 10,
 	
 	--=== which skills to use ===--
 	['skill2use'] = false,
@@ -26,6 +30,10 @@ return {
 	['skill8use'] = false,
 	['skill9use'] = false,
 	['skill0use'] = false,
+	['skillF1use'] = false,
+	['skillF2use'] = false,
+	['skillF3use'] = false,
+	['skillF4use'] = false,
 
 	--=== if the skill needs to target ground ===--
 	['skill2ground'] = false,
@@ -36,7 +44,11 @@ return {
 	['skill7ground'] = false,
 	['skill8ground'] = false,
 	['skill9ground'] = false,
-	['skill0ground'] = false,	
+	['skill0ground'] = false,
+	['skillF1ground'] = false,
+	['skillF2ground'] = false,
+	['skillF3ground'] = false,
+	['skillF4ground'] = false,
 	
 	--=== cast time of the skills ===--
 	['skill2casttime'] = 1,
@@ -48,4 +60,8 @@ return {
 	['skill8casttime'] = 1,
 	['skill9casttime'] = 1,
 	['skill0casttime'] = 1,
+	['skillF1casttime'] = 1,
+	['skillF2casttime'] = 1,
+	['skillF3casttime'] = 1,
+	['skillF4casttime'] = 1,
 }
