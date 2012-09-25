@@ -56,9 +56,6 @@ function WaypointState:update()
 
 		self.tableset = true
 	elseif not self.waypointname and not self.waypoints[1] then	-- no wp file in waypoint state
---		self.waypoints = {								-- use actual position
---			{ X=player.X, Z=player.Z, Y=player.Y}
---		};
 		stateman:pushEvent("Idle","waypoint");			-- go to idle state
 		return
 	end

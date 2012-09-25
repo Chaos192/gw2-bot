@@ -30,19 +30,25 @@ function Player:constructor()
 	self.InteractionId = 0;
 	self.InCombat = false
 	self.Ftext = ""
-
+	self.skill = {}
+	self.skill[1] = 0
+	self.skill[2] = 0
+	self.skill[3] = 0
+	self.skill[4] = 0
+	self.skill[5] = 0
+	self.skill[6] = 0
+	self.skill[7] = 0
+	self.skill[8] = 0
+	self.skill[9] = 0
+	self.skill[0] = 0
+	
 	self.turnDir = nil; -- Turn left/right
 	self.fbMovement = nil; -- Move forward/backward
 	self.skill1used = 0
-	self.skill2used = 0
-	self.skill3used = 0
-	self.skill4used = 0
-	self.skill5used = 0
-	self.skill6used = 0
-	self.skill7used = 0
-	self.skill8used = 0
-	self.skill9used = 0	
-	self.skill0used = 0
+	self.skillF1used = 0
+	self.skillF2used = 0
+	self.skillF3used = 0
+	self.skillF4used = 0
 	self.movementLastUpdate = getTime();
 	self.curtime = 0
 	self.LastX = 0
@@ -193,120 +199,102 @@ function Player:getNextTarget(_dist)
 end
 
 function Player:useSkills(_heal)
-	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)
+	local proc = getProc()
+	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)	
 	if _heal then
-		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then
+		if profile['skill6use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x9C, 0x40, 0x4C, 0xA}) == 0x300000) then
 			keyboardPress(key.VK_6)
 			if profile['skill6ground'] == true then
 				keyboardPress(key.VK_6)
 			end
-			cprintf(cli.green,"heal key 6\n")
-			yrest(profile['skill6casttime']*1000)
-			self.skill6used = os.time()
-		else		-- FIX/TODO: skill use often not fit, if the regular healuse didn't work we just press the key again without remembering the time
-			keyboardPress(key.VK_6)
-			if profile['skill6ground'] == true then
-				keyboardPress(key.VK_6)
-			end
-			cprintf(cli.green,"heal key 6 emergency fix\n")
+			cprintf(cli.green,"heal key 6 with ID "..self.skill[6].."\n")
 			yrest(profile['skill6casttime']*1000)
 		end
-		hpupdate()
 		return
 	end
 
 	if( dist > profile['fightdistance'] ) then
 		return; -- Too far; don't use skills
 	end
-
-	if profile['skill2use'] == true and os.difftime(os.time(),self.skill2used) > profile['skill2cd'] + SETTINGS['lagallowance'] then
+	if os.difftime(os.time(),self.skill1used) > 1 then
+		keyboardPress(key.VK_1)
+		cprintf(cli.green,"using skill 1 with ID "..self.skill[1].."\n")
+		self.skill1used = os.time()	
+	end
+	if profile['skill2use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x6C, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(key.VK_2)
 		if profile['skill2ground'] == true then
 			keyboardPress(key.VK_2)
 		end
-		cprintf(cli.red,"attack 2\n")
+		cprintf(cli.red,"using skill 2 with ID "..self.skill[2].."\n")
 		yrest(profile['skill2casttime']*1000)
-		self.skill2used = os.time()
-		targetupdate()
 		return
 	end
-	if profile['skill3use'] == true and os.difftime(os.time(),self.skill3used) > profile['skill3cd'] + SETTINGS['lagallowance'] then
+	if profile['skill3use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x78, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(key.VK_3)
 		if profile['skill3ground'] == true then
 			keyboardPress(key.VK_3)
 		end
-		cprintf(cli.red,"attack 3\n")
+		cprintf(cli.red,"using skill 3 with ID "..self.skill[3].."\n")
 		yrest(profile['skill3casttime']*1000)
-		self.skill3used = os.time()
-		targetupdate()
 		return
 	end
-	if profile['skill4use'] == true and os.difftime(os.time(),self.skill4used) > profile['skill4cd'] + SETTINGS['lagallowance'] then
+	if profile['skill4use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x84, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(key.VK_4)	
 		if profile['skill4ground'] == true then
 			keyboardPress(key.VK_4)
 		end
-		cprintf(cli.red,"attack 4\n")
+		cprintf(cli.red,"using skill 4 with ID "..self.skill[4].."\n")
 		yrest(profile['skill4casttime']*1000)
-		self.skill4used = os.time()
-		targetupdate()
 		return
-	end
-	if profile['skill5use'] == true and os.difftime(os.time(),self.skill5used) > profile['skill5cd'] + SETTINGS['lagallowance'] then
+	end	
+	if profile['skill5use'] == true and (memoryReadRepeat("intptr", proc, 0x153E7A4 ,{0x54, 0x160, 0x24,0x14,0xA}) == 0x300000) then
 		keyboardPress(key.VK_5)
 		if profile['skill5ground'] == true then
 			keyboardPress(key.VK_5)
 		end
-		cprintf(cli.red,"attack 5\n")
+		cprintf(cli.red,"using skill 5 with ID "..self.skill[5].."\n")
 		yrest(profile['skill5casttime']*1000)
-		self.skill5used = os.time()
-		targetupdate()
-		return		
+		return
 	end
-	if profile['skill7use'] == true and os.difftime(os.time(),self.skill7used) > profile['skill7cd'] + SETTINGS['lagallowance'] then
+	if profile['skill7use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xA8, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(key.VK_7)
 		if profile['skill7ground'] == true then
 			keyboardPress(key.VK_7)
 		end
-		cprintf(cli.red,"attack 7\n")	
+		cprintf(cli.red,"using skill 7 with ID "..self.skill[7].."\n")	
 		yrest(profile['skill7casttime']*1000)
-		self.skill7used = os.time()
-		targetupdate()
-		return		
+		return
 	end
-	if profile['skill8use'] == true and os.difftime(os.time(),self.skill8used) > profile['skill8cd'] + SETTINGS['lagallowance'] then
+	if profile['skill8use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xB4, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(key.VK_8)
 		if profile['skill8ground'] == true then
 			keyboardPress(key.VK_8)
 		end
-		cprintf(cli.red,"attack 8\n")
+		cprintf(cli.red,"using skill 8 with ID "..self.skill[8].."\n")
 		yrest(profile['skill8casttime']*1000)
-		self.skill8used = os.time()
-		targetupdate()
 		return
 	end
-	if profile['skill9use'] == true and os.difftime(os.time(),self.skill9used) > profile['skill9cd'] + SETTINGS['lagallowance'] then
+	if profile['skill9use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xC0, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(key.VK_9)
 		if profile['skill9ground'] == true then
 			keyboardPress(key.VK_9)
 		end
-		cprintf(cli.red,"attack 9\n")
+		cprintf(cli.red,"using skill 9 with ID "..self.skill[9].."\n")
 		yrest(profile['skill9casttime']*1000)
-		self.skill9used = os.time()
-		targetupdate()
 		return
 	end
-	if profile['skill0use'] == true and os.difftime(os.time(),self.skill0used) > profile['skill0cd'] + SETTINGS['lagallowance'] then
+	if profile['skill0use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xC0, 0x174, 0x54, 0xA}) == 0x300000) then
 		keyboardPress(key.VK_0)
 		if profile['skill0ground'] == true then
 			keyboardPress(key.VK_0)
 		end
-		cprintf(cli.red,"attack 0\n")
+		cprintf(cli.red,"using skill 0 with ID "..self.skill[0].."\n")
 		yrest(profile['skill0casttime']*1000)
-		self.skill0used = os.time()
-		targetupdate()
-		return		
-	end
+		return
+	end	
+	
+	--=== Engineer ===--
 	if profile['skillF1use'] == true and os.difftime(os.time(),self.skillF1used) > profile['skillF1cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(key.VK_F1)
 		if profile['skillF1ground'] == true then
@@ -315,7 +303,6 @@ function Player:useSkills(_heal)
 		cprintf(cli.red,"attack F1\n")
 		yrest(profile['skillF1casttime']*1000)
 		self.skillF1used = os.time()
-		targetupdate()
 		return		
 	end
 	if profile['skillF2use'] == true and os.difftime(os.time(),self.skillF2used) > profile['skillF2cd'] + SETTINGS['lagallowance'] then
@@ -326,7 +313,6 @@ function Player:useSkills(_heal)
 		cprintf(cli.red,"attack F2\n")
 		yrest(profile['skillF2casttime']*1000)
 		self.skillF2used = os.time()
-		targetupdate()
 		return		
 	end
 	if profile['skillF3use'] == true and os.difftime(os.time(),self.skillF3used) > profile['skillF3cd'] + SETTINGS['lagallowance'] then
@@ -337,7 +323,6 @@ function Player:useSkills(_heal)
 		cprintf(cli.red,"attack F3\n")
 		yrest(profile['skillF3casttime']*1000)
 		self.skillF3used = os.time()
-		targetupdate()
 		return		
 	end
 	if profile['skillF4use'] == true and os.difftime(os.time(),self.skillF4used) > profile['skillF4cd'] + SETTINGS['lagallowance'] then
@@ -348,12 +333,6 @@ function Player:useSkills(_heal)
 		cprintf(cli.red,"attack F4\n")
 		yrest(profile['skillF4casttime']*1000)
 		self.skillF4used = os.time()
-		targetupdate()
 		return		
 	end
-	if os.difftime(os.time(),self.skill1used) > profile['skill1cd'] then
-		keyboardPress(key.VK_1)
-		self.skill1used = os.time()	
-		targetupdate()
-	end	
 end
