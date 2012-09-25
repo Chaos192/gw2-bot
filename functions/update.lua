@@ -69,13 +69,23 @@ end
 function updateskills()
 	--=== skills 1 to 5 ===--
 	for i = 1,5 do
-		player.skill[i] = memoryReadRepeat("intptr", proc, addresses.playerbasehp,{0x188, 0x100 + (i*4),0x20}) or player.skill[i]
+		local int = memoryReadRepeat("intptr", proc, addresses.playerbasehp,{0x188, 0x100 + (i*4)})
+		if int == 0 then 
+			return 
+		else
+			player.skill[i] = memoryReadRepeat("int", proc, int + 0x20) or player.skill[i]
+		end
 	end
 	--=== skills 6 to 0 ===--
 	for i = 0,4 do
 		local num = i+6
 		if num == 10 then num = 0 end
-		player.skill[num] = memoryReadRepeat("intptr", proc, addresses.playerbasehp,{0x188, 0xF0 + (i*4),0x20}) or player.skill[num]
+		local int = memoryReadRepeat("intptr", proc, addresses.playerbasehp,{0x188, 0xF0 + (i*4)})
+		if int == 0 then 
+			return 
+		else
+			player.skill[num] = memoryReadRepeat("int", proc, int + 0x20) or player.skill[num]
+		end
 	end
 end
 
