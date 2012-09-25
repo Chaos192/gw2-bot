@@ -24,8 +24,7 @@ playerinfoupdate()
 language = Language();
 logger = Logger(BASE_PATH .. "/logs/".. string.gsub(player.Name,"%s","_") .. "/" .. os.date('%Y-%m-%d') .. ".txt");
 
-updateall()
-
+playerinfoupdate()
 --=== update with character profile if it exists, do it here so state:construct can override profile settings ===--
 local char = BASE_PATH .. "/profiles/" .. string.gsub(player.Name,"%s","_") .. ".lua";
 if( fileExists(char) ) then	
@@ -36,16 +35,13 @@ if( fileExists(char) ) then
 		profile[k] = v
 	end
 	player:constructor()
-	updateall()
 else
 	logger:log('info',language:message('start_default_profile'), player.Name)	-- using default profile 
 end	
-
+updateall()
 attach(getWin());
 
-
-
-local version = "rev 71"
+local version = "rev 79"
 
 atError(function(script, line, message)
 	logger:log('error', "%s:%d\t%s", script, line, message);
@@ -69,7 +65,7 @@ for i,v in pairs(subdir) do
 		include("classes/states/"..v)
 	end
 end
---waypoint = WaypointState();
+
 local lastKS = keyboardState();
 function handleInput(_key)
 	local function pressed(vk)
@@ -100,7 +96,8 @@ end
 function _windowname()
 	hpupdate()
 	coordsupdate()
-	setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: %0.2f, Dir2: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle))
+	setWindowName(getHwnd(),sprintf("Name: %s HP: %d MaxHP: %d", player.Name, player.HP, player.MaxHP))
+	--setWindowName(getHwnd(),sprintf("X: %d Z: %d Y: %d Dir1: %0.2f, Dir2: %0.2f, A: %0.2f", player.X, player.Z, player.Y, player.Dir1, player.Dir2, player.Angle))
 end
 registerTimer("setwindow", secondsToTimer(1), _windowname);
 
@@ -116,7 +113,6 @@ function main()
 			local var = string.sub(args[i], 1, foundpos-1);
 			local val = string.sub(args[i], foundpos+1);
 			if( var == "path" ) then
-				--waypoint.waypointname = val
 				wpName = val;
 			end
 			if( var == "state" ) then
@@ -143,11 +139,10 @@ function main()
 		elseif( args[i] == "coords" ) then
 			unregisterTimer("setwindow");
 			while(true) do
-				updateall()
+				hpupdate()
 				if player.Heal > player.HP/player.MaxHP*100 then
 					keyboardPress(key.VK_6)
 				end	
-				hpupdate()
 				coordsupdate()
 				local angle = math.atan2(-4294 - player.Z, -16379 - player.X) + math.pi;
 				local anglediff = math.abs(player.Angle - angle);
@@ -198,14 +193,19 @@ function main()
 	print("Current state: ", stateman:getState().name);
 
 	while(stateman.running) do
-		updates()
-		handleInput();			-- reactive it?
+		updates() 		-- has hpupdate and coordsupdate
+		handleInput();
 		stateman:handleEvents();
 		stateman:run();
 		yrest(1);
-	 	if( os.difftime(os.time(),logger.lastMsgTime) > logger.repeatTimer+1 )	then
-	 		logger:log('debug',"we are still alive here in main.lua at %s", os.date("%H:%M:%S") );
-	 	end
+		if player.HP ~= 0 then
+			if( os.difftime(os.time(),logger.lastMsgTime) >= logger.repeatTimer )	then
+				logger:log('debug',"we are still alive here in main.lua at %s", os.date("%H:%M:%S") );
+			end
+		else
+			logger:log('debug',"we are dead in main.lua at %s", os.date("%H:%M:%S") );
+			yrest(10000)
+		end
 	end
 end
 startMacro(main, true);

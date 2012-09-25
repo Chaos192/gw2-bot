@@ -163,7 +163,20 @@ local updatePatterns =
 		offset = 16,
 		startloc = 0xBC5000,
 		adjustment = -20
-	},]]	
+	},]]
+	skillCDaddress = {
+		pattern = string.char(
+		0x5F, 0x5E, 0x5D,
+		0xC2, 0x04, 0x00,
+		0xCC,
+		0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xC3, 
+		0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
+		mask = "xxxxxxxx????xxxxxx",
+		offset = 8,
+		startloc = 0xC06000,
+		adjustment = 0x10
+	},	
 }
 addresses = {}
 -- This function will attempt to automatically find the true addresses

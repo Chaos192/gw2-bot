@@ -128,7 +128,6 @@ function saveWaypoints(list)
 
 end
 
---updateall()
 coordsupdate()
 function main()
 

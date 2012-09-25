@@ -10,18 +10,12 @@ function BridgeState:constructor()
 	self.name = "Bridge";
 	self.destX = -26943;
 	self.destZ = 10246;
---	profile['skill2use'] = true
---	profile['skill5use'] = true
 	self.tabtime = 0
 	self.karma = player.Karma
 end
 
 function BridgeState:update()
-	--[[if player.Karma > self.karma or handleInput(VK_F7) == true then -- event over
-		waypoint.closest = false
-		waypoint.waypointname = "bridgewalk"
-		stateman:pushState(WaypointState())
-	end]]
+	targetupdate()
 	if SETTINGS['combatstate'] == true then SETTINGS['combatstate'] = false end -- stops combat being pushed
 	if player.HP > 10 then
 		if player:moveTo_step(self.destX, self.destZ, 400, true) then
@@ -31,11 +25,15 @@ function BridgeState:update()
 					keyboardPress(keySettings['nexttarget'])
 					self.tabtime = os.time()
 				end
-			elseif profile['fightdistance'] > distance(player.X, player.Z, target.TargetX, target.TargetZ)  then
-				player:useSkills()
-				if player.Interaction then
-					keyboardPress(keySettings['interact'])
-					print("using F key")
+			else
+				local tdist = distance(player.X, player.Z, target.TargetX, target.TargetZ)
+				if profile['fightdistance'] > tdist  then
+				printf("attacking mob with Address: %x, in Distance: %d.\n",player.TargetMob,tdist)
+					player:useSkills()
+					--[[if player.Interaction then
+						keyboardPress(keySettings['interact'])
+						print("using F key")
+					end]]
 				end
 			end
 		end

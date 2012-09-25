@@ -33,7 +33,7 @@ function UmlautsState:update()
 		return _str;
 	end
 
-	updateall();
+	statusupdate();
 	
 -- print player Ftext
 	if player.Interaction == true then 
