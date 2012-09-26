@@ -42,20 +42,23 @@ function WaypointState:update()
 		return
 	end
 
+	statusupdate()		-- update Interaction
+	targetupdate()		-- to get target cleared
+
 	local wp = self.waypoints[self.index];
 	if not wp then logger:log('error',"Error in waypoints or waypoint file. Please check the waypoints or the waypoint file"); end
 	
 	if player:moveTo_step(wp.X, wp.Z, 100) then
 		if( wp.type == "HARVEST" and player.Interaction ) then
-			print("Harvesting");
-			keyboardPress(key.VK_F);
+			logger:log('info',"Harvesting at (%d, %d)\n", player.X, player.Z);
+			keyboardPress(keySettings['interact']);
+			yrest(4000)
 		end
 		self:advance()
 	end
 -- TODO: unstick here or at player:moveTo_step() if WP never reached
 	
-	statusupdate()	-- update Interaction
-	
+
 -- loot/interact during whole walking
 -- usable at the end of events
 	if self.lootwalk == true and	

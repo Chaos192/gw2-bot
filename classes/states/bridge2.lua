@@ -20,15 +20,22 @@ function Bridge2State:constructor()
 -- Parameters
 	self.OutOfCombatTimer = 30;	-- after x sec of of combat we don't move around anymore
 	self.CombatWait = 10;			-- wait x seconds before entering event
-	self.moveafter = 20;			-- time after that we change place
-	self.moveafter_rnd = 20;		-- random add to the time after that we change place
+	self.moveafter = 10;			-- time after that we change place
+	self.moveafter_rnd = 10;		-- random add to the time after that we change place
 	self.FaceWait = 10;				-- wait until next face (so one has time to do something by hand)
 	self.UseLootrun = true;			-- should we do a loot run at the end of the event (looks more like a bot)
 	self.LootrunWPname = {};		-- WP file(s) for the lootrun at end of event
 	  self.LootrunWPname[1]="kessex-bridge-lootrun1"	-- randomly choose a filename
---	  self.LootrunWPname[2]="kessex-bridge-lootrun2"
---	  self.LootrunWPname[3]="kessex-bridge-lootrun3"
---	  self.LootrunWPname[4]="kessex-bridge-lootrun4"
+	  self.LootrunWPname[2]="kessex-bridge-lootrun2"
+	  self.LootrunWPname[3]="kessex-bridge-lootrun3"
+	  self.LootrunWPname[4]="kessex-bridge-lootrun4"
+	self.UseWaitrun = true;			-- should we do harvesting runs between waiting for the next event
+	self.WaitrunTimer = 30;		-- after beeing X sec out of combat we move await
+	self.WaitrunTimer_rnd = 30;	-- random add
+	self.WaitrunWPname = {};		-- WP file(s) for the waitrun
+	  self.WaitrunWPname[1]="kessex-bridge-waitrun-NW"	-- randomly choose a filename
+	  self.WaitrunWPname[2]="kessex-bridge-waitrun-NW2"
+	  self.WaitrunWPname[3]="kessex-bridge-waitrun-S"
 	self.destX = -27103;		-- middle of fight area
 	self.destZ = 10181;
 	self.nextX = -27236;		-- first place of circle around middle point to run
@@ -86,6 +93,7 @@ function Bridge2State:constructor()
 	self.moving = false;			-- mark if we are moving to avoid facing during move
 	self.facing = false;			-- mark if we are during facing
 	self.needlootrun = false;		-- mark if we need to trigger a lootrun / cleared after triggering
+	self.waitrunActive = false;		-- remember if waitrun is active
 	self.LastKarma = 0				-- Karma before end of event
 end
 
@@ -132,6 +140,18 @@ function Bridge2State:update()
 		stateman:pushEvent("Lootrun", "Bridge2");
 	end
 
+-- start wait run between events
+	if ( self.waitrunActive == true ) then	-- reset combat timer after coming back from waitrun
+		self.waitrunActive = false
+		self.LastCombatTime = os.time();
+	end
+
+	if ( self.UseWaitrun == true ) and
+	   ( self.EventRunning == false ) and
+	   os.difftime(os.time(),self.LastCombatTime) > self.WaitrunTimer+math.random(self.WaitrunTimer_rnd) then
+		stateman:pushEvent("Waitrun", "Bridge2");
+	end
+
 -- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
 	if player.Interaction == true and 
 	   player.Ftext ~= language:message('InteractGreeting') and
@@ -148,7 +168,8 @@ function Bridge2State:update()
 		if( self.interactionCount < 3 ) then		-- only 2 times at the same place
 			self.interactionX = player.X;
 			self.interactionZ = player.Z;
-			keyboardPress(keySettings['interact']);		-- loot
+--			keyboardPress(keySettings['interact']);		-- loot
+			stateman:pushState(LootState(), "Walked over lootable.");		-- loot
 			logger:log('info',"Interaction at (%d, %d)\n", player.X, player.Z);
 			self.InteractTime = getTime();
 		elseif( self.interactionCount == 3 ) then	-- only one message
@@ -267,6 +288,20 @@ function Bridge2State:handleEvent(event)
 		lootrunWP.waypointname = self.LootrunWPname[math.random(#self.LootrunWPname)]
 		logger:log('info',"Change to loot run using waypointfile '%s'\n", lootrunWP.waypointname);		
 		stateman:pushState(lootrunWP)
+		return true;
+	end
+
+	if event == "Waitrun"  then			
+
+		local waitrunWP = WaypointState(self.WaitrunWPname[math.random(#self.WaitrunWPname)])
+		waitrunWP.lootwalk = true	-- loot while running
+		waitrunWP.stopAtEnd = true	-- run path only until end
+		waitrunWP.getTarget = true	-- look for targets during lootrun
+--		waitrunWP.index = 1			-- start with WP #1
+		logger:log('info',"Go to wait run between event using path '%s'\n", waitrunWP.waypointname);
+		self.waitrunActive = true
+		stateman:pushState(waitrunWP)
+		self.LastCombatTime = os.time()
 		return true;
 	end
 

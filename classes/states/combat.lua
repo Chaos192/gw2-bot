@@ -17,8 +17,12 @@ end
 
 function CombatState:update()
 	logger:log('debug-states',"Coming to CombatState:update()");
+	
+	targetupdate();
+	statusupdate();
+	
 	if not player.InCombat	then
-		statusupdate();
+--		statusupdate();
 		if profile['loot'] == true and deltaTime(getTime(), self.startfighttime) > 1000 then
 			stateman:pushEvent("Loot", "finished combat"); 
 		end
