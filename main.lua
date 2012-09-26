@@ -29,14 +29,14 @@ playerinfoupdate()
 local char = BASE_PATH .. "/profiles/" .. string.gsub(player.Name,"%s","_") .. ".lua";
 if( fileExists(char) ) then	
 	charprofile = include(BASE_PATH .. "/profiles/" .. string.gsub(player.Name,"%s","_") .. ".lua", true);
-	logger:log('info',language:message('start_profile_name'), player.Name)	-- loading player profile 
+	logger:log('info',language:message('start_profile_name'), string.gsub(player.Name,"%s","_"))	-- loading player profile 
 
 	for k,v in pairs(charprofile) do
 		profile[k] = v
 	end
 	player:constructor()
 else
-	logger:log('info',language:message('start_default_profile'), player.Name)	-- using default profile 
+	logger:log('info',language:message('start_default_profile'), string.gsub(player.Name,"%s","_") )	-- using default profile 
 end	
 updateall()
 attach(getWin());
@@ -89,6 +89,7 @@ local function updates()
 	hpupdate()
 	if player.Heal > player.HP/player.MaxHP*100 then
 		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
+		player:stopTurning()	-- avoid overturn during healing
 		player:useSkills(true)
 	end
 end

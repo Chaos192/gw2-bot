@@ -100,6 +100,7 @@ function Player:move(direction, dist)
 			if 20 > distance(self.LastX,self.LastZ,self.X,self.Z) then
 				print("not moving")
 				-- deal with not moving here.
+				keyboardPress(key.VK_SPACE)
 			end
 			self.LastX = self.X
 			self.LastZ = self.Z
@@ -128,11 +129,11 @@ function Player:facedirection(x, z, _angle, dist)
 		-- Attempt to face it
 		if angleDif > angleDifference(angle, self.Angle+ 0.01) then
 			-- Rotate left
-			logger:log('debug-moving','at Player:facedirection: move left %.2f > angleDifference: %.2f', angleDif, angleDifference(angle, self.Angle+ 0.01));
+			logger:log('debug-moving','at Player:facedirection: move left angleDif: %.2f > _angle: %.2f', angleDif, _angle);
 			self:move("left", dist)
 		else
 			-- Rotate right
-			logger:log('debug-moving','at Player:facedirection: move right %.2f <= angleDifference: %.2f', angleDif, angleDifference(angle, self.Angle+ 0.01));
+			logger:log('debug-moving','at Player:facedirection: move right angleDif %.2f > _angle: %.2f', angleDif, _angle);
 			self:move("right",dist)
 		end
 	else
@@ -156,6 +157,7 @@ function Player:moveTo_step(x, z, _dist)
 		if dist > _dist then
 			self:move("forward")
 		else
+			logger:log('debug-moving',"at Player:moveTo_step: stopMoving() we are close enough %d < %d", dist, _dist);
 			self:stopMoving()		-- no moving after being there 
 			return true
 		end

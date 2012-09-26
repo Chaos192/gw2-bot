@@ -56,6 +56,20 @@ function Bridge2State:constructor()
 	{ X=-27075, Z=9740, Y=-1482},
 	{ X=-26956, Z=10275, Y=-1608},
 	{ X=-26623, Z=10054, Y=-1587},
+	{ X=-26599, Z=10512, Y=-1675, type="", comment="#1"},
+	{ X=-26725, Z=10634, Y=-1687, type="", comment="#2"},
+	{ X=-26676, Z=10480, Y=-1660, type="", comment="#3"},
+	{ X=-26511, Z=10412, Y=-1654, type="", comment="#4"},
+	{ X=-26895, Z=10457, Y=-1651, type="", comment="#1"},
+	{ X=-26820, Z=10191, Y=-1594, type="", comment="#2"},
+	{ X=-26597, Z=10260, Y=-1618, type="", comment="#3"},
+	{ X=-26729, Z=10392, Y=-1633, type="", comment="#4"},
+	{ X=-27083, Z=10480, Y=-1673, type="", comment="#5"},
+	{ X=-26973, Z=10593, Y=-1711, type="", comment="#6"},
+	{ X=-26864, Z=10229, Y=-1600, type="", comment="#7"},
+	{ X=-26725, Z=10039, Y=-1579, type="", comment="#8"},
+	{ X=-26688, Z=10295, Y=-1614, type="", comment="#9"},
+	{ X=-26835, Z=10492, Y=-1658, type="", comment="#10"},
 	};	
 -- Working fields
 	self.index = 1;
@@ -78,6 +92,10 @@ end
 
 function Bridge2State:update()
 	logger:log('debug-states',"Coming to Bridge2State:update()");
+
+	statusupdate()		-- to get info about interaction
+	targetupdate()		-- to get target cleared
+	playerinfoupdate()	-- to get the karma update information
 
 	if SETTINGS['combatstate'] == true then SETTINGS['combatstate'] = false end -- stops combat being pushed
 
@@ -116,8 +134,9 @@ function Bridge2State:update()
 
 -- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
 	if player.Interaction == true and 
-	   ( player.Ftext ~= language:message('InteractGreeting') or
-	     player.Ftext ~= language:message('InteractTalk') ) and		-- not if only greeting
+	   player.Ftext ~= language:message('InteractGreeting') and
+	   player.Ftext ~= language:message('InteractTalk')  and		-- not if only greeting
+--		player.InteractionId == 0x1403F and -- Make sure it is actually loot  / NOT WORKING ATM
 	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
 		if( self.interactionX == player.X) and	-- count interactions at the same spot
 		  ( self.interactionZ == player.Z) then
@@ -148,12 +167,12 @@ function Bridge2State:update()
 
 -- move around at the fight place
 	if self.moving == true then
-		logger:log('debug-moving',"try to move to #%d (%d, %d) Lastmovetime %d \n", self.index, self.nextX, self.nextZ, self.LastMoveTime);
+		logger:log('debug-moving',"try to move to #%d (%d, %d) Lastmovetime %s \n", self.index, self.nextX, self.nextZ, os.date("%H:%M:%S", self.LastMoveTime));
 		if not player:moveTo_step(self.nextX, self.nextZ ) then
 			self.moving = true;
-			logger:log('debug-moving',"move to not finished: we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
+			logger:log('debug-moving',"at bridge2.lua:move to not finished, we are (%d,%d) distance %d", player.X, player.Z, distance(player.X, player.Z, self.nextX, self.nextZ));
 		else
-			logger:log('debug-moving',"move finished");
+			logger:log('debug-moving',"at bridge2.lua:move finished");
 			self.moving = false;
 			self.LastMoveTime = os.time();
 			self:advance()		
@@ -198,6 +217,18 @@ function Bridge2State:update()
 		end
 	end
 
+-- unstick from gorge
+-- TODO: only check if in a unstick situation / what's best place to detect an unstick situation?
+	if not unstickPathWP then
+		unstickPathWP = WaypointState("kessex-bridge-escape-gorge")
+	end
+
+	local nearest
+	nearest, unstickPathWP.index = unstickPathWP:distanceToPath()
+	if nearest < 250 then	-- seems to be down in the gorge
+		stateman:pushEvent("GorgeEscape", "Bridge2");
+	end
+
 end
 
 -- Advance the waypoint index randomly to the next point.
@@ -214,6 +245,17 @@ end
 
 -- Handle events
 function Bridge2State:handleEvent(event)
+
+	if event == "GorgeEscape"  then			
+
+--		unstickPathWP.laps = 1					-- only one round
+		unstickPathWP.stopAtEnd = true			-- run path only until end
+		unstickPathWP.getTarget = false			-- don't look for targets during runing back
+		logger:log('info',"Try to escape from gorge. We use waypointfile '%s'\n", unstickPathWP.waypointname);		
+		stateman:pushState(unstickPathWP)
+		return true;
+
+	end
 
 	if event == "Lootrun"  then			
 
