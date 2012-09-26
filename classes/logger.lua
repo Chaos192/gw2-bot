@@ -121,7 +121,7 @@ function Logger:log(level, msg, _val1, _val2, _val3, _val4, _val5, _val6 )
 	self.lastMsg = hf_msg;				-- remember last send message
 
    if( self.file ) then
-      self.file:write("\t" .. '[' .. string.upper(level) .. '] ' .. os.date(self.dateformat) .. "\t" .. hf_msg);
+      self.file:write("\t" .. '[' .. string.format("%-12s", string.upper(level)) .. '] ' .. os.date(self.dateformat) .. "\t" .. hf_msg);
       self.file:flush();
    end
    
