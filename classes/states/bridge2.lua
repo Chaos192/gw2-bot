@@ -18,7 +18,7 @@ Bridge2State = class(State);
 function Bridge2State:constructor()
 	self.name = "Bridge2";
 -- Parameters
-	self.OutOfCombatTimer = 30;	-- after x sec of of combat we don't move around anymore
+	self.OutOfCombatTimer = 40;	-- after x sec of of combat we don't move around anymore
 	self.CombatWait = 10;			-- wait x seconds before entering event
 	self.moveafter = 10;			-- time after that we change place
 	self.moveafter_rnd = 10;		-- random add to the time after that we change place
@@ -30,12 +30,16 @@ function Bridge2State:constructor()
 	  self.LootrunWPname[3]="kessex-bridge-lootrun3"
 	  self.LootrunWPname[4]="kessex-bridge-lootrun4"
 	self.UseWaitrun = true;			-- should we do harvesting runs between waiting for the next event
-	self.WaitrunTimer = 30;		-- after beeing X sec out of combat we move await
+	self.WaitrunTimer = 60;		-- after beeing X sec out of combat we move await
 	self.WaitrunTimer_rnd = 30;	-- random add
 	self.WaitrunWPname = {};		-- WP file(s) for the waitrun
 	  self.WaitrunWPname[1]="kessex-bridge-waitrun-NW"	-- randomly choose a filename
 	  self.WaitrunWPname[2]="kessex-bridge-waitrun-NW2"
-	  self.WaitrunWPname[3]="kessex-bridge-waitrun-S"
+	  self.WaitrunWPname[3]="kessex-bridge-waitrun-NW3"	  
+	  self.WaitrunWPname[4]="kessex-bridge-waitrun-S"
+	  self.WaitrunWPname[5]="kessex-bridge-waitrun-S2"	  
+	  self.WaitrunWPname[6]="kessex-bridge-waitrun-W"	  
+	  self.WaitrunWPname[7]="kessex-bridge-waitrun-W2"	  	  
 	self.destX = -27103;		-- middle of fight area
 	self.destZ = 10181;
 	self.nextX = -27236;		-- first place of circle around middle point to run
@@ -94,6 +98,7 @@ function Bridge2State:constructor()
 	self.facing = false;			-- mark if we are during facing
 	self.needlootrun = false;		-- mark if we need to trigger a lootrun / cleared after triggering
 	self.waitrunActive = false;		-- remember if waitrun is active
+	self.escaperunActive = false	-- remember if escaperun from gorge is active
 	self.LastKarma = 0				-- Karma before end of event
 end
 
@@ -104,6 +109,9 @@ function Bridge2State:update()
 	statusupdate()		-- to get info about interaction
 	targetupdate()		-- to get target cleared
 	playerinfoupdate()	-- to get the karma update information
+
+	-- set mouse pointer to middle of screen
+	setMousepointerToMiddle(60)	-- only every 60 seconds
 
 	if SETTINGS['combatstate'] == true then SETTINGS['combatstate'] = false end -- stops combat being pushed
 
@@ -138,6 +146,12 @@ function Bridge2State:update()
 	   ( self.needlootrun == true ) then
 		self.needlootrun = false;	-- clear need lootrun flag
 		stateman:pushEvent("Lootrun", "Bridge2");
+	end
+
+-- after end of escape run from gorge
+	if ( self.escaperunActive == true ) then	-- reset combat timer after coming back from waitrun
+		self.escaperunActive = false
+		player:moveTo_step(self.destX, self.destZ )		-- move to middle of fightarea to get away from escape path
 	end
 
 -- start wait run between events
@@ -272,7 +286,8 @@ function Bridge2State:handleEvent(event)
 --		unstickPathWP.laps = 1					-- only one round
 		unstickPathWP.stopAtEnd = true			-- run path only until end
 		unstickPathWP.getTarget = false			-- don't look for targets during runing back
-		logger:log('info',"Try to escape from gorge. We use waypointfile '%s'\n", unstickPathWP.waypointname);		
+		logger:log('info',"Try to escape from gorge. We use waypointfile '%s'\n", unstickPathWP.waypointname);
+		self.escaperunActive = true
 		stateman:pushState(unstickPathWP)
 		return true;
 
@@ -301,7 +316,6 @@ function Bridge2State:handleEvent(event)
 		logger:log('info',"Go to wait run between event using path '%s'\n", waitrunWP.waypointname);
 		self.waitrunActive = true
 		stateman:pushState(waitrunWP)
-		self.LastCombatTime = os.time()
 		return true;
 	end
 
