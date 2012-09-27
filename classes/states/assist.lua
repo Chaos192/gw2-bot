@@ -49,8 +49,8 @@ function AssistState:update()
 --debug_value(language:message('InteractTalk'), "language:message('InteractTalk')")
 -- if F-Interaction loot every x milliseconds / TODO: use Interaction tye to avoid greeting
 	if player.Interaction == true and 
-	   ( player.Ftext ~= language:message('InteractGreeting') or
-	     player.Ftext ~= language:message('InteractTalk') ) and		-- not if only greeting
+	   player.Ftext ~= language:message('InteractGreeting') and
+	   player.Ftext ~= language:message('InteractTalk')  and		-- not if only greeting
 	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
 		if( self.interactionX == player.X) and	-- count interactions at the same spot
 		  ( self.interactionZ == player.Z) then
