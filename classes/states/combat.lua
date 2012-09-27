@@ -13,7 +13,7 @@ function CombatState:constructor()
 	--self.startfight = os.time() -- DEPRECATED
 	self.startfighttime = getTime();
 	self.lastTargetTime = getTime();
-	self.needLoot = false;
+	self.wasFighting = false;	-- remember if we have used skill
 end
 
 function CombatState:update()
@@ -24,27 +24,27 @@ function CombatState:update()
 -- bot select a new target. So we get aggro from two mob
 -- Solution: firstattack state with special wait time?
 
--- FIX: wait for aggro
-if not player.InCombat then
-	yrest(1000)	-- wait for aggro after firstattack
-end
+	-- FIX: wait for aggro
+	if not player.InCombat and 
+	   self.wasFighting == true  then
+		yrest(1000)	-- wait for aggro after firstattack
+	end
 
 	targetupdate();
 	statusupdate();
 
-	if not player.InCombat	then
---		statusupdate();
-		if profile['loot'] == true and deltaTime(getTime(), self.startfighttime) > 1000 and
-		   self.needLoot == true  then	-- only push loot event after using skills
+	if not player.InCombat  and
+	   self.wasFighting == true  then
+		if profile['loot'] == true and deltaTime(getTime(), self.startfighttime) > 1000 then
 			stateman:pushEvent("Loot", "finished combat"); 
-			self.needLoot = false
 		end
+		self.wasFighting = false
 		stateman:popState("combat ended");	
 	end
 
 	if player.TargetMob ~= 0 then
 		player:useSkills()
-		self.needLoot = true
+		self.wasFighting = true
 	else
 		-- So we don't target TOO fast.
 		if( deltaTime(getTime(), self.lastTargetTime) > 500 ) then

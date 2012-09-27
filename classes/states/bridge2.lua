@@ -133,6 +133,17 @@ function Bridge2State:update()
 		self.LastKarma = player.Karma
 	end
 
+-- after end of escape run from gorge
+	if ( self.escaperunActive == true ) then	-- reset combat timer after coming back from waitrun
+		if not player:moveTo_step(self.destX, self.destZ ) then	-- move back to middle
+			self.moving = true;
+			return
+		else
+			self.escaperunActive = false
+		end
+	end
+
+
 -- check if event is running depending from last combat time / TODO: real event flag for start of Event?
 	if os.difftime(os.time(),self.LastCombatTime) > self.OutOfCombatTimer then
 		logger:log('info',"Last combat at %s more then %d sec ago. No moving anymore", os.date("%H:%M:%S", self.LastCombatTime) , self.OutOfCombatTimer );
@@ -312,7 +323,7 @@ function Bridge2State:handleEvent(event)
 		waitrunWP.lootwalk = true	-- loot while running
 		waitrunWP.stopAtEnd = true	-- run path only until end
 		waitrunWP.getTarget = true	-- look for targets during lootrun
---		waitrunWP.index = 1			-- start with WP #1
+		waitrunWP.index = 1			-- start with WP #1, not with the nearest one
 		logger:log('info',"Go to wait run between event using path '%s'\n", waitrunWP.waypointname);
 		self.waitrunActive = true
 		stateman:pushState(waitrunWP)
