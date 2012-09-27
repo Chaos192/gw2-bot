@@ -52,7 +52,8 @@ function WaypointState:update()
 		if( wp.type == "HARVEST" and player.Interaction ) then
 			logger:log('info',"Harvesting at (%d, %d)\n", player.X, player.Z);
 			keyboardPress(keySettings['interact']);
-			yrest(4000)
+			yrest(5000)
+			statusupdate()		-- update Interaction
 		end
 		self:advance()
 	end

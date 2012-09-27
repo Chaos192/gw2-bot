@@ -19,11 +19,23 @@ LOG_MESSAGE_COLOR['debug'] = cli.lightblue;		-- Color of debug messages
 LOG_MESSAGE_COLOR['info'] = cli.yellow;			-- Color of info messages
 
 keySettings = {}
-keySettings['turnleft'] = key.VK_A
-keySettings['turnright'] = key.VK_D
-keySettings['forward'] = key.VK_W
-keySettings['backward'] = key.VK_S
+keySettings['turnleft']   = key.VK_A
+keySettings['turnright']  = key.VK_D
+keySettings['forward']    = key.VK_W
+keySettings['backward']   = key.VK_S
 keySettings['nexttarget'] = key.VK_TAB
-keySettings['interact'] = key.VK_F
-
-
+keySettings['interact']   = key.VK_F
+keySettings['skillweapon1'] = key.VK_1
+keySettings['skillweapon2'] = key.VK_2
+keySettings['skillweapon3'] = key.VK_3
+keySettings['skillweapon4'] = key.VK_4
+keySettings['skillweapon5'] = key.VK_5
+keySettings['skillheal']    = key.VK_6
+keySettings['skillhelp1']   = key.VK_7
+keySettings['skillhelp2']   = key.VK_8
+keySettings['skillhelp3']   = key.VK_9
+keySettings['skillelite']   = key.VK_0
+keySettings['skillclass1']  = key.VK_F1
+keySettings['skillclass2']  = key.VK_F2
+keySettings['skillclass3']  = key.VK_F3
+keySettings['skillclass4']  = key.VK_F4

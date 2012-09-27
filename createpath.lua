@@ -93,7 +93,7 @@ function saveWaypoints(list)
 			tag_open = true;
 		elseif( v.wp_type == "HARVEST" ) then
 			if( tag_open ) then hf_line = hf_line .. "" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat,  v.X, v.Z, v.Y, p_wp_type, v.nr);
+			hf_line = hf_line .. sprintf(openformat,  v.X, v.Z, v.Y, p_hp_type, v.nr);
 			tag_open = true;
 		elseif( v.wp_type == "MC" ) then -- Mouse click (left)
 			if( tag_open ) then
