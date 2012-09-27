@@ -21,6 +21,9 @@ end
 
 function AssistState:update()
 
+	statusupdate()		-- update Interaction
+	targetupdate()		-- to get target cleared
+
 -- attack or face middle/get target
 	if  player.TargetMob ~= 0	and
 		distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['fightdistance'] then	
