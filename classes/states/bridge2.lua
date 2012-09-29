@@ -24,7 +24,7 @@ function Bridge2State:constructor()
 	self.moveafter_rnd = 10;		-- random add to the time after that we change place
 	self.FaceWait = 10;				-- wait until next face (so one has time to do something by hand)
 	self.UseLootrun = true;			-- should we do a loot run at the end of the event (looks more like a bot)
-	self.LootrunWPname = {		-- WP file(s) for the lootrun at end of event
+	self.lootrunPathName = {		-- WP file(s) for the lootrun at end of event
 	  "kessex-bridge-lootrun1",	-- randomly choose a filename
 	  "kessex-bridge-lootrun2",
 	  "kessex-bridge-lootrun3",
@@ -33,7 +33,7 @@ function Bridge2State:constructor()
 	self.UseWaitrun = true;			-- should we do harvesting runs between waiting for the next event
 	self.WaitrunTimer = 60;		-- after beeing X sec out of combat we move await
 	self.WaitrunTimer_rnd = 30;	-- random add
-	self.WaitrunWPname = {		-- WP file(s) for the waitrun
+	self.waitrunPathName= {		-- WP file(s) for the waitrun
 	  "kessex-bridge-waitrun-NW",	-- randomly choose a filename
 	  "kessex-bridge-waitrun-NW2",
 	  "kessex-bridge-waitrun-NW3",	  
@@ -45,16 +45,19 @@ function Bridge2State:constructor()
 	  "kessex-bridge-waitrun-W3",
 	  "kessex-bridge-waitrun-W4",
 	  };
-	self.destX = -27103;		-- middle of fight area
-	self.destZ = 10181;
+	self.fightareaX = -27103;		-- middle of fight area
+	self.fightareaZ = 10181;
 	self.nextX = -27236;		-- first place of circle around middle point to run
 	self.nextZ = 10121;
 	self.WPadd_rnd = 40;		-- random add to the waypoint to be not to exact
-	self.fightareaPathWPname = {			-- path for fightarea WPs (could be a selection of different files, we use only one of them)
+	self.fightareaPathName = {			-- path for fightarea WPs (could be a selection of different files, we use only one of them)
 	  "kessex-bridge-fightarea",
 	  };	
-	self.unstickPathWPname = {			-- path to escape from gorge (could be a selection of different files, we use only one of them)
+	self.unstickPathName = {			-- path to escape from gorge (could be a selection of different files, we use only one of them)
 	  "kessex-bridge-escape-gorge",
+	  };	
+	self.repairPathName = {			-- path to repair point (could be a selection of different files)
+	  "kessex-bridge-repair-back-1",
 	  };	
 
 -- Working fields
@@ -72,9 +75,10 @@ function Bridge2State:constructor()
 	self.moving = false;			-- mark if we are moving to avoid facing during move
 	self.facing = false;			-- mark if we are during facing
 	self.needlootrun = false;		-- mark if we need to trigger a lootrun / cleared after triggering
-	self.waitrunActive = false;		-- remember if waitrun is active
+	self.pathActive = false;		-- need to move to fightarea after end of path
 	self.escaperunActive = false	-- remember if escaperun from gorge is active
 	self.LastKarma = 0				-- Karma before end of event
+	self.needInitialisation = true	-- run once functions at start of bot/state
 
 end
 
@@ -84,8 +88,13 @@ function Bridge2State:update()
 
 	-- Initialization Work
 	-- choose the set of fightarea WPs
-	if not fightareaPathWP then
-		fightareaPathWP = WaypointState(self.fightareaPathWPname[math.random(#self.fightareaPathWPname)])
+	if self.needInitialisation then
+		fightareaPathWP = WaypointState(self.fightareaPathName[math.random(#self.fightareaPathName)])
+		SETTINGS['combatstate'] = false
+		self.LastKarma = player.Karma
+		self.needInitialisation = false
+
+		self:chooseStartpath()	-- select path to begin if of from the brigde
 	end
 
 	statusupdate()		-- to get info about interaction
@@ -94,18 +103,6 @@ function Bridge2State:update()
 
 	-- set mouse pointer to middle of screen
 	setMousepointerToMiddle(60)	-- only every 60 seconds
-
-	if SETTINGS['combatstate'] == true then SETTINGS['combatstate'] = false end -- stops combat being pushed
-
-	if( self.LastKarma == 0 ) then		-- remeber Karma at beginning
-		self.LastKarma = player.Karma
-	end
-
-	if player.HP < 10 then
-		logger:log('debug',"HP = %d < 10 wait for 10 seconds", player.HP);
-		yrest(10000)
-		return
-	end
 
 -- Check end of Event by Karma / 
 	if ( player.Karma > self.LastKarma ) then
@@ -132,7 +129,7 @@ function Bridge2State:update()
 
 -- after end of escape run from gorge
 	if ( self.escaperunActive == true ) then	-- reset combat timer after coming back from waitrun
-		if not player:moveTo_step(self.destX, self.destZ ) then		-- move to middle of fight area
+		if not player:moveTo_step(self.fightareaX, self.fightareaZ ) then
 			self.moving = true;
 			return
 		else
@@ -141,8 +138,8 @@ function Bridge2State:update()
 	end
 
 -- start wait run between events
-	if ( self.waitrunActive == true ) then	-- reset combat timer after coming back from waitrun
-		self.waitrunActive = false
+	if ( self.pathActive == true ) then	-- reset combat timer after coming back from waitrun
+		self.pathActive = false
 		self.LastCombatTime = os.time();
 	end
 
@@ -204,10 +201,10 @@ function Bridge2State:update()
 	if player.TargetMob == 0 and	-- only face if no target / TODO how to avoid not visible targets
 	   ( os.difftime(os.time(),self.LastFaceTime ) > self.FaceWait ) and	-- only face after every x seconds
 	   self.moving == false  then 	-- no facing during moving
-		local angle = math.atan2(self.destZ - player.Z, self.destX - player.X) + math.pi;	-- *** DEBUG
+		local angle = math.atan2(self.fightareaZ - player.Z, self.fightareaX - player.X) + math.pi;	-- *** DEBUG
 		local anglediff = player.Angle - angle;												-- *** DEBUG
 --		logger:log('debug2',"Bridge2.lua: face middle player.Angle %.2f (anglediff %.2f) max 0.5", player.Angle, anglediff );
-		if not player:facedirection(self.destX, self.destZ, 0.5) then		-- turn if angel more then x  of from waypoint
+		if not player:facedirection(self.fightareaX, self.fightareaZ, 0.5) then		-- turn if angel more then x  of from waypoint
 			self.facing = true;
 		else
 			self.facing = false;
@@ -242,7 +239,7 @@ function Bridge2State:update()
 -- TODO: only check if in a unstick situation / what's best place to detect an unstick situation?
 	-- chose the unstick gorge path
 	if not unstickPathWP then
-		unstickPathWP = WaypointState(self.unstickPathWPname[math.random(#self.unstickPathWPname)])
+		unstickPathWP = WaypointState(self.unstickPathName[math.random(#self.unstickPathName)])
 	end
 
 	local nearest
@@ -265,8 +262,6 @@ function Bridge2State:advance()
 
 end
 
-
-
 -- Handle events
 function Bridge2State:handleEvent(event)
 
@@ -288,7 +283,7 @@ function Bridge2State:handleEvent(event)
 		lootrunWP.lootwalk = true	-- loot while running
 		lootrunWP.laps = 1			-- only one round
 		lootrunWP.getTarget = false		-- don't look for targets during lootrun
-		lootrunWP.waypointname = self.LootrunWPname[math.random(#self.LootrunWPname)]
+		lootrunWP.waypointname = self.lootrunPathName[math.random(#self.lootrunPathName)]
 		logger:log('info',"Change to loot run using waypointfile '%s'\n", lootrunWP.waypointname);		
 		stateman:pushState(lootrunWP)
 		return true;
@@ -296,16 +291,64 @@ function Bridge2State:handleEvent(event)
 
 	if event == "Waitrun"  then			
 
-		local waitrunWP = WaypointState(self.WaitrunWPname[math.random(#self.WaitrunWPname)])
+		local waitrunWP = WaypointState(self.waitrunPathName[math.random(#self.waitrunPathName)])
 		waitrunWP.lootwalk = true	-- loot while running
 		waitrunWP.stopAtEnd = true	-- run path only until end
 		waitrunWP.getTarget = true	-- look for targets during lootrun
 		waitrunWP.index = 1	-- start with WP #1, not with the nearest one
 		logger:log('info',"Go to wait run between event using path '%s'\n", waitrunWP.waypointname);
-		self.waitrunActive = true
+		self.pathActive = true
 		stateman:pushState(waitrunWP)
 		return true;
 	end
+
+
+end
+
+
+-- choose nearest path at start to bring the bot to the fight place
+function Bridge2State:chooseStartpath()
+
+	coordsupdate()
+
+	if distance(player.X, player.Z, self.nextX, self.nextZ) < 1200	then		-- already close to fight area
+		return
+	end
+
+	local hf_dist, hf_index, nearestWPIndex, nearestPathName
+	local nearestDist = 999999999 
+
+-- check repair paths
+	for i = 1,#self.repairPathName do
+		local checkPathWP = WaypointState(self.repairPathName[i])
+		hf_dist, hf_index = checkPathWP:distanceToPath()
+		if hf_dist < nearestDist then
+			nearestDist = hf_dist
+			nearestWPIndex = hf_index         
+			nearestPathName = checkPathWP.waypointname
+		end
+	end
+
+-- check waitrun paths
+	for i = 1,#self.waitrunPathName do
+		local checkPathWP = WaypointState(self.waitrunPathName[i])
+		hf_dist, hf_index = checkPathWP:distanceToPath()
+		if hf_dist < nearestDist then
+			nearestDist = hf_dist
+			nearestWPIndex = hf_index         
+			nearestPathName = checkPathWP.waypointname
+		end
+	end
+
+-- use nearest path to go back to fight are
+	local returnpathWP = WaypointState(nearestPathName)
+	returnpathWP.lootwalk = true	-- loot while running
+	returnpathWP.stopAtEnd = true	-- run path only until end
+	returnpathWP.getTarget = true	-- look for targets during lootrun
+	logger:log('info',"Go back to fight area using path '%s'\n", returnpathWP.waypointname);
+	self.pathActive = true
+	stateman:pushState(returnpathWP)
+	return true;
 
 
 end
