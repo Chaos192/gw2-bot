@@ -34,9 +34,9 @@ function Bridge2State:constructor()
 	self.WaitrunTimer = 60;		-- after beeing X sec out of combat we move await
 	self.WaitrunTimer_rnd = 30;	-- random add
 	self.waitrunPathName= {		-- WP file(s) for the waitrun
-	  "kessex-bridge-waitrun-NW",	-- randomly choose a filename
-	  "kessex-bridge-waitrun-NW2",
-	  "kessex-bridge-waitrun-NW3",	  
+--	  "kessex-bridge-waitrun-NW",	-- randomly choose a filename
+--	  "kessex-bridge-waitrun-NW2",
+--	  "kessex-bridge-waitrun-NW3",	  
 	  "kessex-bridge-waitrun-S",
 	  "kessex-bridge-waitrun-S2",	  
 	  "kessex-bridge-waitrun-S3",	  
@@ -57,7 +57,8 @@ function Bridge2State:constructor()
 	  "kessex-bridge-escape-gorge",
 	  };	
 	self.repairPathName = {			-- path to repair point (could be a selection of different files)
-	  "kessex-bridge-repair-back-1",
+--		"kessex-bridge-repair-back-1",
+		"kessex-bridge-repair-back-2",
 	  };	
 
 -- Working fields
@@ -71,7 +72,7 @@ function Bridge2State:constructor()
 	self.lastTargetTime = getTime();-- last time we use nextTarget Tab
 	self.LastFaceTime = os.time();	-- last time we try to face middle
 	self.LastMoveTime = os.time();	-- last time we moved the place
-	self.LastCombatTime = os.time()-self.OutOfCombatTimer;		-- last time we use skills in combat
+	self.LastActionTime = os.time()-self.OutOfCombatTimer;		-- last time we use skills in combat
 	self.moving = false;			-- mark if we are moving to avoid facing during move
 	self.facing = false;			-- mark if we are during facing
 	self.needlootrun = false;		-- mark if we need to trigger a lootrun / cleared after triggering
@@ -113,8 +114,8 @@ function Bridge2State:update()
 	end
 
 -- check if event is running depending from last combat time / TODO: real event flag for start of Event?
-	if os.difftime(os.time(),self.LastCombatTime) > self.OutOfCombatTimer then
-		logger:log('info',"Last combat at %s more then %d sec ago. No moving anymore", os.date("%H:%M:%S", self.LastCombatTime) , self.OutOfCombatTimer );
+	if os.difftime(os.time(),self.LastActionTime) > self.OutOfCombatTimer then
+		logger:log('info',"Last combat at %s more then %d sec ago. No moving anymore", os.date("%H:%M:%S", self.LastActionTime) , self.OutOfCombatTimer );
 		self.EventRunning = false;	
 	else
 		self.EventRunning = true;
@@ -127,25 +128,21 @@ function Bridge2State:update()
 		stateman:pushEvent("Lootrun", "Bridge2");
 	end
 
--- after end of escape run from gorge
-	if ( self.escaperunActive == true ) then	-- reset combat timer after coming back from waitrun
+-- after coming back to fight area reset moving timer
+	if ( self.pathActive == true ) then	-- reset combat timer after coming back from waitrun
 		if not player:moveTo_step(self.fightareaX, self.fightareaZ ) then
 			self.moving = true;
 			return
 		else
-			self.escaperunActive = false
+			self.pathActive = false
+			self.LastActionTime = os.time();
 		end
 	end
 
--- start wait run between events
-	if ( self.pathActive == true ) then	-- reset combat timer after coming back from waitrun
-		self.pathActive = false
-		self.LastCombatTime = os.time();
-	end
-
+-- start a waitrun
 	if ( self.UseWaitrun == true ) and
 	   ( self.EventRunning == false ) and
-	   os.difftime(os.time(),self.LastCombatTime) > self.WaitrunTimer+math.random(self.WaitrunTimer_rnd) then
+	   os.difftime(os.time(),self.LastActionTime) > self.WaitrunTimer+math.random(self.WaitrunTimer_rnd) then
 		stateman:pushEvent("Waitrun", "Bridge2");
 	end
 
@@ -228,7 +225,7 @@ function Bridge2State:update()
 		if ( target_distance < profile['fightdistance'] ) then	
 			player:useSkills()
 	--		stateman:pushEvent("Combat","Bridge2");
-			self.LastCombatTime = os.time()	-- remeber last time we get in combat
+			self.LastActionTime = os.time()	-- remeber last time we get in combat
 		else
 			logger:log('info',"Target %s is to fare. distance=%d > fightdistance=%d\n", player.TargetMob, target_distance, profile['fightdistance']);
 			keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
@@ -348,8 +345,6 @@ function Bridge2State:chooseStartpath()
 	logger:log('info',"Go back to fight area using path '%s'\n", returnpathWP.waypointname);
 	self.pathActive = true
 	stateman:pushState(returnpathWP)
-	return true;
-
 
 end
 
