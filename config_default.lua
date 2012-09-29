@@ -5,6 +5,8 @@ SETTINGS['language'] = "english" -- "russian" "german" "french"
 SETTINGS['combatstate'] = true					--  entercombat state pushed automaticly if incombat (used by working with waypoint files)
 SETTINGS['lagallowance'] = 1
 
+SETTINGS['useKeypress'] = false		-- use old keypress style for Player:useSkills()
+
 LOG_MESSAGE = {};
 LOG_MESSAGE['error'] = true;					-- Log error messages (NOTE: Cannot be disabled)
 LOG_MESSAGE['debug'] = false;					-- Log debug messages

@@ -99,12 +99,11 @@ function Player:move(direction, dist)
 		end
 		if( direction == "forward" ) then
 			if 20 > distance(self.LastX,self.LastZ,self.X,self.Z) then
-				print("not moving")
 				if not self.notMovingTime then
 					self.notMovingTime = getTime()
 				end
-				
-				if deltaTime(getTime(), self.notMovingTime ) > 500 then -- FIX: jump if not moving, but needs a little delay TODO: unstick state
+				if deltaTime(getTime(), self.notMovingTime ) > 200 then -- FIX: jump if not moving, but needs a little delay TODO: unstick state
+					print("not moving")
 					-- deal with not moving here.
 					keyboardPress(key.VK_SPACE)
 				end
@@ -210,6 +209,13 @@ function Player:getNextTarget(_dist)
 end
 
 function Player:useSkills(_heal)
+
+-- FIX until memwrite works for all classes
+	if ( SETTINGS['useKeypress'] ) then
+		self:useSkillsKeypress(_heal)
+		return
+	end
+
 	local proc = getProc()
 	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)	
 	if _heal then
@@ -346,4 +352,171 @@ function Player:useSkills(_heal)
 		self.skillF4used = os.time()
 		return		
 	end
+end
+
+-- old style keypress to use until mem write works for all classes
+function Player:useSkillsKeypress(_heal)
+	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)
+	if _heal then
+		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then
+			keyboardPress(key.VK_6)
+			if profile['skill6ground'] == true then
+				keyboardPress(key.VK_6)
+			end
+			cprintf(cli.green,"heal key 6\n")
+			yrest(profile['skill6casttime']*1000)
+			self.skill6used = os.time()
+		else		-- FIX/TODO: skill use often not fit, if the regular healuse didn't work we just press the key again without remembering the time
+			keyboardPress(key.VK_6)
+			if profile['skill6ground'] == true then
+				keyboardPress(key.VK_6)
+			end
+			cprintf(cli.green,"heal key 6 emergency fix\n")
+			yrest(profile['skill6casttime']*1000)
+		end
+		hpupdate()
+--		return		-- FIX allow use of damage skills even if in heal mode
+	end
+
+	if( dist > profile['fightdistance'] ) then
+		return; -- Too far; don't use skills
+	end
+
+	if profile['skill2use'] == true and os.difftime(os.time(),self.skill2used) > profile['skill2cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_2)
+		if profile['skill2ground'] == true then
+			keyboardPress(key.VK_2)
+		end
+		cprintf(cli.red,"attack 2\n")
+		yrest(profile['skill2casttime']*1000)
+		self.skill2used = os.time()
+		targetupdate()
+		return
+	end
+	if profile['skill3use'] == true and os.difftime(os.time(),self.skill3used) > profile['skill3cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_3)
+		if profile['skill3ground'] == true then
+			keyboardPress(key.VK_3)
+		end
+		cprintf(cli.red,"attack 3\n")
+		yrest(profile['skill3casttime']*1000)
+		self.skill3used = os.time()
+		targetupdate()
+		return
+	end
+	if profile['skill4use'] == true and os.difftime(os.time(),self.skill4used) > profile['skill4cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_4)	
+		if profile['skill4ground'] == true then
+			keyboardPress(key.VK_4)
+		end
+		cprintf(cli.red,"attack 4\n")
+		yrest(profile['skill4casttime']*1000)
+		self.skill4used = os.time()
+		targetupdate()
+		return
+	end
+	if profile['skill5use'] == true and os.difftime(os.time(),self.skill5used) > profile['skill5cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_5)
+		if profile['skill5ground'] == true then
+			keyboardPress(key.VK_5)
+		end
+		cprintf(cli.red,"attack 5\n")
+		yrest(profile['skill5casttime']*1000)
+		self.skill5used = os.time()
+		targetupdate()
+		return		
+	end
+	if profile['skill7use'] == true and os.difftime(os.time(),self.skill7used) > profile['skill7cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_7)
+		if profile['skill7ground'] == true then
+			keyboardPress(key.VK_7)
+		end
+		cprintf(cli.red,"attack 7\n")	
+		yrest(profile['skill7casttime']*1000)
+		self.skill7used = os.time()
+		targetupdate()
+		return		
+	end
+	if profile['skill8use'] == true and os.difftime(os.time(),self.skill8used) > profile['skill8cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_8)
+		if profile['skill8ground'] == true then
+			keyboardPress(key.VK_8)
+		end
+		cprintf(cli.red,"attack 8\n")
+		yrest(profile['skill8casttime']*1000)
+		self.skill8used = os.time()
+		targetupdate()
+		return
+	end
+	if profile['skill9use'] == true and os.difftime(os.time(),self.skill9used) > profile['skill9cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_9)
+		if profile['skill9ground'] == true then
+			keyboardPress(key.VK_9)
+		end
+		cprintf(cli.red,"attack 9\n")
+		yrest(profile['skill9casttime']*1000)
+		self.skill9used = os.time()
+		targetupdate()
+		return
+	end
+	if profile['skill0use'] == true and os.difftime(os.time(),self.skill0used) > profile['skill0cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_0)
+		if profile['skill0ground'] == true then
+			keyboardPress(key.VK_0)
+		end
+		cprintf(cli.red,"attack 0\n")
+		yrest(profile['skill0casttime']*1000)
+		self.skill0used = os.time()
+		targetupdate()
+		return		
+	end
+	if profile['skillF1use'] == true and os.difftime(os.time(),self.skillF1used) > profile['skillF1cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F1)
+		if profile['skillF1ground'] == true then
+			keyboardPress(key.VK_F1)
+		end
+		cprintf(cli.red,"attack F1\n")
+		yrest(profile['skillF1casttime']*1000)
+		self.skillF1used = os.time()
+		targetupdate()
+		return		
+	end
+	if profile['skillF2use'] == true and os.difftime(os.time(),self.skillF2used) > profile['skillF2cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F2)
+		if profile['skillF2ground'] == true then
+			keyboardPress(key.VK_F2)
+		end
+		cprintf(cli.red,"attack F2\n")
+		yrest(profile['skillF2casttime']*1000)
+		self.skillF2used = os.time()
+		targetupdate()
+		return		
+	end
+	if profile['skillF3use'] == true and os.difftime(os.time(),self.skillF3used) > profile['skillF3cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F3)
+		if profile['skillF3ground'] == true then
+			keyboardPress(key.VK_F3)
+		end
+		cprintf(cli.red,"attack F3\n")
+		yrest(profile['skillF3casttime']*1000)
+		self.skillF3used = os.time()
+		targetupdate()
+		return		
+	end
+	if profile['skillF4use'] == true and os.difftime(os.time(),self.skillF4used) > profile['skillF4cd'] + SETTINGS['lagallowance'] then
+		keyboardPress(key.VK_F4)
+		if profile['skillF4ground'] == true then
+			keyboardPress(key.VK_F4)
+		end
+		cprintf(cli.red,"attack F4\n")
+		yrest(profile['skillF4casttime']*1000)
+		self.skillF4used = os.time()
+		targetupdate()
+		return		
+	end
+	if os.difftime(os.time(),self.skill1used) > profile['skill1cd'] then
+		keyboardPress(key.VK_1)
+		self.skill1used = os.time()	
+		targetupdate()
+	end	
 end
