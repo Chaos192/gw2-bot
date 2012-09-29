@@ -63,3 +63,22 @@ function setMousepointerToMiddle(_interval)
 	attach(getWin()); -- Re-attach bindings
 
 end
+
+function setSpeed(_speed)
+	if not SETTINGS['speed'] then return; end
+	
+	local timer = 500
+	local proc = getProc()
+	local speed = _speed or SETTINGS['speed'] 	-- 9.1 is standard speed
+
+	if not timerLastSpeedSet then
+		timerLastSpeedSet = getTime()	-- if never done we do it now
+	end
+
+	if( deltaTime(getTime(), timerLastSpeedSet) > 500 ) and
+	   memoryReadRepeat("floatptr", proc, addresses.playerbasehp, {0x44,0x1c,0x5c,0x114}) ~= speed then
+		memoryWriteFloatPtr(proc,addresses.playerbasehp, {0x44,0x1c,0x5c,0x114},speed)
+		timerLastSpeedSet = getTime()
+	end
+	
+end

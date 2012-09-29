@@ -194,6 +194,7 @@ function main()
 	print("Current state: ", stateman:getState().name);
 
 	while(stateman.running) do
+		setSpeed()
 		updates() 		-- has hpupdate and coordsupdate
 		handleInput();
 		stateman:handleEvents();
