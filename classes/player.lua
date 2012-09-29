@@ -53,6 +53,7 @@ function Player:constructor()
 	self.curtime = 0
 	self.LastX = 0
 	self.LastZ = 0
+	self.notMovingTime = nil	-- time we last moved successfully to detect not moving situations	
 end
 
 function Player:stopMoving()
@@ -99,8 +100,16 @@ function Player:move(direction, dist)
 		if( direction == "forward" ) then
 			if 20 > distance(self.LastX,self.LastZ,self.X,self.Z) then
 				print("not moving")
-				-- deal with not moving here.
-				keyboardPress(key.VK_SPACE)
+				if not self.notMovingTime then
+					self.notMovingTime = getTime()
+				end
+				
+				if deltaTime(getTime(), self.notMovingTime ) > 500 then -- FIX: jump if not moving, but needs a little delay TODO: unstick state
+					-- deal with not moving here.
+					keyboardPress(key.VK_SPACE)
+				end
+			else
+				self.notMovingTime = nil	-- we moved successfully
 			end
 			self.LastX = self.X
 			self.LastZ = self.Z

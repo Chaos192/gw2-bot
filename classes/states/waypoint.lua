@@ -50,9 +50,9 @@ function WaypointState:update()
 	
 	if player:moveTo_step(wp.X, wp.Z, 100) then
 		if( wp.type == "HARVEST" and player.Interaction ) then
-			logger:log('info',"Harvesting at (%d, %d)\n", player.X, player.Z);
+			logger:log('info',"Harvesting at WP (%d, %d) %s\n", wp.X, wp.Z, wp.comment);
 			keyboardPress(keySettings['interact']);
-			yrest(5000)
+			yrest(5000)		-- TODO: harvesting state? or just not moving but still fight?
 			statusupdate()		-- update Interaction
 		end
 		self:advance()

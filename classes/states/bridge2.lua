@@ -24,64 +24,39 @@ function Bridge2State:constructor()
 	self.moveafter_rnd = 10;		-- random add to the time after that we change place
 	self.FaceWait = 10;				-- wait until next face (so one has time to do something by hand)
 	self.UseLootrun = true;			-- should we do a loot run at the end of the event (looks more like a bot)
-	self.LootrunWPname = {};		-- WP file(s) for the lootrun at end of event
-	  self.LootrunWPname[1]="kessex-bridge-lootrun1"	-- randomly choose a filename
-	  self.LootrunWPname[2]="kessex-bridge-lootrun2"
-	  self.LootrunWPname[3]="kessex-bridge-lootrun3"
-	  self.LootrunWPname[4]="kessex-bridge-lootrun4"
+	self.LootrunWPname = {		-- WP file(s) for the lootrun at end of event
+	  "kessex-bridge-lootrun1",	-- randomly choose a filename
+	  "kessex-bridge-lootrun2",
+	  "kessex-bridge-lootrun3",
+	  "kessex-bridge-lootrun4",
+	  };
 	self.UseWaitrun = true;			-- should we do harvesting runs between waiting for the next event
 	self.WaitrunTimer = 60;		-- after beeing X sec out of combat we move await
 	self.WaitrunTimer_rnd = 30;	-- random add
-	self.WaitrunWPname = {};		-- WP file(s) for the waitrun
-	  self.WaitrunWPname[1]="kessex-bridge-waitrun-NW"	-- randomly choose a filename
-	  self.WaitrunWPname[2]="kessex-bridge-waitrun-NW2"
-	  self.WaitrunWPname[3]="kessex-bridge-waitrun-NW3"	  
-	  self.WaitrunWPname[4]="kessex-bridge-waitrun-S"
-	  self.WaitrunWPname[5]="kessex-bridge-waitrun-S2"	  
-	  self.WaitrunWPname[6]="kessex-bridge-waitrun-W"	  
-	  self.WaitrunWPname[7]="kessex-bridge-waitrun-W2"	  	  
+	self.WaitrunWPname = {		-- WP file(s) for the waitrun
+	  "kessex-bridge-waitrun-NW",	-- randomly choose a filename
+	  "kessex-bridge-waitrun-NW2",
+	  "kessex-bridge-waitrun-NW3",	  
+	  "kessex-bridge-waitrun-S",
+	  "kessex-bridge-waitrun-S2",	  
+	  "kessex-bridge-waitrun-S3",	  
+	  "kessex-bridge-waitrun-W",	  
+	  "kessex-bridge-waitrun-W2",
+	  "kessex-bridge-waitrun-W3",
+	  "kessex-bridge-waitrun-W4",
+	  };
 	self.destX = -27103;		-- middle of fight area
 	self.destZ = 10181;
 	self.nextX = -27236;		-- first place of circle around middle point to run
 	self.nextZ = 10121;
 	self.WPadd_rnd = 40;		-- random add to the waypoint to be not to exact
-	self.waypoints = {			-- waypoints around fight area / used randomly
-	{ X=-26618, Z=10294, Y=-1621},
-	{ X=-26947, Z=10480, Y=-1669},
-	{ X=-27090, Z=10038, Y=-1559},
-	{ X=-26840, Z=9791, Y=-1508},
-	{ X=-27304, Z=9862, Y=-1512},
-	{ X=-26795, Z=9981, Y=-1564},
-	{ X=-26749, Z=10369, Y=-1626},
-	{ X=-27243, Z=10219, Y=-1631},
-	{ X=-26823, Z=10018, Y=-1570},
-	{ X=-26960, Z=10540, Y=-1696},
-	{ X=-26823, Z=10294, Y=-1610},
-	{ X=-27167, Z=10426, Y=-1674},
-	{ X=-27176, Z=10059, Y=-1568},
-	{ X=-27372, Z=10423, Y=-1693},
-	{ X=-26790, Z=9998, Y=-1568},
-	{ X=-26898, Z=10454, Y=-1651},
-	{ X=-26637, Z=10220, Y=-1609},
-	{ X=-27242, Z=10248, Y=-1642},
-	{ X=-27075, Z=9740, Y=-1482},
-	{ X=-26956, Z=10275, Y=-1608},
-	{ X=-26623, Z=10054, Y=-1587},
-	{ X=-26599, Z=10512, Y=-1675, type="", comment="#1"},
-	{ X=-26725, Z=10634, Y=-1687, type="", comment="#2"},
-	{ X=-26676, Z=10480, Y=-1660, type="", comment="#3"},
-	{ X=-26511, Z=10412, Y=-1654, type="", comment="#4"},
-	{ X=-26895, Z=10457, Y=-1651, type="", comment="#1"},
-	{ X=-26820, Z=10191, Y=-1594, type="", comment="#2"},
-	{ X=-26597, Z=10260, Y=-1618, type="", comment="#3"},
-	{ X=-26729, Z=10392, Y=-1633, type="", comment="#4"},
-	{ X=-27083, Z=10480, Y=-1673, type="", comment="#5"},
-	{ X=-26973, Z=10593, Y=-1711, type="", comment="#6"},
-	{ X=-26864, Z=10229, Y=-1600, type="", comment="#7"},
-	{ X=-26725, Z=10039, Y=-1579, type="", comment="#8"},
-	{ X=-26688, Z=10295, Y=-1614, type="", comment="#9"},
-	{ X=-26835, Z=10492, Y=-1658, type="", comment="#10"},
-	};	
+	self.fightareaPathWPname = {			-- path for fightarea WPs (could be a selection of different files, we use only one of them)
+	  "kessex-bridge-fightarea",
+	  };	
+	self.unstickPathWPname = {			-- path to escape from gorge (could be a selection of different files, we use only one of them)
+	  "kessex-bridge-escape-gorge",
+	  };	
+
 -- Working fields
 	self.index = 1;
 	self.interactionX = 0;		-- remember interaction place to avoid being sticked
@@ -100,11 +75,18 @@ function Bridge2State:constructor()
 	self.waitrunActive = false;		-- remember if waitrun is active
 	self.escaperunActive = false	-- remember if escaperun from gorge is active
 	self.LastKarma = 0				-- Karma before end of event
+
 end
 
 
 function Bridge2State:update()
 	logger:log('debug-states',"Coming to Bridge2State:update()");
+
+	-- Initialization Work
+	-- choose the set of fightarea WPs
+	if not fightareaPathWP then
+		fightareaPathWP = WaypointState(self.fightareaPathWPname[math.random(#self.fightareaPathWPname)])
+	end
 
 	statusupdate()		-- to get info about interaction
 	targetupdate()		-- to get target cleared
@@ -133,17 +115,6 @@ function Bridge2State:update()
 		self.LastKarma = player.Karma
 	end
 
--- after end of escape run from gorge
-	if ( self.escaperunActive == true ) then	-- reset combat timer after coming back from waitrun
-		if not player:moveTo_step(self.destX, self.destZ ) then	-- move back to middle
-			self.moving = true;
-			return
-		else
-			self.escaperunActive = false
-		end
-	end
-
-
 -- check if event is running depending from last combat time / TODO: real event flag for start of Event?
 	if os.difftime(os.time(),self.LastCombatTime) > self.OutOfCombatTimer then
 		logger:log('info',"Last combat at %s more then %d sec ago. No moving anymore", os.date("%H:%M:%S", self.LastCombatTime) , self.OutOfCombatTimer );
@@ -161,8 +132,12 @@ function Bridge2State:update()
 
 -- after end of escape run from gorge
 	if ( self.escaperunActive == true ) then	-- reset combat timer after coming back from waitrun
-		self.escaperunActive = false
-		player:moveTo_step(self.destX, self.destZ )		-- move to middle of fightarea to get away from escape path
+		if not player:moveTo_step(self.destX, self.destZ ) then		-- move to middle of fight area
+			self.moving = true;
+			return
+		else
+			self.escaperunActive = false
+		end
 	end
 
 -- start wait run between events
@@ -265,8 +240,9 @@ function Bridge2State:update()
 
 -- unstick from gorge
 -- TODO: only check if in a unstick situation / what's best place to detect an unstick situation?
+	-- chose the unstick gorge path
 	if not unstickPathWP then
-		unstickPathWP = WaypointState("kessex-bridge-escape-gorge")
+		unstickPathWP = WaypointState(self.unstickPathWPname[math.random(#self.unstickPathWPname)])
 	end
 
 	local nearest
@@ -279,12 +255,14 @@ end
 
 -- Advance the waypoint index randomly to the next point.
 function Bridge2State:advance()
-	self.index = math.random(#self.waypoints);
-	local wp = self.waypoints[self.index];
+
+	fightareaPathWP.index = math.random(#fightareaPathWP.waypoints);
+	local wp = fightareaPathWP.waypoints[fightareaPathWP.index];
 	self.nextX = wp.X+math.random(self.WPadd_rnd);
 	self.nextZ = wp.Z+math.random(self.WPadd_rnd);
 	self.nextMoveafter = self.moveafter+math.random(self.moveafter_rnd)	-- set time for next move
-	logger:log('info',"Waypoints randomly move to #%d (%d, %d) next move in %d sec\n", self.index, wp.X, wp.Z, self.nextMoveafter);
+	logger:log('info',"Waypoints randomly move to #%d (%d, %d) next move in %d sec\n", fightareaPathWP.index, wp.X, wp.Z, self.nextMoveafter);
+
 end
 
 
@@ -294,7 +272,6 @@ function Bridge2State:handleEvent(event)
 
 	if event == "GorgeEscape"  then			
 
---		unstickPathWP.laps = 1					-- only one round
 		unstickPathWP.stopAtEnd = true			-- run path only until end
 		unstickPathWP.getTarget = false			-- don't look for targets during runing back
 		logger:log('info',"Try to escape from gorge. We use waypointfile '%s'\n", unstickPathWP.waypointname);
@@ -323,7 +300,7 @@ function Bridge2State:handleEvent(event)
 		waitrunWP.lootwalk = true	-- loot while running
 		waitrunWP.stopAtEnd = true	-- run path only until end
 		waitrunWP.getTarget = true	-- look for targets during lootrun
-		waitrunWP.index = 1			-- start with WP #1, not with the nearest one
+		waitrunWP.index = 1	-- start with WP #1, not with the nearest one
 		logger:log('info',"Go to wait run between event using path '%s'\n", waitrunWP.waypointname);
 		self.waitrunActive = true
 		stateman:pushState(waitrunWP)
