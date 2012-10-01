@@ -35,6 +35,7 @@ end
 function WaypointState:update()
 	logger:log('debug-states',"WaypointState:update()");
 
+-- load WP path if WPs not already there
 	if self.waypointname and not self.waypoints[1] then	-- load WPs from file if WP table empty
 		self:loadPath(self.waypointname)
 	elseif not self.waypointname and not self.waypoints[1] then	-- no wp file in waypoint state
@@ -48,6 +49,7 @@ function WaypointState:update()
 	local wp = self.waypoints[self.index];
 	if not wp then logger:log('error',"Error in waypoints or waypoint file. Please check the waypoints or the waypoint file"); end
 	
+--debug_value(player.Interaction,"player.Interaction")	
 	if player:moveTo_step(wp.X, wp.Z, 100) then
 		if( wp.type == "HARVEST" and player.Interaction ) then
 			logger:log('info',"Harvesting at WP (%d, %d) %s\n", wp.X, wp.Z, wp.comment);
@@ -55,7 +57,7 @@ function WaypointState:update()
 			yrest(5000)		-- TODO: harvesting state? or just not moving but still fight?
 			statusupdate()		-- update Interaction
 		end
-		self:advance()
+		self:advance()			-- advance to next WP
 	end
 -- TODO: unstick here or at player:moveTo_step() if WP never reached
 	
@@ -90,6 +92,7 @@ function WaypointState:update()
 	end
 
 
+-- target new mob
 	if( deltaTime(getTime(), self.lastTargetTime) > 500 ) and
 	  ( self.getTarget == true ) then	-- active looking for new targets
 		player:getNextTarget();
