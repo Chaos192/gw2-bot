@@ -102,8 +102,10 @@ function Player:move(direction, dist)
 				if not self.notMovingTime then
 					self.notMovingTime = getTime()
 				end
-				if deltaTime(getTime(), self.notMovingTime ) > 200 then -- FIX: jump if not moving, but needs a little delay TODO: unstick state
-					print("not moving")
+				if deltaTime(getTime(), self.notMovingTime ) > 5000 then 	-- we stick for more then 5 sec, stop the bot
+					error('we dont move since more then 5 seconds. We stop the bot',0)
+				elseif deltaTime(getTime(), self.notMovingTime ) > 200 then -- TODO: unstick state
+					logger:log('info',"not moving");
 					-- deal with not moving here.
 					keyboardPress(key.VK_SPACE)
 				end
@@ -152,7 +154,7 @@ function Player:facedirection(x, z, _angle, dist)
 end
 
 function Player:moveTo_step(x, z, _dist)
-	_dist = _dist or 100;
+	_dist = _dist or SETTINGS['WPaccuracy'];
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
@@ -160,12 +162,13 @@ function Player:moveTo_step(x, z, _dist)
 	local dist = distance(self.X, self.Z, x, z)
 	
 	if 400 > dist then angle = 0.5 else angle = 0.2 end
+
 	logger:log('debug-moving',"at Player:moveTo_step: Distance %d from WP (%d,%d)", dist, x, z);
 	if self:facedirection(x, z, angle, dist) then
 		if dist > _dist then
 			self:move("forward")
 		else
-			logger:log('debug-moving',"at Player:moveTo_step: stopMoving() we are close enough %d < %d", dist, _dist);
+			logger:log('debug',"at Player:moveTo_step: stopMoving() we are close at (%d,%d) dist %d < %d", x, z, dist, _dist);
 			self:stopMoving()		-- no moving after being there 
 			return true
 		end

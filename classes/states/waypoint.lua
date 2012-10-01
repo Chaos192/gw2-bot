@@ -10,10 +10,11 @@ function WaypointState:constructor(name)
 	self.name = "Waypoint";
 -- parameters
 	self.index = 1;
+	self.startIndex = 0;		-- the WP index we start with
 	self.tableset = false
 	self.waypoints = {};
 	self.waypointname = "";	
-	if name then			-- load WPs from path file
+	if name then			-- load WPs from path file (set also index and startIndex)
 		self:loadPath(name)
 	end
 	
@@ -27,7 +28,6 @@ function WaypointState:constructor(name)
 	self.interactionX = 0;		-- remember interaction place to avoid being sticked
 	self.interactionZ = 0;	
 	self.LapCounter = 0;		-- how often we have circled the wp file
-	self.StartIndex = 0;		-- the WP index we start with
 
 	self.lastTargetTime = getTime();
 end
@@ -50,7 +50,7 @@ function WaypointState:update()
 	if not wp then logger:log('error',"Error in waypoints or waypoint file. Please check the waypoints or the waypoint file"); end
 	
 --debug_value(player.Interaction,"player.Interaction")	
-	if player:moveTo_step(wp.X, wp.Z, 100) then
+	if player:moveTo_step(wp.X, wp.Z) then
 		if( wp.type == "HARVEST" and player.Interaction ) then
 			logger:log('info',"Harvesting at WP (%d, %d) %s\n", wp.X, wp.Z, wp.comment);
 			keyboardPress(keySettings['interact']);
@@ -69,6 +69,9 @@ function WaypointState:update()
 	    player.Ftext ~= language:message('InteractGreeting') and
 	    player.Ftext ~= language:message('InteractTalk')  and		-- not if only greeting
 --		player.InteractionId == 0x1403F and -- Make sure it is actually loot  / NOT WORKING ATM
+-- BUG: if we 'loot' and don't wait until finished (5 sec) we can't walk anymore
+-- that happens if we not reach the harves WP and instead first try to loot it
+-- would be ok if we can check the interactionID
 		deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
 
 		if( self.interactionX == player.X) and	-- count interactions at the same spot
@@ -135,7 +138,7 @@ function WaypointState:advance()
 	end
 
 -- count the laps
-	if ( self.index == self.StartIndex ) then
+	if ( self.index == self.startIndex ) then
 		self.LapCounter = self.LapCounter + 1
 		if( self.laps == self.LapCounter ) then		-- only x rounds 
 			logger:log('info',"Finished waypoint state after %d rounds", self.laps)
@@ -199,7 +202,7 @@ function WaypointState:loadPath(_filename)
 		end
 	end
 
-	self.StartIndex = self.index	-- remeber WP we start with
+	self.startIndex = self.index	-- remeber WP we start with
 
 	self.tableset = true
 end

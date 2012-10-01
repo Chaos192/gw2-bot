@@ -125,7 +125,12 @@ function Bridge2State:update()
 	if ( self.UseLootrun == true ) and
 	   ( self.needlootrun == true ) then
 		self.needlootrun = false;	-- clear need lootrun flag
-		stateman:pushEvent("Lootrun", "Bridge2");
+		if distance(player.X, player.Z, self.fightareaX, self.fightareaX) < 900	then		-- already close to fight area
+			stateman:pushEvent("Lootrun", "Bridge2");
+			return
+		else
+			logger:log('info',"to far away from fight are (%d, %d) distance %d. Skip lootrun\n", player.X, player.Z, distance(player.X, player.Z, self.fightareaX, self.fightareaX));
+		end
 	end
 
 -- after coming back to fight area reset moving timer
@@ -279,12 +284,11 @@ function Bridge2State:handleEvent(event)
 	if event == "Lootrun"  then			
 
 		self.needlootrun = false;	-- clear need lootrun flag
-		local lootrunWP = WaypointState()
+		local lootrunWP = WaypointState(self.lootrunPathName[math.random(#self.lootrunPathName)])
 		lootrunWP.lootwalk = true	-- loot while running
 		lootrunWP.laps = 1			-- only one round
 		lootrunWP.getTarget = false		-- don't look for targets during lootrun
-		lootrunWP.waypointname = self.lootrunPathName[math.random(#self.lootrunPathName)]
-		logger:log('info',"Change to loot run using waypointfile '%s'\n", lootrunWP.waypointname);		
+		logger:log('info',"Change to lootrun using waypointfile '%s'\n", lootrunWP.waypointname);		
 		stateman:pushState(lootrunWP)
 		return true;
 	end
@@ -296,7 +300,7 @@ function Bridge2State:handleEvent(event)
 		waitrunWP.stopAtEnd = true	-- run path only until end
 		waitrunWP.getTarget = true	-- look for targets during lootrun
 		waitrunWP.index = 1	-- start with WP #1, not with the nearest one
-		logger:log('info',"Go to wait run between event using path '%s'\n", waitrunWP.waypointname);
+		logger:log('info',"Go to waitrun between event using path '%s'\n", waitrunWP.waypointname);
 		self.pathActive = true
 		stateman:pushState(waitrunWP)
 		return true;
@@ -311,7 +315,7 @@ function Bridge2State:chooseStartpath()
 
 	coordsupdate()
 
-	if distance(player.X, player.Z, self.nextX, self.nextZ) < 1200	then		-- already close to fight area
+	if distance(player.X, player.Z, self.fightareaX, self.fightareaX) < 1200	then		-- already close to fight area
 		return
 	end
 
