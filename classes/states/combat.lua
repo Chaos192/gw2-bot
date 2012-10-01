@@ -107,8 +107,12 @@ function CombatState:update()
 		if self.getNewTarget == true and
 		( deltaTime(getTime(), self.lastTargetTime) > self.getNewTargetTimer ) then
 			player:getNextTarget()
-			keyboardPress(keySettings['nexttarget']);
 			self.lastTargetTime = getTime();
+
+		end
+
+		if player.TargetMob == 0 then	-- still no target
+			stateman:popState("end of combat state, no more targets");
 		end
 
 	end

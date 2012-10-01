@@ -4,6 +4,7 @@ SETTINGS = {}
 SETTINGS['language'] = "english" -- "russian" "german" "french"
 SETTINGS['combatstate'] = true					--  entercombat state pushed automaticly if incombat (used by working with waypoint files)
 SETTINGS['lagallowance'] = 1
+SETTINGS['WPaccuracy'] = 100	-- how close should we be to a WP to count it as reached
 
 SETTINGS['useKeypress'] = false		-- use old keypress style for Player:useSkills()
 
