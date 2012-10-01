@@ -223,7 +223,10 @@ function Bridge2State:update()
 		self.moving == false then
 		local target_distance = distance(player.X, player.Z, target.TargetX, target.TargetZ)
 		if ( target_distance < profile['fightdistance'] ) then	
-			player:useSkills()
+			local combat = CombatState()
+			combat.getNewTarget = false
+			stateman:pushState(CombatState(combat));
+--			player:useSkills()
 	--		stateman:pushEvent("Combat","Bridge2");
 			self.LastActionTime = os.time()	-- remeber last time we get in combat
 		else
@@ -314,6 +317,17 @@ function Bridge2State:chooseStartpath()
 
 	local hf_dist, hf_index, nearestWPIndex, nearestPathName
 	local nearestDist = 999999999 
+
+-- check escape paths
+	for i = 1,#self.unstickPathName do
+		local checkPathWP = WaypointState(self.unstickPathName[i])
+		hf_dist, hf_index = checkPathWP:distanceToPath()
+		if hf_dist < nearestDist then
+			nearestDist = hf_dist
+			nearestWPIndex = hf_index         
+			nearestPathName = checkPathWP.waypointname
+		end
+	end
 
 -- check repair paths
 	for i = 1,#self.repairPathName do

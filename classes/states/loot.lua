@@ -25,7 +25,7 @@ function LootState:update()
 	end
 
 	logger:log('info',"finished looting, popping")
-	stateman:popState("loot");
+	stateman:popState("loot finished");
 	statusupdate();
 end
 table.insert(events,{name = "Loot", func = LootState()})
