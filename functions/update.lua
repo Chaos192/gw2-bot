@@ -20,6 +20,7 @@ function coordsupdate()
 	player.Dir1 = memoryReadRepeat("float", proc, addresses.playerDir1) or player.Dir1;
 	player.Dir2 = memoryReadRepeat("float", proc, addresses.playerDir2) or player.Dir2;
 	player.Angle = math.atan2(player.Dir2, player.Dir1) + math.pi;
+	player.MapId = memoryReadRepeat("int", proc, addresses.mapId) or 0;
 end
 
 function hpupdate()
