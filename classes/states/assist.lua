@@ -20,13 +20,14 @@ function AssistState:constructor()
 end
 
 function AssistState:update()
+	logger:log('debug-states',"Coming to AssistState:update()");
 
 	statusupdate()		-- update Interaction
 	targetupdate()		-- to get target cleared
 
 -- attack or face middle/get target
 	if  player.TargetMob ~= 0	and
-		distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['fightdistance'] then	
+		distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['maxdistance'] then	
 		stateman:pushEvent("Combat","assist have a target");		
 --		player:useSkills()
 	elseif ( deltaTime(getTime(), self.tabtime ) > 500 ) then	-- only ever 0.5 second
