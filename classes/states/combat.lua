@@ -72,10 +72,16 @@ function CombatState:update()
 -- TODO: if getNewTarget = true then we should look for new target within combat state and block that target instead of leaving the state		
 			if player.TargetMob ~= 0 then
 				logger:log('info', "Don't get aggro from Target %s. Clear target.\n", player.TargetMob);
+				if not player.blockedTargets[player.TargetMob] then player.blockedTargets[player.TargetMob] = { count=0 } end
+				player.blockedTargets[player.TargetMob].time = os.time()
+				player.blockedTargets[player.TargetMob].count = player.blockedTargets[player.TargetMob].count + 1
+--debug_value(player.TargetMob,"player.TargetMob")
+--debug_value(player.blockedTargets[player.TargetMob].count,"player.blockedTargets[player.TargetMob].count in cmobat")				
 				keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
 				targetupdate()
 			end
 			stateman:popState("end of combat state forced, we don't get combat flag");
+			return
 		end
 
 	end
@@ -84,15 +90,30 @@ function CombatState:update()
 
 		self.waitForTargetInCombatTime = false			-- reset timer in combat without target
 
+		-- FIX/TODO: as long as clear target don't work properly in getNextTarget() we have to check blocked targets here again
+		if player.blockedTargets[player.TargetMob] and
+		   player.blockedTargets[player.TargetMob].count > 4 then
+			keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+			stateman:popState("end of combat state forced, blocked target %s", player.TargetMob);
+			return
+		end
+
 		player:useSkills()
 		self.wasFighting = true							-- remember if we have used skills
 
-		if not player.InCombat and
-		   not self.waitForCombatWithTargetTime then 
+		if not player.InCombat and						-- remember how long we wait for getting aggro from mob
+		   not self.waitForCombatWithTargetTime then 	-- FIX/TODO: need that as long we don't see if we do damage to the mob
 			self.waitForCombatWithTargetTime = getTime()
 		end
 
-	else
+		-- delete mob from blocked targets
+		-- TODO: use targetHP and nod InCombat flag to decide if we do damage to the mob
+		if player.InCombat and
+		   player.blockedTargets[player.TargetMob] then
+			player.blockedTargets[player.TargetMob] = nil
+		end
+
+	else												-- don't have a target
 
 		self.waitForCombatWithTargetTime = false		-- no target, clear wait aggro timer
 		

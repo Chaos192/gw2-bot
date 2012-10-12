@@ -87,6 +87,12 @@ end
 
 local function updates()
 	hpupdate()
+	-- FIX/TODO: just do press 4 to do something / check where is 
+	if player.Downed then
+		logger:log('info',"use 4 during being down");
+		keyboardPress(key.VK_4)
+	end
+	
 	if player.Heal > player.HP/player.MaxHP*100 then
 		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
 		player:stopTurning()	-- avoid overturn during healing
@@ -106,6 +112,7 @@ registerTimer("setwindow", secondsToTimer(1), _windowname);
 function main()
 	local defaultState = nil;
 	local wpName = nil;
+	local multipathName = nil;
 
 	stateman = StateManager();
 	for i = 2,#args do
@@ -115,6 +122,9 @@ function main()
 			local val = string.sub(args[i], foundpos+1);
 			if( var == "path" ) then
 				wpName = val;
+			end
+			if( var == "multipath" ) then
+				multipathName = val;
 			end
 			if( var == "state" ) then
 				for k,v in pairs(events) do
@@ -186,6 +196,8 @@ function main()
 
 	if( defaultState ) then
 		stateman:pushState(defaultState);
+	elseif ( multipathName ) then				-- load file with multiple waypoint paths
+		stateman:pushState(MultipathState(multipathName));
 	else
 		stateman:pushState(WaypointState(wpName));
 	end

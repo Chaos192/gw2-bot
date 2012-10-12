@@ -30,6 +30,7 @@ function Player:constructor()
 	self.InteractionId = 0;
 	self.InCombat = false
 	self.Ftext = ""
+	self.blockedTargets = {}			-- remember targets to ignore
 	self.skill = {}
 	self.skill[1] = 0
 	self.skill[2] = 0
@@ -184,6 +185,15 @@ end
 
 function Player:getNextTarget(_dist)
 
+	if player.HP/player.MaxHP*100 < player.Heal and	-- first rest until targeting new mob
+	   not player.InCombat then						-- still targeting if already in combat (to avoid standing still while being attacked without target)
+		logger:log('debug', "HP to low for new target: %d/%d HP < %d", player.HP, player.MaxHP, player.Heal );
+		return
+	end
+-- TODO: 
+-- function for rest check, do rest chech outside of getNextTarget ?
+-- also don't walk while resting
+
 	if not _dist then
 		_dist = profile['maxdistance']
 	end
@@ -192,9 +202,42 @@ function Player:getNextTarget(_dist)
 	
 	targetupdate()
 	coordsupdate()
+	
 	if self.TargetMob == 0 then
 		return false
 	end
+
+--debug_value(self.TargetMob,"self.TargetMob")
+--debug_value(self.blockedTargets[self.TargetMob],"self.blockedTargets[self.TargetMob] in getnext")
+--if self.blockedTargets[self.TargetMob] then
+--debug_value(self.blockedTargets[self.TargetMob].count,"self.blockedTargets[self.TargetMob].count")
+--debug_value(os.difftime(os.time(),self.blockedTargets[self.TargetMob].time ),"os.difftime(os.time(),self.blockedTargets[self.TargetMob].time )")
+--end
+
+	-- check blocked targets
+	if self.blockedTargets[self.TargetMob]   and		-- short term block
+	   self.blockedTargets[self.TargetMob].count < 4	and
+	   os.difftime(os.time(),self.blockedTargets[self.TargetMob].time ) < 4	then 	-- only target again after x seconds
+		logger:log('debug',"target %d is blocked for 3 seconds\n", self.TargetMob);
+		keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+		return false
+	end
+
+	if self.blockedTargets[self.TargetMob]   and		-- long term block
+	   self.blockedTargets[self.TargetMob].count == 4	and
+	   os.difftime(os.time(),self.blockedTargets[self.TargetMob].time ) < 300	then 	-- only target again after x seconds
+		logger:log('debug',"target %d is blocked for 5 minutes\n", self.TargetMob);
+		keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+		return false
+	end
+
+	if self.blockedTargets[self.TargetMob]   and		-- final block
+	   self.blockedTargets[self.TargetMob].count > 4	then
+		logger:log('debug',"target %d is finaly blocked\n", self.TargetMob);
+		keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+		return false
+	end
+
 	
 	local hf_dist = distance( self.X, self.Z, target.TargetX, target.TargetZ)
 
@@ -362,17 +405,17 @@ function Player:useSkillsKeypress(_heal)
 	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)
 	if _heal then
 		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then
-			keyboardPress(key.VK_6)
+			keyboardPress(keySettings['skillheal'])
 			if profile['skill6ground'] == true then
-				keyboardPress(key.VK_6)
+				keyboardPress(keySettings['skillheal'])
 			end
 			cprintf(cli.green,"heal key 6\n")
 			yrest(profile['skill6casttime']*1000)
 			self.skill6used = os.time()
 		else		-- FIX/TODO: skill use often not fit, if the regular healuse didn't work we just press the key again without remembering the time
-			keyboardPress(key.VK_6)
+			keyboardPress(keySettings['skillheal'])
 			if profile['skill6ground'] == true then
-				keyboardPress(key.VK_6)
+				keyboardPress(keySettings['skillheal'])
 			end
 			cprintf(cli.green,"heal key 6 emergency fix\n")
 			yrest(profile['skill6casttime']*1000)
@@ -386,9 +429,9 @@ function Player:useSkillsKeypress(_heal)
 	end
 
 	if profile['skill2use'] == true and os.difftime(os.time(),self.skill2used) > profile['skill2cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_2)
+		keyboardPress(keySettings['skillweapon2'])
 		if profile['skill2ground'] == true then
-			keyboardPress(key.VK_2)
+			keyboardPress(keySettings['skillweapon2'])
 		end
 		cprintf(cli.red,"attack 2\n")
 		yrest(profile['skill2casttime']*1000)
@@ -397,9 +440,9 @@ function Player:useSkillsKeypress(_heal)
 		return
 	end
 	if profile['skill3use'] == true and os.difftime(os.time(),self.skill3used) > profile['skill3cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_3)
+		keyboardPress(keySettings['skillweapon3'])
 		if profile['skill3ground'] == true then
-			keyboardPress(key.VK_3)
+			keyboardPress(keySettings['skillweapon3'])
 		end
 		cprintf(cli.red,"attack 3\n")
 		yrest(profile['skill3casttime']*1000)
@@ -408,9 +451,9 @@ function Player:useSkillsKeypress(_heal)
 		return
 	end
 	if profile['skill4use'] == true and os.difftime(os.time(),self.skill4used) > profile['skill4cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_4)	
+		keyboardPress(keySettings['skillweapon4'])	
 		if profile['skill4ground'] == true then
-			keyboardPress(key.VK_4)
+			keyboardPress(keySettings['skillweapon4'])
 		end
 		cprintf(cli.red,"attack 4\n")
 		yrest(profile['skill4casttime']*1000)
@@ -419,9 +462,9 @@ function Player:useSkillsKeypress(_heal)
 		return
 	end
 	if profile['skill5use'] == true and os.difftime(os.time(),self.skill5used) > profile['skill5cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_5)
+		keyboardPress(keySettings['skillweapon5'])
 		if profile['skill5ground'] == true then
-			keyboardPress(key.VK_5)
+			keyboardPress(keySettings['skillweapon5'])
 		end
 		cprintf(cli.red,"attack 5\n")
 		yrest(profile['skill5casttime']*1000)
@@ -430,9 +473,9 @@ function Player:useSkillsKeypress(_heal)
 		return		
 	end
 	if profile['skill7use'] == true and os.difftime(os.time(),self.skill7used) > profile['skill7cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_7)
+		keyboardPress(keySettings['skillhelp1'])
 		if profile['skill7ground'] == true then
-			keyboardPress(key.VK_7)
+			keyboardPress(keySettings['skillhelp1'])
 		end
 		cprintf(cli.red,"attack 7\n")	
 		yrest(profile['skill7casttime']*1000)
@@ -441,9 +484,9 @@ function Player:useSkillsKeypress(_heal)
 		return		
 	end
 	if profile['skill8use'] == true and os.difftime(os.time(),self.skill8used) > profile['skill8cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_8)
+		keyboardPress(keySettings['skillhelp2'])
 		if profile['skill8ground'] == true then
-			keyboardPress(key.VK_8)
+			keyboardPress(keySettings['skillhelp2'])
 		end
 		cprintf(cli.red,"attack 8\n")
 		yrest(profile['skill8casttime']*1000)
@@ -452,9 +495,9 @@ function Player:useSkillsKeypress(_heal)
 		return
 	end
 	if profile['skill9use'] == true and os.difftime(os.time(),self.skill9used) > profile['skill9cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_9)
+		keyboardPress(keySettings['skillhelp3'])
 		if profile['skill9ground'] == true then
-			keyboardPress(key.VK_9)
+			keyboardPress(keySettings['skillhelp3'])
 		end
 		cprintf(cli.red,"attack 9\n")
 		yrest(profile['skill9casttime']*1000)
@@ -463,9 +506,9 @@ function Player:useSkillsKeypress(_heal)
 		return
 	end
 	if profile['skill0use'] == true and os.difftime(os.time(),self.skill0used) > profile['skill0cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_0)
+		keyboardPress(keySettings['skillelite'])
 		if profile['skill0ground'] == true then
-			keyboardPress(key.VK_0)
+			keyboardPress(keySettings['skillelite'])
 		end
 		cprintf(cli.red,"attack 0\n")
 		yrest(profile['skill0casttime']*1000)
@@ -474,9 +517,9 @@ function Player:useSkillsKeypress(_heal)
 		return		
 	end
 	if profile['skillF1use'] == true and os.difftime(os.time(),self.skillF1used) > profile['skillF1cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_F1)
+		keyboardPress(keySettings['skillclass1'])
 		if profile['skillF1ground'] == true then
-			keyboardPress(key.VK_F1)
+			keyboardPress(keySettings['skillclass1'])
 		end
 		cprintf(cli.red,"attack F1\n")
 		yrest(profile['skillF1casttime']*1000)
@@ -485,9 +528,9 @@ function Player:useSkillsKeypress(_heal)
 		return		
 	end
 	if profile['skillF2use'] == true and os.difftime(os.time(),self.skillF2used) > profile['skillF2cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_F2)
+		keyboardPress(keySettings['skillclass2'])
 		if profile['skillF2ground'] == true then
-			keyboardPress(key.VK_F2)
+			keyboardPress(keySettings['skillclass2'])
 		end
 		cprintf(cli.red,"attack F2\n")
 		yrest(profile['skillF2casttime']*1000)
@@ -496,9 +539,9 @@ function Player:useSkillsKeypress(_heal)
 		return		
 	end
 	if profile['skillF3use'] == true and os.difftime(os.time(),self.skillF3used) > profile['skillF3cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_F3)
+		keyboardPress(keySettings['skillclass3'])
 		if profile['skillF3ground'] == true then
-			keyboardPress(key.VK_F3)
+			keyboardPress(keySettings['skillclass3'])
 		end
 		cprintf(cli.red,"attack F3\n")
 		yrest(profile['skillF3casttime']*1000)
@@ -507,9 +550,9 @@ function Player:useSkillsKeypress(_heal)
 		return		
 	end
 	if profile['skillF4use'] == true and os.difftime(os.time(),self.skillF4used) > profile['skillF4cd'] + SETTINGS['lagallowance'] then
-		keyboardPress(key.VK_F4)
+		keyboardPress(keySettings['skillclass4'])
 		if profile['skillF4ground'] == true then
-			keyboardPress(key.VK_F4)
+			keyboardPress(keySettings['skillclass4'])
 		end
 		cprintf(cli.red,"attack F4\n")
 		yrest(profile['skillF4casttime']*1000)
@@ -518,7 +561,7 @@ function Player:useSkillsKeypress(_heal)
 		return		
 	end
 	if os.difftime(os.time(),self.skill1used) > profile['skill1cd'] then
-		keyboardPress(key.VK_1)
+		keyboardPress(keySettings['skillweapon1'])
 		self.skill1used = os.time()	
 		targetupdate()
 	end	

@@ -49,7 +49,6 @@ function WaypointState:update()
 	local wp = self.waypoints[self.index];
 	if not wp then logger:log('error',"Error in waypoints or waypoint file. Please check the waypoints or the waypoint file"); end
 	
---debug_value(player.Interaction,"player.Interaction")	
 	if player:moveTo_step(wp.X, wp.Z) then
 		if( wp.type == "HARVEST" and player.Interaction ) then
 			logger:log('info',"Harvesting at WP (%d, %d) %s\n", wp.X, wp.Z, wp.comment);
