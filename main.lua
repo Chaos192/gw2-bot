@@ -86,11 +86,22 @@ function handleInput(_key)
 end
 
 local function updates()
+
 	hpupdate()
-	-- FIX/TODO: just do press 4 to do something / check where is 
-	if player.Downed then
-		logger:log('info',"use 4 during being down");
-		keyboardPress(key.VK_4)
+
+	-- Down State
+	if player.Downed and
+	   player.HP > 0 then
+		logger:log('info', "We are down: %d/%d HP", player.HP, player.MaxHP);
+		stateman:pushState(DownState(), "We are down on the ground");	
+	end
+
+-- we need a rest out of combat
+	if player.HP/player.MaxHP*100 < player.Heal and	-- need a rest
+	   not player.InCombat then						-- still targeting if already in combat (to avoid standing still while being attacked without target)
+		logger:log('info', "Need a rest out of combat: %d/%d HP < %d", player.HP, player.MaxHP, player.Heal );
+		stateman:pushState(RestState(), "Need a rest out of combat before going on.");	
+--		return
 	end
 	
 	if player.Heal > player.HP/player.MaxHP*100 then
