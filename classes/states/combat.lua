@@ -125,11 +125,15 @@ function CombatState:update()
 		end
 
 		-- try to get a target
-		if self.getNewTarget == true and
+		if self.getNewTarget == true and		-- automatic get new targets during in combat to clear area
 		( deltaTime(getTime(), self.lastTargetTime) > self.getNewTargetTimer ) then
 			player:getNextTarget()
 			self.lastTargetTime = getTime();
-
+		elseif self.getNewTarget == false and	-- no targeting in combat but we have to defend
+		   player.InCombat and
+		( deltaTime(getTime(), self.lastTargetTime) > self.getNewTargetTimer ) then
+			player:getNextTarget()
+			self.lastTargetTime = getTime();
 		end
 
 		if player.TargetMob == 0 then	-- still no target

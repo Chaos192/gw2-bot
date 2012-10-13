@@ -40,6 +40,7 @@ function MultipathState:update()
 		self.startState = false
 		local startPath, startIndex = self:chooseStartPath()
 		chooseWP = WaypointState( startPath )	-- run to start area
+		chooseWP.lootwalk = true				-- loot while running
 		chooseWP.stopAtEnd = true				-- run path only until end,
 		logger:log('info',"Choose path '%s' #%s to go to the start area of multiple paths\n", chooseWP.waypointname, startIndex);		
 		stateman:pushState(chooseWP)
@@ -47,8 +48,8 @@ function MultipathState:update()
 	end
 
 	chooseWP = WaypointState(self.paths[math.random(#self.paths)])
-	chooseWP.lootwalk = true	-- loot while running
-	chooseWP.laps = 1			-- only one round
+	chooseWP.lootwalk = true					-- loot while running
+	chooseWP.laps = 1							-- only one round
 	logger:log('info',"Change to path '%s'\n", chooseWP.waypointname);		
 	stateman:pushState(chooseWP)
 

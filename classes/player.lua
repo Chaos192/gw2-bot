@@ -185,15 +185,6 @@ end
 
 function Player:getNextTarget(_dist)
 
-	if player.HP/player.MaxHP*100 < player.Heal and	-- first rest until targeting new mob
-	   not player.InCombat then						-- still targeting if already in combat (to avoid standing still while being attacked without target)
-		logger:log('debug', "HP to low for new target: %d/%d HP < %d", player.HP, player.MaxHP, player.Heal );
-		return
-	end
--- TODO: 
--- function for rest check, do rest chech outside of getNextTarget ?
--- also don't walk while resting
-
 	if not _dist then
 		_dist = profile['maxdistance']
 	end
