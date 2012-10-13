@@ -67,7 +67,7 @@ function memoryReadRepeat(_type, proc, address, offset)
 		end
 	end
 
-end	
+end
 
 --[[
 	Required:
@@ -178,7 +178,8 @@ local updatePatterns =
 		adjustment = 0x10
 	},	
 }
-addresses = {}
+include("addresses.lua", true);
+print("Addresses:", addresses);
 -- This function will attempt to automatically find the true addresses
 -- from GW2, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
@@ -259,8 +260,42 @@ function findOffsets()
 	end
 end
 
+local function format_value(val)
+	if( type(val) == "number" ) then
+		return sprintf("0x%X", val);
+	elseif( type(val) == "string" ) then
+		return '"' .. string.gsub(val, '"', '\"') .. '"';
+	elseif( type(val) == "nil" ) then
+		return "nil";
+	elseif( type(val) == "table" ) then
+		local str = "{";
+		local len = #val;
+		for i,v in pairs(val) do
+			str = str .. format_value(v);
+			if( i < len ) then
+				str = str .. ", ";
+			end
+		end
+		str = str .. "}";
+		return str;
+	else
+		return val;
+	end
+end
+
 function rewriteAddresses()
 	local filename = getExecutionPath() .. "/addresses.lua";
+	local template_filename = getExecutionPath() .. "/addresses_template.tmpl";
+	local template_f = io.open(template_filename, "r");
+	local template;
+
+	if( template_f ) then
+		template = template_f:read("*a");
+	end
+	if( not template_f or not template ) then
+		error(sprintf("Cannot read address template (%s). What did you do?", template_filename), 0);
+	end
+
 	getProc(); -- Just to make sure we open the process first
 
 	printf("Scanning for updated addresses...\n");
@@ -282,9 +317,128 @@ function rewriteAddresses()
 	end
 	table.sort(addresses_new, addressSort);
 
-	local file = io.open(filename, "w");
+	addresses['playerDir1'] = addresses['playerbasecoords'] + 0x10;
+	addresses['playerDir2'] = addresses['playerbasecoords'] + 0x14;
+	addresses['playerX'] = addresses['playerbasecoords'] + 0x28;
+	addresses['playerZ'] = addresses['playerbasecoords'] + 0x2C;
+	addresses['playerY'] = addresses['playerbasecoords'] + 0x30;
 
-	file:write(
+	addresses['playerHPoffset'] = {0x150,0x3C,0x10};
+	addresses['playerMaxHPoffset'] = {0x150,0x3C,0x14};
+	addresses['playerKarmaoffset'] = {0x1B0, 0x4, 0x1B4};
+	addresses['playerGoldoffset'] = {0x154, 0x50};
+	addresses['playerInCombat'] = addresses['playerbasehp'] - 0x1AC;
+	addresses['playerDowned'] = addresses['playerbasehp'] - 0x6C0;
+
+	addresses['playerAccount'] = addresses['playerName'] + 0xD0;
+	addresses['loadingbase'] = addresses['playerName'] + 0x14A8;
+	addresses['loadingOffset'] = {0xC8, 0x4, 0x0, 0x3BC};
+
+	addresses['FtextOffset'] = {0x0, 0x94, 0x14, 0x22};
+
+	addresses['Finteraction'] = addresses['playerbaseui'] + 0x60;
+	addresses['TargetMob'] = addresses['playerbaseui'] + 0x78;
+	addresses['TargetAll'] = addresses['playerbaseui'] + 0x90;
+	addresses['mousewinX'] = addresses['playerbaseui'] + 0x98;
+	addresses['mousewinZ'] = addresses['playerbaseui'] + 0x9C;
+	addresses['mousepointX'] = addresses['playerbaseui'] + 0xB8;
+	addresses['mousepointZ'] = addresses['playerbaseui'] + 0xBC;
+	addresses['mousepointY'] = addresses['playerbaseui'] + 0xC0;
+	addresses['XPbase'] = addresses['playerbaseui'] - 0x89C;
+	addresses['xpOffset'] = {0x80, 0x120, 0x14, 0x4};
+	addresses['xpnextlvlOffset'] = {0x80, 0x120, 0x14, 0xC};
+	addresses['targetbaseAddress'] = addresses['playerbaseui'] + 0x181C;
+	addresses['targetXoffset'] = {0x30, 0x5C, 0x110};
+	addresses['targetZoffset'] = {0x30, 0x5C, 0x114};
+	addresses['targetYoffset'] = {0x30, 0x5C, 0x118};
+	addresses['moveForward'] = addresses['playerbaseui'] + 0x18E8;
+	addresses['moveBackward'] = addresses['playerbaseui'] + 0x18EC;
+	addresses['turnLeft'] = addresses['playerbaseui'] + 0x18F8;
+	addresses['turnRight'] = addresses['playerbaseui'] + 0x18FC;
+	addresses['FtextAddress'] = addresses['playerbaseui'] + 0x19C4;
+	addresses['FtextOffset'] = {0x0, 0xC4, 0x22};
+
+	addresses['actlvlOffset'] = 0x7C;
+	addresses['adjlvlOffset'] = 0xA0;
+
+	-- Attempts to replace an entry in the template.
+	-- If successful, removes it from addresses.new
+	local template_replace = function(str, index)
+		if( addresses[index] ) then
+			template = string.gsub(template, str, tostring(format_value(addresses[index])));
+			addresses[index] = nil;
+		end
+	end
+
+	-- Replace known template markers
+	template_replace('__BASE__', 			'base');
+	template_replace('__PLAYER_NAME__', 	'playerName');
+	template_replace('__PLAYER_ACCOUNT__',	'playerAccount');
+	template_replace('__LOADING_BASE__',	'loadingbase');
+	template_replace('__LOADING_OFFSET__',	'loadingOffset');
+	template_replace('__PLAYER_DIR_1__',	'playerDir1');
+	template_replace('__PLAYER_DIR_2__',	'playerDir2');
+	template_replace('__PLAYER_X__',		'playerX');
+	template_replace('__PLAYER_Z__',		'playerZ');
+	template_replace('__PLAYER_Y__',		'playerY');
+	template_replace('__PLAYER_BASE_HP__',	'playerbasehp');
+	template_replace('__PLAYER_HP_OFFSET__',	'playerHPoffset');
+	template_replace('__PLAYER_MAX_HP_OFFSET__',	'playerMaxHPoffset');
+	template_replace('__PLAYER_KARMA_OFFSET__',		'playerKarmaoffset');
+	template_replace('__PLAYER_GOLD_OFFSET__',		'playerGoldoffset');
+	template_replace('__PLAYER_COMBAT__',	'playerInCombat');
+	template_replace('__PLAYER_DOWNED__',	'playerDowned');
+	template_replace('__F_INTERACTION__',	'Finteraction');
+	template_replace('__TARGET_MOB__',		'TargetMob');
+	template_replace('__TARGET_ALL__',		'TargetAll');
+	template_replace('__MOUSE_WIN_X__',		'mousewinX');
+	template_replace('__MOUSE_WIN_Z__',		'mousewinZ');
+	template_replace('__MOUSE_POINT_X__',	'mousepointX');
+	template_replace('__MOUSE_POINT_Z__',	'mousepointZ');
+	template_replace('__MOUSE_POINT_Y__',	'mousepointY');
+	template_replace('__XP_BASE__',			'XPbase');
+	template_replace('__XP_OFFSET__',		'xpOffset');
+	template_replace('__XP_NEXT_LEVEL_OFFSET__',	'xpnextlvlOffset');
+	template_replace('__TARGET_BASE__',		'targetbaseAddress');
+	template_replace('__TARGET_X_OFFSET__',	'targetXoffset');
+	template_replace('__TARGET_Z_OFFSET__',	'targetZoffset');
+	template_replace('__TARGET_Y_OFFSET__',	'targetYoffset');
+	template_replace('__MOVE_FORWARD__',	'moveForward');
+	template_replace('__MOVE_BACKWARD__',	'moveBackward');
+	template_replace('__TURN_LEFT__',		'turnLeft');
+	template_replace('__TURN_RIGHT__',		'turnRight');
+	template_replace('__F_TEXT__',			'FtextAddress');
+	template_replace('__F_TEXT_OFFSET__',	'FtextOffset');
+	template_replace('__SKILL_CD__',		'skillCDaddress');
+	template_replace('__STAT_BASE__',		'statbase');
+	template_replace('__ACT_LEVEL_OFFSET__',	'actlvlOffset');
+	template_replace('__ADJ_LEVEL_OFFSET__',	'adjlvlOffset');
+
+	-- Remove unnecessary garbage
+	addresses['playerbasecoords'] = nil;
+
+	-- Now add in any unlisted entries
+	local additional_entries = "";
+	for index,value in pairs(addresses) do
+		additional_entries = additional_entries .. index .. " = " .. format_value(value) .. ",\n\t"
+	end
+
+	-- Trim whitespace from additional_entries
+	additional_entries = string.trim(additional_entries);
+
+	-- Now do the final template replace for additonal entries
+	template = string.gsub(template, '__UNORGANIZED_ADDRESSES__', tostring(additional_entries));
+
+	local file = io.open(filename, "w");
+	file:write(template);
+	file:close();
+
+
+	-- Finally, reload our addresses (in case we needed anything from the addresses table)
+	include("addresses.lua");
+
+	--[[
+		file:write(
 		sprintf("-- Auto-generated by update.lua\n") ..
 		"addresses = {\n"
 	);
@@ -294,7 +448,7 @@ function rewriteAddresses()
 		if( updatePatterns[v.index] ) then
 			local tmp = updatePatterns[v.index].comment;
 			if( tmp ) then
-				comment = "\t--[[ " .. tmp .. " ]]";
+				comment = "\t-- " .. tmp .. " ]";
 			end
 		end
 
@@ -386,7 +540,7 @@ function rewriteAddresses()
 	file:write("}\n");
 
 	file:close();
-
+]]
 end
 rewriteAddresses();
 
