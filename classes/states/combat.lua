@@ -60,6 +60,7 @@ function CombatState:update()
 				stateman:pushEvent("Loot", "finished combat");
 			end
 			stateman:popState("combat ended");
+			return
 		end
 
 --		if self.waitForCombatWithTargetTime then
@@ -122,6 +123,7 @@ function CombatState:update()
 		   deltaTime(getTime(),self.waitForTargetInCombatTime)	> 3000 then
 			self.waitForTargetInCombatTime = false
 			stateman:popState("end of combat state forced, no target");
+			return		
 		end
 
 		-- try to get a target
@@ -138,6 +140,7 @@ function CombatState:update()
 
 		if player.TargetMob == 0 then	-- still no target
 			stateman:popState("end of combat state, no more targets");
+			return
 		end
 
 	end

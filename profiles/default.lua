@@ -3,6 +3,11 @@ return {
 	['heal'] = 60, -- what % hp to use heal skill
 	['maxdistance'] = 2000, -- max distance to decide to attack mob
 	['fightdistance'] = 1100, -- distance when start to use skills, melee should be low (50)
+
+	--=== cooldown for the skills ===--
+	['downskill2cd'] = 3,
+	['downskill3cd'] = 5,
+	['downskill4cd'] = 5,
 	
 	--=== which skills to use ===--
 	['skill2use'] = false,
@@ -18,7 +23,11 @@ return {
 	['skillF2use'] = false,
 	['skillF3use'] = false,
 	['skillF4use'] = false,
-
+	['downskill1use'] = true,
+	['downskill2use'] = true,
+	['downskill3use'] = true,
+	['downskill4use'] = true,	
+	
 	--=== if the skill needs to target ground ===--
 	['skill2ground'] = false,
 	['skill3ground'] = false,
@@ -48,4 +57,8 @@ return {
 	['skillF2casttime'] = 1,
 	['skillF3casttime'] = 1,
 	['skillF4casttime'] = 1,
+	['downskill1casttime'] = 1,
+	['downskill2casttime'] = 1,
+	['downskill3casttime'] = 1,
+	['downskill4casttime'] = 5,	
 }

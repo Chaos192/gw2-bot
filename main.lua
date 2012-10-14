@@ -93,18 +93,33 @@ local function updates()
 	if player.Downed and
 	   player.HP > 0 then
 		logger:log('info', "We are down: %d/%d HP", player.HP, player.MaxHP);
-		stateman:pushState(DownState(), "We are down on the ground");	
+		local runningState = stateman:getState();
+		if runningState.name ~= "Down" then
+			stateman:pushState(DownState(), "We are down on the ground");
+		end
+	end
+
+	-- we are death
+	if player.HP == 0 then		-- TODO: use death flag instead
+		local runningState = stateman:getState();
+		if runningState.name ~= "Death" then
+			stateman:pushState(DeathState(), "Need a rest out of combat before going on.");	
+		end
 	end
 
 -- we need a rest out of combat
 	if player.HP/player.MaxHP*100 < player.Heal and	-- need a rest
+ 	   player.HP ~= 0	and							-- but only if alive
 	   not player.InCombat then						-- still targeting if already in combat (to avoid standing still while being attacked without target)
 		logger:log('info', "Need a rest out of combat: %d/%d HP < %d", player.HP, player.MaxHP, player.Heal );
-		stateman:pushState(RestState(), "Need a rest out of combat before going on.");	
---		return
+		local runningState = stateman:getState();
+		if runningState.name ~= "Rest" then
+			stateman:pushState(RestState(), "Need a rest out of combat before going on.");	
+		end
 	end
 	
-	if player.Heal > player.HP/player.MaxHP*100 then
+	if player.Heal > player.HP/player.MaxHP*100 and
+		not player.Downed then	--TODO: use alive flag
 		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
 		player:stopTurning()	-- avoid overturn during healing
 		player:useSkills(true)
@@ -227,9 +242,9 @@ function main()
 			if( os.difftime(os.time(),logger.lastMsgTime) >= logger.repeatTimer )	then
 				logger:log('debug',"we are still alive here in main.lua at %s", os.date("%H:%M:%S") );
 			end
-		else
-			logger:log('debug',"we are dead in main.lua at %s", os.date("%H:%M:%S") );
-			yrest(10000)
+--		else
+--			logger:log('debug',"we are dead in main.lua at %s", os.date("%H:%M:%S") );
+--			yrest(10000)
 		end
 	end
 end
