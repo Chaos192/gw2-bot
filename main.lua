@@ -92,9 +92,9 @@ local function updates()
 	-- Down State
 	if player.Downed and
 	   player.HP > 0 then
-		logger:log('info', "We are down: %d/%d HP", player.HP, player.MaxHP);
 		local runningState = stateman:getState();
 		if runningState.name ~= "Down" then
+			logger:log('info', "We are down: %d/%d HP", player.HP, player.MaxHP);
 			stateman:pushState(DownState(), "We are down on the ground");
 		end
 	end
@@ -103,7 +103,8 @@ local function updates()
 	if player.HP == 0 then		-- TODO: use death flag instead
 		local runningState = stateman:getState();
 		if runningState.name ~= "Death" then
-			stateman:pushState(DeathState(), "Need a rest out of combat before going on.");	
+			logger:log('info',"we died at %s", os.date("%H:%M:%S") );
+			stateman:pushState(DeathState(), "We are dead now.");	
 		end
 	end
 
@@ -111,13 +112,16 @@ local function updates()
 	if player.HP/player.MaxHP*100 < player.Heal and	-- need a rest
  	   player.HP ~= 0	and							-- but only if alive
 	   not player.InCombat then						-- still targeting if already in combat (to avoid standing still while being attacked without target)
-		logger:log('info', "Need a rest out of combat: %d/%d HP < %d", player.HP, player.MaxHP, player.Heal );
 		local runningState = stateman:getState();
 		if runningState.name ~= "Rest" then
+			logger:log('info', "Need a rest out of combat: %d/%d HP < %d", player.HP, player.MaxHP, player.Heal );
+			player:stopTurning()	
+			player:stopMoving()		
 			stateman:pushState(RestState(), "Need a rest out of combat before going on.");	
 		end
 	end
 	
+	-- use heal skills
 	if player.Heal > player.HP/player.MaxHP*100 and
 		not player.Downed then	--TODO: use alive flag
 		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);

@@ -20,6 +20,19 @@ function RestState:update()
 		return
 	end
 
+	if player.Downed then
+		logger:log('info',"We are down so popping Rest state.")
+		stateman:popState("Rest");
+		return
+	end
+
+	if player.HP == 0 then
+		logger:log('info',"We are dead so popping Rest state.")
+		stateman:popState("Rest");
+		return
+	end
+
+
 -- defend if inCombat but don't target new ones
 	if player.InCombat then
 		local combat = CombatState()
