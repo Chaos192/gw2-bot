@@ -11,6 +11,7 @@ function CombatState:constructor()
 --	self.autostarted = nil			-- DEPRECATED not used ???
 	self.getNewTarget = true		-- automaticly look for new targets around if no target
 	self.getNewTargetTimer = 500	-- only look for new target each x ms			
+	self.waitForAggroTimer = 5000	-- how long we wait for getting aggro after attacking a new target
 --	self.combat = false				-- DEPRECATED not used ???
 	--self.startfight = os.time() 	-- DEPRECATED
 	self.waitForTargetInCombatTime = false			-- rember how long we wait for a target if in combat
@@ -68,7 +69,7 @@ function CombatState:update()
 --		end
 		
 		if self.waitForCombatWithTargetTime	and			-- we wait for the combat flag
-		   deltaTime(getTime(),self.waitForCombatWithTargetTime)	> 3000 then
+		   deltaTime(getTime(),self.waitForCombatWithTargetTime)	> self.waitForAggroTimer then
 			self.waitForCombatWithTargetTime = false
 -- TODO: if getNewTarget = true then we should look for new target within combat state and block that target instead of leaving the state		
 			if player.TargetMob ~= 0 then

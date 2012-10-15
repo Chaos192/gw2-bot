@@ -60,5 +60,5 @@ return {
 	['downskill1casttime'] = 1,
 	['downskill2casttime'] = 1,
 	['downskill3casttime'] = 1,
-	['downskill4casttime'] = 5,	
+	['downskill4casttime'] = 49,	
 }

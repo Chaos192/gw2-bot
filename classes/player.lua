@@ -135,7 +135,7 @@ function Player:facedirection(x, z, _angle, dist)
 	-- Check our angle to the waypoint.
 	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
 	local angleDif = angleDifference(angle, self.Angle);
-	
+
 	if( angleDif > _angle ) then
 		-- Attempt to face it
 		if angleDif > angleDifference(angle, self.Angle+ 0.01) then
@@ -261,7 +261,7 @@ function Player:useSkills(_heal)
 			if profile['skill6ground'] == true then
 				keyboardPress(keySettings['skillheal'])
 			end
-			cprintf(cli.green,"heal key 6 with ID "..self.skill[6].."\n")
+			cprintf(cli.green,"heal key %s with ID %s\n", getKeyName(keySettings['skillheal']), self.skill[6])
 			yrest(profile['skill6casttime']*1000)
 		end
 		return
@@ -272,7 +272,7 @@ function Player:useSkills(_heal)
 	end
 	if os.difftime(os.time(),self.skill1used) > 1 then
 		keyboardPress(keySettings['skillweapon1'])
-		cprintf(cli.green,"using skill 1 with ID "..self.skill[1].."\n")
+		cprintf(cli.green,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon1']), self.skill[1])
 		self.skill1used = os.time()	
 	end
 	if profile['skill2use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x6C, 0x40, 0x4C, 0xA}) == 0x300000) then
@@ -280,7 +280,7 @@ function Player:useSkills(_heal)
 		if profile['skill2ground'] == true then
 			keyboardPress(keySettings['skillweapon2'])
 		end
-		cprintf(cli.red,"using skill 2 with ID "..self.skill[2].."\n")
+		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon2']), self.skill[2])
 		yrest(profile['skill2casttime']*1000)
 		return
 	end
@@ -289,7 +289,7 @@ function Player:useSkills(_heal)
 		if profile['skill3ground'] == true then
 			keyboardPress(keySettings['skillweapon3'])
 		end
-		cprintf(cli.red,"using skill 3 with ID "..self.skill[3].."\n")
+		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon3']), self.skill[3])
 		yrest(profile['skill3casttime']*1000)
 		return
 	end
@@ -298,7 +298,7 @@ function Player:useSkills(_heal)
 		if profile['skill4ground'] == true then
 			keyboardPress(keySettings['skillweapon4'])
 		end
-		cprintf(cli.red,"using skill 4 with ID "..self.skill[4].."\n")
+		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon4']), self.skill[4])
 		yrest(profile['skill4casttime']*1000)
 		return
 	end	
@@ -307,7 +307,7 @@ function Player:useSkills(_heal)
 		if profile['skill5ground'] == true then
 			keyboardPress(keySettings['skillweapon5'])
 		end
-		cprintf(cli.red,"using skill 5 with ID "..self.skill[5].."\n")
+		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon5']), self.skill[5])
 		yrest(profile['skill5casttime']*1000)
 		return
 	end
@@ -316,7 +316,7 @@ function Player:useSkills(_heal)
 		if profile['skill7ground'] == true then
 			keyboardPress(keySettings['skillhelp1'])
 		end
-		cprintf(cli.red,"using skill 7 with ID "..self.skill[7].."\n")	
+		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp1']), self.skill[7])
 		yrest(profile['skill7casttime']*1000)
 		return
 	end
@@ -325,7 +325,7 @@ function Player:useSkills(_heal)
 		if profile['skill8ground'] == true then
 			keyboardPress(keySettings['skillhelp2'])
 		end
-		cprintf(cli.red,"using skill 8 with ID "..self.skill[8].."\n")
+		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp2']), self.skill[8])
 		yrest(profile['skill8casttime']*1000)
 		return
 	end
@@ -334,7 +334,7 @@ function Player:useSkills(_heal)
 		if profile['skill9ground'] == true then
 			keyboardPress(keySettings['skillhelp3'])
 		end
-		cprintf(cli.red,"using skill 9 with ID "..self.skill[9].."\n")
+		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp3']), self.skill[9])
 		yrest(profile['skill9casttime']*1000)
 		return
 	end
@@ -343,7 +343,7 @@ function Player:useSkills(_heal)
 		if profile['skill0ground'] == true then
 			keyboardPress(keySettings['skillelite'])
 		end
-		cprintf(cli.red,"using skill 0 with ID "..self.skill[0].."\n")
+		cprintf(cli.red,"using eliteskill key %s with ID %s\n", getKeyName(keySettings['skillelite']), self.skill[0])
 		yrest(profile['skill0casttime']*1000)
 		return
 	end	
@@ -354,7 +354,7 @@ function Player:useSkills(_heal)
 		if profile['skillF1ground'] == true then
 			keyboardPress(keySettings['skillclass1'])
 		end
-		cprintf(cli.red,"attack F1\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass1']))
 		yrest(profile['skillF1casttime']*1000)
 		self.skillF1used = os.time()
 		return		
@@ -364,7 +364,7 @@ function Player:useSkills(_heal)
 		if profile['skillF2ground'] == true then
 			keyboardPress(keySettings['skillclass2'])
 		end
-		cprintf(cli.red,"attack F2\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass2']))
 		yrest(profile['skillF2casttime']*1000)
 		self.skillF2used = os.time()
 		return		
@@ -374,7 +374,7 @@ function Player:useSkills(_heal)
 		if profile['skillF3ground'] == true then
 			keyboardPress(keySettings['skillclass3'])
 		end
-		cprintf(cli.red,"attack F3\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass3']))
 		yrest(profile['skillF3casttime']*1000)
 		self.skillF3used = os.time()
 		return		
@@ -384,7 +384,7 @@ function Player:useSkills(_heal)
 		if profile['skillF4ground'] == true then
 			keyboardPress(keySettings['skillclass4'])
 		end
-		cprintf(cli.red,"attack F4\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass4']))
 		yrest(profile['skillF4casttime']*1000)
 		self.skillF4used = os.time()
 		return		
@@ -400,7 +400,7 @@ function Player:useSkillsKeypress(_heal)
 			if profile['skill6ground'] == true then
 				keyboardPress(keySettings['skillheal'])
 			end
-			cprintf(cli.green,"heal key 6\n")
+			cprintf(cli.green,"heal key %s\n", getKeyName(keySettings['skillheal']))
 			yrest(profile['skill6casttime']*1000)
 			self.skill6used = os.time()
 		else		-- FIX/TODO: skill use often not fit, if the regular healuse didn't work we just press the key again without remembering the time
@@ -424,7 +424,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill2ground'] == true then
 			keyboardPress(keySettings['skillweapon2'])
 		end
-		cprintf(cli.red,"attack 2\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon2']))
 		yrest(profile['skill2casttime']*1000)
 		self.skill2used = os.time()
 		targetupdate()
@@ -435,7 +435,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill3ground'] == true then
 			keyboardPress(keySettings['skillweapon3'])
 		end
-		cprintf(cli.red,"attack 3\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon3']))
 		yrest(profile['skill3casttime']*1000)
 		self.skill3used = os.time()
 		targetupdate()
@@ -446,7 +446,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill4ground'] == true then
 			keyboardPress(keySettings['skillweapon4'])
 		end
-		cprintf(cli.red,"attack 4\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon4']))
 		yrest(profile['skill4casttime']*1000)
 		self.skill4used = os.time()
 		targetupdate()
@@ -457,7 +457,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill5ground'] == true then
 			keyboardPress(keySettings['skillweapon5'])
 		end
-		cprintf(cli.red,"attack 5\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon5']))
 		yrest(profile['skill5casttime']*1000)
 		self.skill5used = os.time()
 		targetupdate()
@@ -468,7 +468,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill7ground'] == true then
 			keyboardPress(keySettings['skillhelp1'])
 		end
-		cprintf(cli.red,"attack 7\n")	
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillhelp1']))
 		yrest(profile['skill7casttime']*1000)
 		self.skill7used = os.time()
 		targetupdate()
@@ -479,7 +479,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill8ground'] == true then
 			keyboardPress(keySettings['skillhelp2'])
 		end
-		cprintf(cli.red,"attack 8\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillhelp2']))
 		yrest(profile['skill8casttime']*1000)
 		self.skill8used = os.time()
 		targetupdate()
@@ -490,7 +490,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill9ground'] == true then
 			keyboardPress(keySettings['skillhelp3'])
 		end
-		cprintf(cli.red,"attack 9\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillhelp3']))
 		yrest(profile['skill9casttime']*1000)
 		self.skill9used = os.time()
 		targetupdate()
@@ -501,7 +501,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skill0ground'] == true then
 			keyboardPress(keySettings['skillelite'])
 		end
-		cprintf(cli.red,"attack 0\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillelite']))
 		yrest(profile['skill0casttime']*1000)
 		self.skill0used = os.time()
 		targetupdate()
@@ -512,7 +512,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skillF1ground'] == true then
 			keyboardPress(keySettings['skillclass1'])
 		end
-		cprintf(cli.red,"attack F1\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass1']))
 		yrest(profile['skillF1casttime']*1000)
 		self.skillF1used = os.time()
 		targetupdate()
@@ -523,7 +523,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skillF2ground'] == true then
 			keyboardPress(keySettings['skillclass2'])
 		end
-		cprintf(cli.red,"attack F2\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass2']))
 		yrest(profile['skillF2casttime']*1000)
 		self.skillF2used = os.time()
 		targetupdate()
@@ -534,7 +534,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skillF3ground'] == true then
 			keyboardPress(keySettings['skillclass3'])
 		end
-		cprintf(cli.red,"attack F3\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass3']))
 		yrest(profile['skillF3casttime']*1000)
 		self.skillF3used = os.time()
 		targetupdate()
@@ -545,7 +545,7 @@ function Player:useSkillsKeypress(_heal)
 		if profile['skillF4ground'] == true then
 			keyboardPress(keySettings['skillclass4'])
 		end
-		cprintf(cli.red,"attack F4\n")
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass4']))
 		yrest(profile['skillF4casttime']*1000)
 		self.skillF4used = os.time()
 		targetupdate()
