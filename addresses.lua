@@ -58,5 +58,4 @@ addresses = {
 	actlvlOffset = 0x7C,
 	adjlvlOffset = 0xA0,
 
-	mapId = 0x164496C,
 }

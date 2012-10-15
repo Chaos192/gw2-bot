@@ -28,7 +28,11 @@ function AssistState:update()
 -- attack or face middle/get target
 	if  player.TargetMob ~= 0	and
 		distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['maxdistance'] then	
-		stateman:pushEvent("Combat","assist have a target");		
+		local newCombat = CombatState()
+		logger:log('info',"get new target in assist state, we push combat state");
+		newCombat.getNewTarget = false			-- don't get new targets in combat state, just defend
+		stateman:pushState(newCombat);
+--		stateman:pushEvent("Combat","assist have a target");		
 --		player:useSkills()
 	elseif ( deltaTime(getTime(), self.tabtime ) > 500 ) then	-- only ever 0.5 second
 			player:getNextTarget();

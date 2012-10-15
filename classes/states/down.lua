@@ -30,7 +30,7 @@ function DownState:update()
 -- check if we get damage and skill 4 is interrupted 
 	if self.breakableSkillActiv and
 	   player.HP < self.lastHP then		-- we get Damage
-		logger:log('info',"Skill 4 interuppted")
+		logger:log('info',"Skill 4 interupted")
 		self.breakableSkillActiv = false
 		self.lastCastingTimer = 0
 	else
@@ -44,19 +44,20 @@ function DownState:update()
 
 	if profile['downskill4use'] == true and os.difftime(os.time(),self.downskill4used) > profile['downskill4cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(keySettings['skillweapon4'])	
-		cprintf(cli.red,"using downskill 4\n")
+		cprintf(cli.red,"using downskill %s\n", getKeyName(keySettings['skillweapon4']))
 		self.lastCastingTimer = profile['downskill4casttime']*1000
 --		yrest(profile['downskill4casttime']*1000)
 		self.downskill4used = os.time()
 		self.lastSkilluseTime = getTime()
 		self.breakableSkillActiv = true
 		self.lastHP = player.HP				-- remember HP to detect Damage
+		yrest(1000)			-- not sure if we need that to not break skill 4 immediately becaus of damage
 		return
 	end	
 
 	if profile['downskill2use'] == true and os.difftime(os.time(),self.downskill2used) > profile['downskill2cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(keySettings['skillweapon2'])
-		cprintf(cli.red,"using skill 2\n")
+		cprintf(cli.red,"using skill %s\n", getKeyName(keySettings['skillweapon2']))
 		self.lastCastingTimer = profile['downskill2casttime']*1000
 --		yrest(profile['downskill2casttime']*1000)
 		self.downskill2used = os.time()
@@ -65,7 +66,7 @@ function DownState:update()
 	end
 	if profile['downskill3use'] == true and os.difftime(os.time(),self.downskill3used) > profile['downskill3cd'] + SETTINGS['lagallowance'] then
 		keyboardPress(keySettings['skillweapon3'])
-		cprintf(cli.red,"using downskill 3\n")
+		cprintf(cli.red,"using downskill %s\n", getKeyName(keySettings['skillweapon3']))
 		self.lastCastingTimer = profile['downskill3casttime']*1000
 --		yrest(profile['downskill3casttime']*1000)
 		self.downskill3used = os.time()
@@ -73,26 +74,10 @@ function DownState:update()
 		return
 	end
 
-	cprintf(cli.red,"using downskill 1\n")
+	cprintf(cli.red,"using downskill %s\n", getKeyName(keySettings['skillweapon1']))
 	keyboardPress(keySettings['skillweapon1'])
 	self.lastCastingTimer = 750
 	self.lastSkilluseTime = getTime()
-
-
-
-
--- use skills during down / TODO: need some logic/priority/cooldowns
-
---	logger:log('info',"use 4 during being down");
---	keyboardPress(keySettings['skillweapon4'])
-
---	yrest(4000)
-
---	logger:log('info',"use 2 during being down");
---	keyboardPress(keySettings['skillweapon2'])
-
---	logger:log('info',"use 3 during being down");
---	keyboardPress(keySettings['skillweapon3'])
 
 
 end

@@ -130,11 +130,13 @@ function CombatState:update()
 		-- try to get a target
 		if self.getNewTarget == true and		-- automatic get new targets during in combat to clear area
 		( deltaTime(getTime(), self.lastTargetTime) > self.getNewTargetTimer ) then
+			logger:log('debug',"getNewTarget == true, try to get a new target in combat state");
 			player:getNextTarget()
 			self.lastTargetTime = getTime();
 		elseif self.getNewTarget == false and	-- no targeting in combat but we have to defend
 		   player.InCombat and
 		( deltaTime(getTime(), self.lastTargetTime) > self.getNewTargetTimer ) then
+			logger:log('debug',"still in combat, try to get the target in combat state");
 			player:getNextTarget()
 			self.lastTargetTime = getTime();
 		end
