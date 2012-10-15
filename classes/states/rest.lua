@@ -13,6 +13,8 @@ end
 function RestState:update()
 	logger:log('debug-states',"Coming to RestState:update()");
 
+	statusupdate()		-- update combat flag
+
 -- rest until HP is full
 	if player.HP == player.MaxHP then
 		logger:log('info',"Rested up to full HP so popping Rest state.")
@@ -37,6 +39,7 @@ function RestState:update()
 	if player.InCombat then
 		local combat = CombatState()
 		combat.getNewTarget = false			-- don't get new targets in combat state, just defend
+		logger:log('info',"Get in combat during resting. We push combat state..")
 		stateman:pushState(CombatState(combat));
 	end		
 
