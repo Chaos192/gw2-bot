@@ -88,4 +88,4 @@ function DownState:handleEvent(event)
 end
 
 
-table.insert(events,{name = "Down", func = DownState()})
+table.insert(events,{name = "Down", func = DownState})

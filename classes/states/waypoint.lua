@@ -208,4 +208,4 @@ end
 
 
 
-table.insert(events,{name = "Waypoint", func = WaypointState()})
+table.insert(events,{name = "Waypoint", func = WaypointState})

@@ -128,4 +128,4 @@ function ChestfarmState:interact()
 	end
 end
 
-table.insert(events,{name = "Chestfarm", func = ChestfarmState()})
+table.insert(events,{name = "Chestfarm", func = ChestfarmState})

@@ -29,4 +29,4 @@ function FarmState:update()
 		end
 	end
 end
-table.insert(events,{name = "Farm" ,func = FarmState()})
+table.insert(events,{name = "Farm" ,func = FarmState})

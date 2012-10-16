@@ -26,4 +26,4 @@ function TravelState:update()
 		stateman:popState();			
 	end
 end
-table.insert(events,{name = "Travel", func = TravelState()})
+table.insert(events,{name = "Travel", func = TravelState})

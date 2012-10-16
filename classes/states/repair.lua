@@ -27,4 +27,4 @@ function RepairState:update()
 		self.first = true
 	end
 end
-table.insert(events,{name = "Repair", func = RepairState()})
+table.insert(events,{name = "Repair", func = RepairState})

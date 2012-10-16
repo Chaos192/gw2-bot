@@ -107,4 +107,4 @@ function MultipathState:chooseStartPath()
 	return nearestPathName, nearestWPIndex;
 end
 
-table.insert(events,{name = "Multipath", func = MultipathState()})
+table.insert(events,{name = "Multipath", func = MultipathState})

@@ -35,4 +35,4 @@ function DeathState:handleEvent(event)
 end
 
 
-table.insert(events,{name = "Death", func = DeathState()})
+table.insert(events,{name = "Death", func = DeathState})

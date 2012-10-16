@@ -30,4 +30,4 @@ function FirstattackState:update()
 	end
 	if os.difftime(os.time(),self.starttime) > 5 then stateman:popState("first attack no damage") keyboardPress(key.VK_ESCAPE) end
 end
-table.insert(events,{ name = "Firstattack", func = FirstattackState() })
+table.insert(events,{ name = "Firstattack", func = FirstattackState })
