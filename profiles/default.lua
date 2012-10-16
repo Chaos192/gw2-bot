@@ -1,6 +1,7 @@
 return {
 	['loot'] = true, -- to loot mobs or not
 	['heal'] = 60, -- what % hp to use heal skill
+	['healEmergency'] = 20, -- what % hp to use heal skill immediately
 	['maxdistance'] = 2000, -- max distance to decide to attack mob
 	['fightdistance'] = 1100, -- distance when start to use skills, melee should be low (50)
 

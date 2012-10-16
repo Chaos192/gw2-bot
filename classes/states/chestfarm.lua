@@ -70,7 +70,7 @@ end
 
 function ChestfarmState:sync()
 	-- TODO: Make this depend on class and weapon skills.
-	keyboardPress(key.VK_4);
+	keyboardPress(keySettings['skillweapon4']);
 	self.lastskilltime = getTime();
 end
 

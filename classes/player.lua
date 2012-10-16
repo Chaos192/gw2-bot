@@ -50,6 +50,8 @@ function Player:constructor()
 	self.skillF2used = 0
 	self.skillF3used = 0
 	self.skillF4used = 0
+	self.lastSkillTimer = 0					-- Casttime of used Spell
+	self.lastSkilluseTime = getTime()			-- last time we used a skill
 	self.movementLastUpdate = getTime();
 	self.curtime = 0
 	self.LastX = 0
@@ -253,6 +255,18 @@ function Player:useSkills(_heal)
 		return
 	end
 
+--	emergency heal?
+	if (_heal) and
+	   player.HP/player.MaxHP*100 < profile['healEmergency']  then
+		self.lastSkillTimer = 0   
+	end
+
+	-- check there is still a skill used/channeled 
+	if deltaTime(getTime(), self.lastSkilluseTime ) < self.lastSkillTimer then	-- still other cast channeling?
+--		logger:log('debug',"still casting: %d < %d)\n", deltaTime(getTime(), self.lastSkilluseTime ), self.lastSkillTimer );
+		return
+	end
+
 	local proc = getProc()
 	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)	
 	if _heal then
@@ -262,7 +276,9 @@ function Player:useSkills(_heal)
 				keyboardPress(keySettings['skillheal'])
 			end
 			cprintf(cli.green,"heal key %s with ID %s\n", getKeyName(keySettings['skillheal']), self.skill[6])
-			yrest(profile['skill6casttime']*1000)
+			self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer
+			self.lastSkillTimer = profile['skill6casttime']*1000		-- Casttime of used Spell			
+--			yrest(profile['skill6casttime']*1000)
 		end
 		return
 	end
@@ -273,6 +289,9 @@ function Player:useSkills(_heal)
 	if os.difftime(os.time(),self.skill1used) > 1 then
 		keyboardPress(keySettings['skillweapon1'])
 		cprintf(cli.green,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon1']), self.skill[1])
+		self.lastSkillTimer = profile['skill1casttime'] or 0.75
+		self.lastSkillTimer = self.lastSkillTimer  * 1000
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer				
 		self.skill1used = os.time()	
 	end
 	if profile['skill2use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x6C, 0x40, 0x4C, 0xA}) == 0x300000) then
@@ -281,7 +300,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillweapon2'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon2']), self.skill[2])
-		yrest(profile['skill2casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill2casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill2casttime']*1000)
 		return
 	end
 	if profile['skill3use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x78, 0x40, 0x4C, 0xA}) == 0x300000) then
@@ -290,7 +311,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillweapon3'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon3']), self.skill[3])
-		yrest(profile['skill3casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill3casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill3casttime']*1000)
 		return
 	end
 	if profile['skill4use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x84, 0x40, 0x4C, 0xA}) == 0x300000) then
@@ -299,7 +322,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillweapon4'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon4']), self.skill[4])
-		yrest(profile['skill4casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill4casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill4casttime']*1000)
 		return
 	end	
 	if profile['skill5use'] == true and (memoryReadRepeat("intptr", proc, 0x153E7A4 ,{0x54, 0x160, 0x24,0x14,0xA}) == 0x300000) then
@@ -308,7 +333,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillweapon5'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon5']), self.skill[5])
-		yrest(profile['skill5casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill5casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill5casttime']*1000)
 		return
 	end
 	if profile['skill7use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xA8, 0x40, 0x4C, 0xA}) == 0x300000) then
@@ -317,7 +344,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillhelp1'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp1']), self.skill[7])
-		yrest(profile['skill7casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill7casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill7casttime']*1000)
 		return
 	end
 	if profile['skill8use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xB4, 0x40, 0x4C, 0xA}) == 0x300000) then
@@ -326,7 +355,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillhelp2'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp2']), self.skill[8])
-		yrest(profile['skill8casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill8casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill8casttime']*1000)
 		return
 	end
 	if profile['skill9use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xC0, 0x40, 0x4C, 0xA}) == 0x300000) then
@@ -335,7 +366,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillhelp3'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp3']), self.skill[9])
-		yrest(profile['skill9casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill9casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill9casttime']*1000)
 		return
 	end
 	if profile['skill0use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xC0, 0x174, 0x54, 0xA}) == 0x300000) then
@@ -344,7 +377,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillelite'])
 		end
 		cprintf(cli.red,"using eliteskill key %s with ID %s\n", getKeyName(keySettings['skillelite']), self.skill[0])
-		yrest(profile['skill0casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skill0casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skill0casttime']*1000)
 		return
 	end	
 	
@@ -355,7 +390,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillclass1'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass1']))
-		yrest(profile['skillF1casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skillF1casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skillF1casttime']*1000)
 		self.skillF1used = os.time()
 		return		
 	end
@@ -365,7 +402,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillclass2'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass2']))
-		yrest(profile['skillF2casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skillF2casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skillF2casttime']*1000)
 		self.skillF2used = os.time()
 		return		
 	end
@@ -375,7 +414,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillclass3'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass3']))
-		yrest(profile['skillF3casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skillF3casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skillF3casttime']*1000)
 		self.skillF3used = os.time()
 		return		
 	end
@@ -385,7 +426,9 @@ function Player:useSkills(_heal)
 			keyboardPress(keySettings['skillclass4'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass4']))
-		yrest(profile['skillF4casttime']*1000)
+		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
+		self.lastSkillTimer = profile['skillF4casttime']*1000		-- Casttime of used Spell			
+--		yrest(profile['skillF4casttime']*1000)
 		self.skillF4used = os.time()
 		return		
 	end
@@ -393,7 +436,20 @@ end
 
 -- old style keypress to use until mem write works for all classes
 function Player:useSkillsKeypress(_heal)
-	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)
+
+--	emergency heal?
+	if (_heal) and
+	   player.HP/player.MaxHP*100 < profile['healEmergency']  then
+		logger:log('debug', "Need a emergency heal: %d/%d HP < %d", player.HP, player.MaxHP, profile['healEmergency'] );
+		self.lastSkillTimer = 0   
+	end
+
+	-- check there is still a skill used/channeled 
+	if deltaTime(getTime(), self.lastSkilluseTime ) < self.lastSkillTimer then	-- still other cast channeling?
+--		logger:log('debug',"still casting: %d < %d)\n", deltaTime(getTime(), self.lastSkilluseTime ), self.lastSkillTimer );
+		return
+	end
+
 	if _heal then
 		if profile['skill6use'] == true and os.difftime(os.time(),self.skill6used) > profile['skill6cd'] + SETTINGS['lagallowance'] then
 			keyboardPress(keySettings['skillheal'])
@@ -403,6 +459,7 @@ function Player:useSkillsKeypress(_heal)
 			cprintf(cli.green,"heal key %s\n", getKeyName(keySettings['skillheal']))
 			yrest(profile['skill6casttime']*1000)
 			self.skill6used = os.time()
+			self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer			
 		else		-- FIX/TODO: skill use often not fit, if the regular healuse didn't work we just press the key again without remembering the time
 			keyboardPress(keySettings['skillheal'])
 			if profile['skill6ground'] == true then
@@ -415,6 +472,8 @@ function Player:useSkillsKeypress(_heal)
 --		return		-- FIX allow use of damage skills even if in heal mode
 	end
 
+	local dist = distance(self.X, self.Z, target.TargetX, target.TargetZ)
+
 	if( dist > profile['fightdistance'] ) then
 		return; -- Too far; don't use skills
 	end
@@ -425,8 +484,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillweapon2'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon2']))
-		yrest(profile['skill2casttime']*1000)
+		self.lastSkillTimer = profile['skill2casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill2casttime']*1000)
 		self.skill2used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer
 		targetupdate()
 		return
 	end
@@ -436,8 +497,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillweapon3'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon3']))
-		yrest(profile['skill3casttime']*1000)
+		self.lastSkillTimer = profile['skill3casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill3casttime']*1000)
 		self.skill3used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer
 		targetupdate()
 		return
 	end
@@ -447,8 +510,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillweapon4'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon4']))
-		yrest(profile['skill4casttime']*1000)
+		self.lastSkillTimer = profile['skill4casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill4casttime']*1000)
 		self.skill4used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return
 	end
@@ -458,8 +523,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillweapon5'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon5']))
-		yrest(profile['skill5casttime']*1000)
+		self.lastSkillTimer = profile['skill5casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill5casttime']*1000)
 		self.skill5used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return		
 	end
@@ -469,8 +536,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillhelp1'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillhelp1']))
-		yrest(profile['skill7casttime']*1000)
+		self.lastSkillTimer = profile['skill7casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill7casttime']*1000)
 		self.skill7used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return		
 	end
@@ -480,8 +549,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillhelp2'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillhelp2']))
-		yrest(profile['skill8casttime']*1000)
+		self.lastSkillTimer = profile['skill8casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill8casttime']*1000)
 		self.skill8used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return
 	end
@@ -491,8 +562,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillhelp3'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillhelp3']))
-		yrest(profile['skill9casttime']*1000)
+		self.lastSkillTimer = profile['skill9casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill9casttime']*1000)
 		self.skill9used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return
 	end
@@ -502,8 +575,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillelite'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillelite']))
-		yrest(profile['skill0casttime']*1000)
+		self.lastSkillTimer = profile['skill0casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skill0casttime']*1000)
 		self.skill0used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return		
 	end
@@ -513,8 +588,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillclass1'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass1']))
-		yrest(profile['skillF1casttime']*1000)
+		self.lastSkillTimer = profile['skillF1casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skillF1casttime']*1000)
 		self.skillF1used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return		
 	end
@@ -524,8 +601,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillclass2'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass2']))
-		yrest(profile['skillF2casttime']*1000)
+		self.lastSkillTimer = profile['skillF2casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skillF2casttime']*1000)
 		self.skillF2used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return		
 	end
@@ -535,8 +614,10 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillclass3'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass3']))
-		yrest(profile['skillF3casttime']*1000)
+		self.lastSkillTimer = profile['skillF3casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skillF3casttime']*1000)
 		self.skillF3used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return		
 	end
@@ -546,14 +627,20 @@ function Player:useSkillsKeypress(_heal)
 			keyboardPress(keySettings['skillclass4'])
 		end
 		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillclass4']))
-		yrest(profile['skillF4casttime']*1000)
+		self.lastSkillTimer = profile['skillF4casttime']*1000		-- Casttime of used Spell
+--		yrest(profile['skillF4casttime']*1000)
 		self.skillF4used = os.time()
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
 		targetupdate()
 		return		
 	end
 	if os.difftime(os.time(),self.skill1used) > profile['skill1cd'] then
 		keyboardPress(keySettings['skillweapon1'])
-		self.skill1used = os.time()	
+		cprintf(cli.red,"attack key %s\n", getKeyName(keySettings['skillweapon1']))
+		self.lastSkillTimer = profile['skill1casttime'] or 0.75
+		self.lastSkillTimer = self.lastSkillTimer  * 1000
+		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer		
+		self.skill1used = os.time()
 		targetupdate()
 	end	
 end
