@@ -41,4 +41,4 @@ function TestState:handleEvent(event)
 
 end
 
-table.insert(events,{name = "Test", func = TestState()})
+table.insert(events,{name = "Test", func = TestState})

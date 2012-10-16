@@ -26,4 +26,4 @@ function ObjectState:update()
 		stateman:popState();			
 	end
 end
-table.insert(events,{name = "Object", func = ObjectState()})
+table.insert(events,{name = "Object", func = ObjectState})

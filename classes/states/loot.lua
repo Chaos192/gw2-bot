@@ -28,4 +28,4 @@ function LootState:update()
 	stateman:popState("loot finished");
 	statusupdate();
 end
-table.insert(events,{name = "Loot", func = LootState()})
+table.insert(events,{name = "Loot", func = LootState})

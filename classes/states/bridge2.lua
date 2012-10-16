@@ -366,4 +366,4 @@ function Bridge2State:chooseStartpath()
 
 end
 
-table.insert(events,{name = "Bridge2", func = Bridge2State()})
+table.insert(events,{name = "Bridge2", func = Bridge2State})

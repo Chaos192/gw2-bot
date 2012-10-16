@@ -26,4 +26,4 @@ function VendorState:update()
 		stateman:popState();			
 	end
 end
-table.insert(events,{name = "Vendor", func = VendorState()})
+table.insert(events,{name = "Vendor", func = VendorState})

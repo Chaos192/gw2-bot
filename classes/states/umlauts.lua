@@ -93,4 +93,4 @@ function UmlautsState:handleEvent(event)
 
 end
 
-table.insert(events,{name = "Umlauts", func = UmlautsState()})
+table.insert(events,{name = "Umlauts", func = UmlautsState})

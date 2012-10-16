@@ -18,4 +18,4 @@ function IdleState:update()
 
 end
 
-table.insert(events,{name = "Idle", func = IdleState()})
+table.insert(events,{name = "Idle", func = IdleState})

@@ -26,4 +26,4 @@ function NpcState:update()
 		stateman:popState();			
 	end
 end
-table.insert(events,{name = "Npc", func = NpcState()})
+table.insert(events,{name = "Npc", func = NpcState})

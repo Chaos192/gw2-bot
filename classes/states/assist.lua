@@ -84,4 +84,4 @@ function AssistState:handleEvent(event)
 end
 
 
-table.insert(events,{name = "Assist", func = AssistState()})
+table.insert(events,{name = "Assist", func = AssistState})

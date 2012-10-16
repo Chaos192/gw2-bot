@@ -49,4 +49,4 @@ end
 function BridgeState:handleEvent(event)
 
 end
-table.insert(events,{name = "Bridge", func = BridgeState()})
+table.insert(events,{name = "Bridge", func = BridgeState})

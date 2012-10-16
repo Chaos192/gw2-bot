@@ -27,4 +27,4 @@ function QuestState:update()
 	end
 end
 
-table.insert(events,{name = "Quest", func = QuestState()})
+table.insert(events,{name = "Quest", func = QuestState})

@@ -27,4 +27,4 @@ function HealState:handleEvent(event)
 		return true;
 	end
 end
-table.insert(events,{name = "Heal", func = HealState()})
+table.insert(events,{name = "Heal", func = HealState})

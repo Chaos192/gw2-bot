@@ -51,4 +51,4 @@ function RestState:handleEvent(event)
 end
 
 
-table.insert(events,{name = "Rest", func = RestState()})
+table.insert(events,{name = "Rest", func = RestState})

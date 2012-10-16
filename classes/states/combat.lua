@@ -160,4 +160,4 @@ function CombatState:handleEvent(event)
 --	end
 
 end
-table.insert(events,{name = "Combat", func = CombatState()})
+table.insert(events,{name = "Combat", func = CombatState})

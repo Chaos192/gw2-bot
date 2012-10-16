@@ -158,8 +158,8 @@ function main()
 			end
 			if( var == "state" ) then
 				for k,v in pairs(events) do
-					if string.lower(v.name) == string.lower(val) then 
-						defaultState = v.func
+					if string.lower(v.name) == string.lower(val) then
+						defaultState = v.func();
 					end
 				end
 			end
