@@ -19,6 +19,8 @@ include("classes/target.lua");
 attach(getWin());
 player = Player();
 target = Target();
+bot = {}
+bot.startTimeBot = os.time();			-- remember start time of the bot
 
 playerinfoupdate()
 language = Language();
@@ -124,7 +126,7 @@ local function updates()
 	-- use heal skills
 	if player.Heal > player.HP/player.MaxHP*100 and
 		not player.Downed then	--TODO: use alive flag
-		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
+--		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
 		player:stopTurning()	-- avoid overturn during healing
 		player:useSkills(true)
 	end
@@ -236,6 +238,7 @@ function main()
 	print("Current state: ", stateman:getState().name);
 
 	while(stateman.running) do
+		player:logoutCheck()
 		setSpeed()
 		updates() 		-- has hpupdate and coordsupdate
 		handleInput();
