@@ -45,6 +45,7 @@ return {
 	['skillF4ground'] = false,
 	
 	--=== cast time of the skills ===--
+	['skill1casttime'] = 0.75,
 	['skill2casttime'] = 1,
 	['skill3casttime'] = 1,
 	['skill4casttime'] = 1,
