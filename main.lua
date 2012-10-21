@@ -2,7 +2,7 @@ BASE_PATH = getExecutionPath();
 profile = include(BASE_PATH .. "/profiles/default.lua", true);
 include("classes/language.lua");
 include("classes/statemanager.lua");
-include("addresses.lua");
+addresses = include("addresses.lua",true);
 include("config_default.lua");
 include("config.lua");
 local subdir = getDirectory(getExecutionPath() .. "/functions/")

@@ -20,6 +20,10 @@ function coordsupdate()
 	player.Dir1 = memoryReadRepeat("float", proc, addresses.playerDir1) or player.Dir1;
 	player.Dir2 = memoryReadRepeat("float", proc, addresses.playerDir2) or player.Dir2;
 	player.Angle = math.atan2(player.Dir2, player.Dir1) + math.pi;
+	player.ServX = memoryReadRepeat("floatptr", proc, addresses.playerbasehp,addresses.playerServX) or 0
+	player.ServZ = memoryReadRepeat("floatptr", proc, addresses.playerbasehp,addresses.playerServZ) or 0
+	player.ServY = memoryReadRepeat("floatptr", proc, addresses.playerbasehp,addresses.playerServY) or 0
+	
 --debug_value(player.Angle, "player.Angle");	
 --	player.MapId = memoryReadRepeat("int", proc, addresses.mapId) or 0;
 end
@@ -49,7 +53,10 @@ function statusupdate()
 	player.Interaction = (memoryReadRepeat("int", proc, addresses.Finteraction) ~= 0)
 	--player.InteractionId = memoryReadRepeat("int", proc, 0x1103EFD8);
 	player.InCombat = (memoryReadRepeat("int", proc, addresses.playerInCombat) ~= 0)
-	player.Downed = (memoryReadRepeat("int", proc, addresses.playerDowned) ~= 0)
+	local down = memoryReadRepeat("intptr", proc, addresses.playerbasehp,addresses.playerDowned)
+	player.Alive = (down == 1);
+	player.Downed = (down == 2);
+	player.Dead = (down == 0);
 	player.Loading = (memoryReadRepeat("intptr", proc, addresses.loadingbase,addresses.loadingOffset) ~= 0)
 
 	if( stateman and player.InCombat and not last_combat  and
@@ -58,6 +65,7 @@ function statusupdate()
 		stateman:pushEvent("entercombat", n.name);
 	end
 	player.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
+	player.Fid = 0
 	if player.Interaction == true then
 		player.Ftext = memoryReadUStringPtr(proc,addresses.FtextAddress, addresses.FtextOffset) or ""
 --		if( SETTINGS['language'] == "russian" ) then
@@ -65,6 +73,7 @@ function statusupdate()
 --		else
 --			player.Ftext = utf8ToAscii_umlauts(player.Ftext)
 --		end
+		player.Fid = memoryReadIntPtr(proc,addresses.FtextAddress, addresses.FidOffset) or 0
 	end
 end
 
