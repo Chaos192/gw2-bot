@@ -20,6 +20,9 @@ function Player:constructor()
 	self.X = 0
 	self.Z = 0
 	self.Y = 0
+	self.ServX = 0
+	self.ServZ = 0
+	self.ServY = 0
 	self.Dir1 = 0
 	self.Dir2 = 0
 	self.Angle = 0
@@ -30,6 +33,11 @@ function Player:constructor()
 	self.InteractionId = 0;
 	self.InCombat = false
 	self.Ftext = ""
+	self.Fid = 0
+	self.Alive = true
+	self.Downed = false
+	self.Dead = false
+
 	self.blockedTargets = {}			-- remember targets to ignore
 	self.skill = {}
 	self.skill[1] = 0
