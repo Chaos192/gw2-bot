@@ -7,11 +7,11 @@ return {
 	playerName = 0x15C0C68,
 	playerAccount = 0x15C0D38,
 
-	playerDir1 = 0x164EFFC,
-	playerDir2 = 0x164F000,
-	playerX = 0x164F014,
-	playerZ = 0x164F018,
-	playerY = 0x164F01C,
+	playerDir1 = 0x164F000,
+	playerDir2 = 0x164F004,
+	playerX = 0x164F018,
+	playerZ = 0x164F01C,
+	playerY = 0x164F020,
 
 	playerbasehp = 0x15C5284,
 	playerHPoffset = {0x150, 0x8},
@@ -69,8 +69,8 @@ return {
 		Anything below this line has (probably) *NOT* been updated automatically!
 		It has only been retained from previous versions.
 	--]]
-	playerServX = {0x44, 0x1C, 0x88, 0xD0},
 	playerbaseui = 0x1694F50,
+	playerServX = {0x44, 0x1C, 0x88, 0xD0},
 	playerServY = {0x44, 0x1C, 0x88, 0xD8},
 	playerVisZ = {0x44, 0x1C, 0x5C, 0xB8},
 	playerServZ = {0x44, 0x1C, 0x88, 0xD4},
