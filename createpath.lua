@@ -1,6 +1,6 @@
 BASE_PATH = getExecutionPath();
 profile = include(BASE_PATH .. "/profiles/default.lua", true);
-include("addresses.lua");
+addresses = include("addresses.lua",true);
 include("classes/player.lua");
 local subdir = getDirectory(getExecutionPath() .. "/functions/")
 for i,v in pairs(subdir) do

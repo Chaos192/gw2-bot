@@ -129,14 +129,16 @@ local updatePatterns =
 		startloc = 0x470000,
 	},	
 	playerbaseui = {
-		pattern = string.char(	
-		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 
-		0xB8, 0x60, 0xC1, 0x67, 0x01, 
-		0xC3, 
-		0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
-		mask = "xxxxxx????xxxxxx",
-		offset = 6,
-		startloc = 0xAC0000,
+		pattern = string.char(
+		0xFF, 0xD2, 
+		0xD9, 0x85, 0x78, 0xFF, 0xFF, 0xFF, 
+		0xD8, 0x65, 0xCC, 
+		0x8B, 0x15, 0xFF, 0xFF, 0xFF, 0xFF,
+		0x56,
+		0x56),
+		mask = "xxxxxxxxxxxxx????xx",
+		offset = 13,
+		startloc = 0xAe4000,
 	},
 	playerName = {
 		pattern = string.char(	
@@ -178,7 +180,7 @@ local updatePatterns =
 		adjustment = 0x10
 	},	
 }
-include("addresses.lua", true);
+addresses = include("addresses.lua", true);
 print("Addresses:", addresses);
 -- This function will attempt to automatically find the true addresses
 -- from GW2, even if they have moved.
@@ -323,8 +325,8 @@ function rewriteAddresses()
 	addresses['playerZ'] = addresses['playerbasecoords'] + 0x2C;
 	addresses['playerY'] = addresses['playerbasecoords'] + 0x30;
 
-	addresses['playerHPoffset'] = {0x150,0x3C,0x10};
-	addresses['playerMaxHPoffset'] = {0x150,0x3C,0x14};
+	addresses['playerHPoffset'] = {0x150,0x8};
+	addresses['playerMaxHPoffset'] = {0x150,0xC};
 	addresses['playerKarmaoffset'] = {0x1B0, 0x4, 0x1B4};
 	addresses['playerGoldoffset'] = {0x154, 0x50};
 	addresses['playerInCombat'] = addresses['playerbasehp'] - 0x1AC;
@@ -347,19 +349,22 @@ function rewriteAddresses()
 	addresses['XPbase'] = addresses['playerbaseui'] - 0x89C;
 	addresses['xpOffset'] = {0x80, 0x120, 0x14, 0x4};
 	addresses['xpnextlvlOffset'] = {0x80, 0x120, 0x14, 0xC};
-	addresses['targetbaseAddress'] = addresses['playerbaseui'] + 0x181C;
-	addresses['targetXoffset'] = {0x30, 0x5C, 0x110};
-	addresses['targetZoffset'] = {0x30, 0x5C, 0x114};
-	addresses['targetYoffset'] = {0x30, 0x5C, 0x118};
-	addresses['moveForward'] = addresses['playerbaseui'] + 0x18E8;
-	addresses['moveBackward'] = addresses['playerbaseui'] + 0x18EC;
-	addresses['turnLeft'] = addresses['playerbaseui'] + 0x18F8;
-	addresses['turnRight'] = addresses['playerbaseui'] + 0x18FC;
-	addresses['FtextAddress'] = addresses['playerbaseui'] + 0x19C4;
+	addresses['targetbaseAddress'] = addresses['playerbaseui'] + 0x1824;
+	addresses['targetXoffset'] = {0x30, 0x58, 0x110};
+	addresses['targetZoffset'] = {0x30, 0x58, 0x114};
+	addresses['targetYoffset'] = {0x30, 0x58, 0x118};
+	addresses['moveForward'] = addresses['playerbaseui'] + 0x18f0;
+	addresses['moveBackward'] = addresses['playerbaseui'] + 0x18f4;
+	addresses['turnLeft'] = addresses['playerbaseui'] + 0x1900;
+	addresses['turnRight'] = addresses['playerbaseui'] + 0x1904;
+	addresses['FtextAddress'] = addresses['playerbaseui'] + 0x19d0;
 	addresses['FtextOffset'] = {0x0, 0xC4, 0x22};
-
+	addresses['FidOffset'] = {0x0, 0xC4, 0x8};
+	
 	addresses['actlvlOffset'] = 0x7C;
 	addresses['adjlvlOffset'] = 0xA0;
+	
+	addresses['objectArray'] = addresses['playerbaseui'] + 0xFC;
 
 	-- Attempts to replace an entry in the template.
 	-- If successful, removes it from addresses.new
@@ -413,6 +418,7 @@ function rewriteAddresses()
 	template_replace('__STAT_BASE__',		'statbase');
 	template_replace('__ACT_LEVEL_OFFSET__',	'actlvlOffset');
 	template_replace('__ADJ_LEVEL_OFFSET__',	'adjlvlOffset');
+	template_replace('__OBJECT_ARRAY__',	'objectArray');
 
 	-- Remove unnecessary garbage
 	addresses['playerbasecoords'] = nil;
@@ -435,7 +441,7 @@ function rewriteAddresses()
 
 
 	-- Finally, reload our addresses (in case we needed anything from the addresses table)
-	include("addresses.lua");
+	addresses = include("addresses.lua",true);
 
 	--[[
 		file:write(
@@ -550,7 +556,7 @@ BASE_PATH = getExecutionPath();
 profile = include(BASE_PATH .. "/profiles/default.lua", true);
 include("classes/language.lua");
 include("classes/statemanager.lua");
-include("addresses.lua");
+addresses = include("addresses.lua",true);
 include("config_default.lua");
 include("config.lua");
 local subdir = getDirectory(getExecutionPath() .. "/functions/")
@@ -592,3 +598,4 @@ print("target X: "..target.TargetX)
 print("target Z: "..target.TargetZ)
 print("target Y: "..target.TargetY)
 --print("Monthly Ach XP: "..player.monthlyXP)
+printf("F ID: %x\n",player.Fid)
