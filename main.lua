@@ -89,11 +89,10 @@ end
 
 local function updates()
 
-	hpupdate()
-
+	hpupdate() -- just for logger print?
+	statusupdate()
 	-- Down State
-	if player.Downed and
-	   player.HP > 0 then
+	if player.Downed then
 		local runningState = stateman:getState();
 		if runningState.name ~= "Down" then
 			logger:log('info', "We are down: %d/%d HP", player.HP, player.MaxHP);
@@ -102,7 +101,7 @@ local function updates()
 	end
 
 	-- we are death
-	if player.HP == 0 then		-- TODO: use death flag instead
+	if player.Dead then
 		local runningState = stateman:getState();
 		if runningState.name ~= "Death" then
 			logger:log('info',"we died at %s", os.date("%H:%M:%S") );

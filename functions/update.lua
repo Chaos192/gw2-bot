@@ -78,24 +78,13 @@ function statusupdate()
 end
 
 function updateskills()
-	--=== skills 1 to 5 ===--
-	for i = 1,5 do
-		local int = memoryReadRepeat("intptr", proc, addresses.playerbasehp,{0x188, 0x100 + (i*4)})
+	local fskill = {6,7,8,9,0,1,2,3,4,5,"U1","U2","F1","F2","F3","F4","U3"}
+	for i = 1,17 do
+		local int = memoryReadRepeat("intptr", proc, addresses.playerbasehp,{0x188, 0xEC + (i*4)})
 		if int == 0 then 
-			return 
+			player.skill[fskill[i]] = 0
 		else
-			player.skill[i] = memoryReadRepeat("int", proc, int + 0x20) or player.skill[i]
-		end
-	end
-	--=== skills 6 to 0 ===--
-	for i = 0,4 do
-		local num = i+6
-		if num == 10 then num = 0 end
-		local int = memoryReadRepeat("intptr", proc, addresses.playerbasehp,{0x188, 0xF0 + (i*4)})
-		if int == 0 then 
-			return 
-		else
-			player.skill[num] = memoryReadRepeat("int", proc, int + 0x20) or player.skill[num]
+			player.skill[fskill[i]] = memoryReadRepeat("int", proc, int + 0x20) or player.skill[fskill[i]]
 		end
 	end
 end
