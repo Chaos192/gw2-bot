@@ -50,7 +50,13 @@ function Player:constructor()
 	self.skill[8] = 0
 	self.skill[9] = 0
 	self.skill[0] = 0
-	
+	self.skill["F1"] = 0
+	self.skill["F2"] = 0
+	self.skill["F3"] = 0
+	self.skill["F4"] = 0
+	self.skill["U1"] = 0
+	self.skill["U2"] = 0
+	self.skill["U3"] = 0	
 	self.turnDir = nil; -- Turn left/right
 	self.fbMovement = nil; -- Move forward/backward
 	self.skill1used = 0

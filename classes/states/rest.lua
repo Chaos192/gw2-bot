@@ -14,7 +14,7 @@ function RestState:update()
 	logger:log('debug-states',"Coming to RestState:update()");
 
 	statusupdate()		-- update combat flag
-
+	
 -- rest until HP is full
 	if player.HP == player.MaxHP then
 		logger:log('info',"Rested up to full HP so popping Rest state.")
@@ -28,7 +28,7 @@ function RestState:update()
 		return
 	end
 
-	if player.HP == 0 then
+	if player.Dead then
 		logger:log('info',"We are dead so popping Rest state.")
 		stateman:popState("Rest");
 		return

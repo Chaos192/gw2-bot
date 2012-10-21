@@ -18,7 +18,7 @@ function DeathState:update()
 
 	statusupdate()		-- for Death flag
 
-	if player.HP ~= 0 then
+	if not player.Dead then
 		logger:log('info',"We are alive or only down. Pop Death State")
 		stateman:popState("Death");
 		return
