@@ -319,11 +319,11 @@ function rewriteAddresses()
 	end
 	table.sort(addresses_new, addressSort);
 
-	addresses['playerDir1'] = addresses['playerbasecoords'] + 0x10;
-	addresses['playerDir2'] = addresses['playerbasecoords'] + 0x14;
-	addresses['playerX'] = addresses['playerbasecoords'] + 0x28;
-	addresses['playerZ'] = addresses['playerbasecoords'] + 0x2C;
-	addresses['playerY'] = addresses['playerbasecoords'] + 0x30;
+	addresses['playerDir1'] = addresses['playerbasecoords'] + 0x14;
+	addresses['playerDir2'] = addresses['playerbasecoords'] + 0x18;
+	addresses['playerX'] = addresses['playerbasecoords'] + 0x2C;
+	addresses['playerZ'] = addresses['playerbasecoords'] + 0x30;
+	addresses['playerY'] = addresses['playerbasecoords'] + 0x34;
 
 	addresses['playerHPoffset'] = {0x150,0x8};
 	addresses['playerMaxHPoffset'] = {0x150,0xC};
@@ -599,3 +599,4 @@ print("target Z: "..target.TargetZ)
 print("target Y: "..target.TargetY)
 --print("Monthly Ach XP: "..player.monthlyXP)
 printf("F ID: %x\n",player.Fid)
+print("F text: "..player.Ftext)
