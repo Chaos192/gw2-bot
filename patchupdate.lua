@@ -233,7 +233,7 @@ function findOffsets()
 			num4 = tonumber("0x0"..str[1])
 			local newpattern = string.char(num1,num2,num3,num4)
 			found	= findPatternInProcess(getProc(), newpattern, "xxxx", 0x15A0000, searchlen);
-			addresses[name] = found - 0x4
+			addresses[name] = found - 0x8
 		end	
 		
 		local msg = sprintf("Patched addresses.%s\t (value: 0x%X, at: 0x%X)", name, addresses[name], found + offset);
@@ -349,14 +349,14 @@ function rewriteAddresses()
 	addresses['XPbase'] = addresses['playerbaseui'] - 0x89C;
 	addresses['xpOffset'] = {0x80, 0x120, 0x14, 0x4};
 	addresses['xpnextlvlOffset'] = {0x80, 0x120, 0x14, 0xC};
-	addresses['targetbaseAddress'] = addresses['playerbaseui'] + 0x1824;
-	addresses['targetXoffset'] = {0x30, 0x58, 0x110};
-	addresses['targetZoffset'] = {0x30, 0x58, 0x114};
-	addresses['targetYoffset'] = {0x30, 0x58, 0x118};
-	addresses['moveForward'] = addresses['playerbaseui'] + 0x18f0;
-	addresses['moveBackward'] = addresses['playerbaseui'] + 0x18f4;
-	addresses['turnLeft'] = addresses['playerbaseui'] + 0x1900;
-	addresses['turnRight'] = addresses['playerbaseui'] + 0x1904;
+	addresses['targetbaseAddress'] = addresses['playerbaseui'] + 0x182c;
+	addresses['targetXoffset'] = {0x30, 0x58, 0x108};
+	addresses['targetZoffset'] = {0x30, 0x58, 0x10c};
+	addresses['targetYoffset'] = {0x30, 0x58, 0x110};
+	addresses['moveForward'] = addresses['playerbaseui'] + 0x18f8;
+	addresses['moveBackward'] = addresses['playerbaseui'] + 0x18fc;
+	addresses['turnLeft'] = addresses['playerbaseui'] + 0x1908;
+	addresses['turnRight'] = addresses['playerbaseui'] + 0x190c;
 	addresses['FtextAddress'] = addresses['playerbaseui'] + 0x19d0;
 	addresses['FtextOffset'] = {0x0, 0xC4, 0x22};
 	addresses['FidOffset'] = {0x0, 0xC4, 0x8};
