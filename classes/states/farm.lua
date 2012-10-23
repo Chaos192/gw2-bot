@@ -18,15 +18,16 @@ function FarmState:update()
 	else
 		self.skipmob = false
 	end
-	keyboardPress(keySettings['nexttarget'])
+	targetnearestmob()
+	--keyboardPress(keySettings['nexttarget'])
 	targetupdate()
 	self.prevmob = player.TargetMob
 	if self.skipmob ~= true and player.TargetMob ~= 0 then
 		stateman:pushEvent("Firstattack","farm have target");
-	else
+	--[[else
 		for i = 1,10 do
 			keyboardPress(keySettings['turnleft'])
-		end
+		end]]
 	end
 end
 table.insert(events,{name = "Farm" ,func = FarmState})

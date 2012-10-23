@@ -329,8 +329,8 @@ function rewriteAddresses()
 	addresses['playerMaxHPoffset'] = {0x150,0xC};
 	addresses['playerKarmaoffset'] = {0x1B0, 0x4, 0x1B4};
 	addresses['playerGoldoffset'] = {0x154, 0x50};
-	addresses['playerInCombat'] = addresses['playerbasehp'] - 0x1AC;
-	addresses['playerDowned'] = addresses['playerbasehp'] - 0x6C0;
+	addresses['playerInCombat'] = addresses['playerbasehp'] - 0x1C0;
+	addresses['playerDowned'] = addresses['playerbasehp'] - 0x6D4;
 
 	addresses['playerAccount'] = addresses['playerName'] + 0xD0;
 	addresses['loadingbase'] = addresses['playerName'] + 0x14A8;
