@@ -23,24 +23,21 @@ function RestState:update()
 	end
 
 	if player.Downed then
-		logger:log('info',"We are down so popping Rest state.")
+		logger:log('info',"We are down so popping rest state.")
 		stateman:popState("Rest");
 		return
 	end
 
 	if player.Dead then
-		logger:log('info',"We are dead so popping Rest state.")
-		stateman:popState("Rest");
+		logger:log('info',"We are dead so popping rest state.")
 		return
 	end
 
-
--- defend if inCombat but don't target new ones
+-- we ge in combat, stopping rest state
 	if player.InCombat then
-		local combat = CombatState()
-		combat.getNewTarget = false			-- don't get new targets in combat state, just defend
-		logger:log('info',"Get in combat during resting. We push combat state..")
-		stateman:pushState(CombatState(combat));
+		logger:log('info',"Get in combat so popping rest state.")
+		stateman:popState("Rest");
+		return
 	end		
 
 end
