@@ -21,6 +21,68 @@ function logInfo(_address,_name)
 	file:close()
 end
 
+function targetnearestmob(_range)
+	_range = _range or 50
+	local function mobstats(_arg1)
+		local lvl, adjlvl, X, Z, Y, id, hostile, name, targetingID
+		name = memoryReadUStringPtr(proc,_arg1 + 0x30,0x0)
+		hostile = memoryReadInt(proc, _arg1 + 0x60)
+		lvl = memoryReadIntPtr(proc, _arg1 + 0x128,0x7C)
+		targetingID = memoryReadInt( proc, _arg1 + 0x44)
+		hp = memoryReadFloatPtr(proc, _arg1 + 0x150,0x8)
+		maxhp = memoryReadFloatPtr(proc, _arg1 + 0x150,0xC)
+		
+		local b4 = memoryReadIntPtr(proc, _arg1 + 0x44,{0x1C,0x5C})
+		X = memoryReadFloat(proc, b4 + 0x44)
+		Z = memoryReadFloat(proc, b4 + 0x48)
+		Y = memoryReadFloat(proc, b4 + 0x4C)
+		
+		return lvl, X, Z, Y, hostile, name, targetingID, hp, maxhp
+	end
+	mobs = {}
+	local _time = getTime()
+	count = 0
+	local size = memoryReadIntPtr(proc, addresses.objectArray, 0x1C)
+	--print("The size of the array is "..size)
+	local one = memoryReadIntPtr(proc, addresses.objectArray,0x14)
+	for i = 0, size-1 do
+		local two = memoryReadInt(proc, one + (i*4))
+		if two ~= 0 then
+			coordsupdate()
+			count = count +1
+			lvl, X, Z, Y, hostile, name, targetingID, hp, maxhp = mobstats(two)
+			dist = distance(player.ServX,player.ServZ,player.ServY,X,Z,Y)	
+			if (hostile == 2 or hostile == 1) and lvl ~= 1 then
+				table.insert(mobs,{lvl = lvl, X=X, Z=Z, Y=Y, hostile=hostile,tarID = targetingID, dist = dist, HP = hp, MaxHP = maxhp, baseaddress = two,})
+			end
+		end
+	end
+	--print(count)
+	--print(deltaTime(getTime(), _time))
+
+	local function Sort(tab1, tab2)
+		if( tab1.dist < tab2.dist ) then
+			return true;
+		end
+		return false;
+	end
+	table.sort(mobs,Sort)
+	print("distance to closest mob "..mobs[1].dist)
+	
+	if _range >= mobs[1].dist and mobs[1].HP ~= 0 then
+		printf("HP: %d, MaxHP: %d\n",mobs[1].HP,mobs[1].MaxHP)
+		memoryWriteInt( proc, addresses.TargetAll,mobs[1].tarID)
+		yrest(500)
+		return mobs[1]
+	else
+		print("no mob in range to kill")
+		return
+	end
+	
+end
+
+
+--[[ keeping back up copy
 function mob()
 	local function mobstats(_arg1)
 		local lvl, adjlvl, X, Z, Y, id, hostile, name, targetingID
@@ -56,7 +118,7 @@ function mob()
 			if (hostile == 2 or hostile == 1) and lvl ~= 1 then
 			--if lvl ~= 1 and hostile == 0 then
 				table.insert(mobs,{lvl = lvl, X=X, Z=Z, Y=Y, id = id, hostile=hostile,tarID = targetingID, baseaddress = two, dist = dist, HP = hp, MaxHP = maxhp})
-				logInfo(two,i)
+				--logInfo(two,i)
 			end
 				--memoryWriteInt( proc, addresses.TargetAll,targetingID)
 				--yrest(1000)
@@ -79,6 +141,4 @@ function mob()
 	targetupdate()
 	printf("\nTarget all value: %x\n",player.TargetAll)
 end
-
-
-
+]]
