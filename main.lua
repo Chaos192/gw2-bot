@@ -91,6 +91,7 @@ local function updates()
 
 	hpupdate() -- just for logger print?
 	statusupdate()
+
 	-- Down State
 	if player.Downed then
 		local runningState = stateman:getState();
@@ -101,7 +102,7 @@ local function updates()
 	end
 
 	-- we are death
-	if player.Dead then
+	if player.Dead then		-- FIX/TODO sometimes Dead flag even if alive, thereby using still HP value
 		local runningState = stateman:getState();
 		if runningState.name ~= "Death" then
 			logger:log('info',"we died at %s", os.date("%H:%M:%S") );
@@ -124,8 +125,7 @@ local function updates()
 	
 	-- use heal skills
 	if player.Heal > player.HP/player.MaxHP*100 and
-		not player.Downed then	--TODO: use alive flag
---		logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", player.HP, player.MaxHP, player.Heal);
+		player.Alive then
 		player:stopTurning()	-- avoid overturn during healing
 		player:useSkills(true)
 	end
