@@ -5,10 +5,16 @@ SETTINGS['language'] = "english" -- "russian" "german" "french"
 SETTINGS['combatstate'] = true					--  entercombat state pushed automaticly if incombat (used by working with waypoint files)
 SETTINGS['lagallowance'] = 1
 SETTINGS['WPaccuracy'] = 100	-- how close should we be to a WP to count it as reached (needs <150 to interact/harvest)
+SETTINGS['maxFightTime'] = 120			-- how long we fight the same mob (to avoid to be attached to a buged mob)
+SETTINGS['maxFightTimeAssist'] = 600	-- how long we fight the same mob in assist state (it's longer because there are also boss fights)
+
+SETTINGS['FIX_ignoreInCombatFlag'] = true	-- is used in combat state as long inCombat is false instead of true during combat
 
 SETTINGS['botStopTime'] = 0						-- stop bot after x minutes, 0 = open-end
 
 SETTINGS['useKeypress'] = false		-- use old keypress style for Player:useSkills()
+
+
 
 LOG_MESSAGE = {};
 LOG_MESSAGE['error'] = true;					-- Log error messages (NOTE: Cannot be disabled)

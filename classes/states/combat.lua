@@ -16,7 +16,8 @@ function CombatState:constructor()
 	--self.startfight = os.time() 	-- DEPRECATED
 	self.waitForTargetInCombatTime = false			-- rember how long we wait for a target if in combat
 	self.waitForCombatWithTargetTime = false		-- rember how long we wait for combat flag until change/clear target
-	self.startFightTime = getTime();	--- ???
+	self.startFightTime = false;	-- start figting the same mob
+	self.lastTargetMob = 0			-- remember the mob we are fighting
 	self.lastTargetTime = getTime();
 	self.wasFighting = false;		-- remember if we have used skill
 end
@@ -64,26 +65,27 @@ function CombatState:update()
 			return
 		end
 
---		if self.waitForCombatWithTargetTime then
---debug_value(deltaTime(getTime(),self.waitForCombatWithTargetTime),"deltaTime(getTime(),self.waitForCombatWithTargetTime)")
---		end
-		
+
+		-- not in combat, perhaps we attack a hidden or bugged mob
 		if self.waitForCombatWithTargetTime	and			-- we wait for the combat flag
-		   deltaTime(getTime(),self.waitForCombatWithTargetTime)	> self.waitForAggroTimer then
+		   deltaTime(getTime(),self.waitForCombatWithTargetTime)	> self.waitForAggroTimer then	
 			self.waitForCombatWithTargetTime = false
 -- TODO: if getNewTarget = true then we should look for new target within combat state and block that target instead of leaving the state		
-			if player.TargetMob ~= 0 then
-				logger:log('info', "Don't get aggro from Target %s. Clear target.\n", player.TargetMob);
-				if not player.blockedTargets[player.TargetMob] then player.blockedTargets[player.TargetMob] = { count=0 } end
-				player.blockedTargets[player.TargetMob].time = os.time()
-				player.blockedTargets[player.TargetMob].count = player.blockedTargets[player.TargetMob].count + 1
---debug_value(player.TargetMob,"player.TargetMob")
---debug_value(player.blockedTargets[player.TargetMob].count,"player.blockedTargets[player.TargetMob].count in cmobat")				
-				keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
-				targetupdate()
+
+			if SETTINGS['FIX_ignoreInCombatFlag'] then
+				logger:log('info', "FIX: Don't get aggro from Target %s. But we ignore that atm\n", player.TargetMob);
+			else
+				if player.TargetMob ~= 0 then
+					logger:log('info', "Don't get aggro from Target %s. Clear target.\n", player.TargetMob);
+					if not player.blockedTargets[player.TargetMob] then player.blockedTargets[player.TargetMob] = { count=0 } end
+					player.blockedTargets[player.TargetMob].time = os.time()
+					player.blockedTargets[player.TargetMob].count = player.blockedTargets[player.TargetMob].count + 1
+					keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+					targetupdate()
+				end
+				stateman:popState("end of combat state forced, we don't get combat flag");
+				return
 			end
-			stateman:popState("end of combat state forced, we don't get combat flag");
-			return
 		end
 
 	end
@@ -92,10 +94,31 @@ function CombatState:update()
 
 		self.waitForTargetInCombatTime = false			-- reset timer in combat without target
 
+
+		-- remember mob and fight starttime
+		if player.TargetMob ~= self.lastTargetMob then	-- new mob
+			self.lastTargetMob = player.TargetMob
+			self.startFightTime = os.time()
+		end
+
+		-- remeber if we fight the same mob to long
+		if os.difftime(os.time(),self.startFightTime) > SETTINGS['maxFightTime'] then
+--			self.startFightTime = os.time()
+			keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+			if not player.blockedTargets[player.TargetMob] then player.blockedTargets[player.TargetMob] = { count=0 } end
+			player.blockedTargets[player.TargetMob].time = os.time()
+			player.blockedTargets[player.TargetMob].count = player.blockedTargets[player.TargetMob].count + 1
+			keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+			targetupdate()
+			stateman:popState("fight aborted: fight time > config setting for maxFightTime (%s sec)", SETTINGS['maxFightTime']);
+			return
+		end
+		
 		-- FIX/TODO: as long as clear target don't work properly in getNextTarget() we have to check blocked targets here again
 		if player.blockedTargets[player.TargetMob] and
 		   player.blockedTargets[player.TargetMob].count > 4 then
 			keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+			targetupdate()
 			stateman:popState("end of combat state forced, blocked target %s", player.TargetMob);
 			return
 		end
@@ -141,6 +164,7 @@ function CombatState:update()
 			self.lastTargetTime = getTime();
 		end
 
+		-- no more targets, leave combat state
 		if player.TargetMob == 0 then	-- still no target
 			stateman:popState("end of combat state, no more targets");
 			return

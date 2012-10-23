@@ -17,10 +17,16 @@ function AssistState:constructor()
 	self.interactionCount = 0;
 	self.InteractTime = getTime();	-- last time we do an F-Interaction
 	self.tabtime = getTime();		-- last time nexttarget
+	self.needInit = true
 end
 
 function AssistState:update()
 	logger:log('debug-states',"Coming to AssistState:update()");
+
+	if self.needInit then
+		SETTINGS['maxFightTime'] = SETTINGS['maxFightTimeAssist']	-- increase max fight time in assist state
+		self.needInit = false
+	end
 
 	statusupdate()		-- update Interaction
 	targetupdate()		-- to get target cleared
@@ -32,21 +38,10 @@ function AssistState:update()
 		logger:log('info',"get new target in assist state, we push combat state");
 		newCombat.getNewTarget = false			-- don't get new targets in combat state, just defend
 		stateman:pushState(newCombat);
---		stateman:pushEvent("Combat","assist have a target");		
---		player:useSkills()
 	elseif ( deltaTime(getTime(), self.tabtime ) > 500 ) then	-- only ever 0.5 second
 			player:getNextTarget();
 			self.tabtime = getTime();
 	end
-
---debug_value(player.Interaction, "player.Interaction")
---debug_value(player.InteractionId, "player.InteractionId")
---	if player.Interaction == true and 
---	   player.InteractionId == 0x1403F and -- Make sure it is actually loot
---	   deltaTime(getTime(), self.InteractTime ) > 500 then	-- only ever 0.5 second
---			stateman:pushState(LootState(), "Walked over lootable.");		-- loot
---			logger:log('info',"Interaction at (%d, %d)\n", player.X, player.Z);
---	end			
 
 
 -- Loot/Harvest if Interaction available
@@ -67,7 +62,6 @@ function AssistState:update()
 		if( self.interactionCount < 2 ) then		-- only 3 times at the same place
 			self.interactionX = player.X;
 			self.interactionZ = player.Z;
---			keyboardPress(keySettings['interact']);		-- loot
 			stateman:pushState(LootState(), "Walked over lootable.");		-- loot
 			logger:log('info',"Interaction at (%d, %d)\n", player.X, player.Z);
 			self.InteractTime = getTime();
