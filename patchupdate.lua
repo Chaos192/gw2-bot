@@ -336,7 +336,7 @@ function rewriteAddresses()
 	addresses['loadingbase'] = addresses['playerName'] + 0x14A8;
 	addresses['loadingOffset'] = {0xC8, 0x4, 0x0, 0x3BC};
 
-	addresses['FtextOffset'] = {0x0, 0x94, 0x14, 0x22};
+	--addresses['FtextOffset'] = {0x0, 0x94, 0x14, 0x22};
 
 	addresses['Finteraction'] = addresses['playerbaseui'] + 0x60;
 	addresses['TargetMob'] = addresses['playerbaseui'] + 0x78;
@@ -357,7 +357,7 @@ function rewriteAddresses()
 	addresses['moveBackward'] = addresses['playerbaseui'] + 0x18fc;
 	addresses['turnLeft'] = addresses['playerbaseui'] + 0x1908;
 	addresses['turnRight'] = addresses['playerbaseui'] + 0x190c;
-	addresses['FtextAddress'] = addresses['playerbaseui'] + 0x19d0;
+	addresses['FtextAddress'] = addresses['playerbaseui'] + 0x19d4;
 	addresses['FtextOffset'] = {0x0, 0xC4, 0x22};
 	addresses['FidOffset'] = {0x0, 0xC4, 0x8};
 	
