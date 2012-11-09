@@ -97,10 +97,9 @@ function WaypointState:update()
 -- target new mob
 	if( deltaTime(getTime(), self.lastTargetTime) > 500 ) and
 	  ( self.getTarget == true ) then	-- active looking for new targets
-		player:getNextTarget();
-		
-		if( player.TargetMob ) then
-			targetupdate();
+		--targetnearestmob()
+		targetupdate();
+		if( player.TargetMob ~= 0 ) then
 			if( distance(player.X, player.Z, target.TargetX, target.TargetZ) < profile['maxdistance'] ) then
 				player:stopMoving();
 				player:stopTurning();

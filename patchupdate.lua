@@ -176,7 +176,7 @@ local updatePatterns =
 		0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
 		mask = "xxxxxxxx????xxxxxx",
 		offset = 8,
-		startloc = 0xC06000,
+		startloc = 0xb56000,
 		adjustment = 0x10
 	},	
 }

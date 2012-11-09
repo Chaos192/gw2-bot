@@ -12,7 +12,7 @@ SETTINGS['FIX_ignoreInCombatFlag'] = true	-- is used in combat state as long inC
 
 SETTINGS['botStopTime'] = 0						-- stop bot after x minutes, 0 = open-end
 
-SETTINGS['useKeypress'] = false		-- use old keypress style for Player:useSkills()
+SETTINGS['useKeypress'] = true		-- use old keypress style for Player:useSkills()
 
 
 

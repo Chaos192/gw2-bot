@@ -220,7 +220,7 @@ function Bridge2State:update()
 	   self.moving == false and		-- not during moving
 	   self.facing == false  then	-- no targeting during facing to middle move
 		self.lastTargetTime = getTime()
-		player:getNextTarget()
+		targetnearestmob()
 	end
 
 -- attack 

@@ -80,7 +80,7 @@ function CombatState:update()
 					if not player.blockedTargets[player.TargetMob] then player.blockedTargets[player.TargetMob] = { count=0 } end
 					player.blockedTargets[player.TargetMob].time = os.time()
 					player.blockedTargets[player.TargetMob].count = player.blockedTargets[player.TargetMob].count + 1
-					keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
+					--keyboardPress(key.VK_ESCAPE)	-- TODO / use memwrite function to clear target
 					targetupdate()
 				end
 				stateman:popState("end of combat state forced, we don't get combat flag");
@@ -92,7 +92,7 @@ function CombatState:update()
 
 	if player.TargetMob ~= 0 then
 
-		self.waitForTargetInCombatTime = false			-- reset timer in combat without target
+		--[[self.waitForTargetInCombatTime = false			-- reset timer in combat without target
 
 
 		-- remember mob and fight starttime
@@ -121,12 +121,12 @@ function CombatState:update()
 			targetupdate()
 			stateman:popState("end of combat state forced, blocked target %s", player.TargetMob);
 			return
-		end
+		end]]
 
 		player:useSkills()
 		self.wasFighting = true							-- remember if we have used skills
 
-		if not player.InCombat and						-- remember how long we wait for getting aggro from mob
+		--[[if not player.InCombat and						-- remember how long we wait for getting aggro from mob
 		   not self.waitForCombatWithTargetTime then 	-- FIX/TODO: need that as long we don't see if we do damage to the mob
 			self.waitForCombatWithTargetTime = getTime()
 		end
@@ -136,7 +136,7 @@ function CombatState:update()
 		if player.InCombat and
 		   player.blockedTargets[player.TargetMob] then
 			player.blockedTargets[player.TargetMob] = nil
-		end
+		end]]
 
 	else												-- don't have a target
 
@@ -154,13 +154,12 @@ function CombatState:update()
 		if self.getNewTarget == true and		-- automatic get new targets during in combat to clear area
 		( deltaTime(getTime(), self.lastTargetTime) > self.getNewTargetTimer ) then
 			logger:log('debug',"getNewTarget == true, try to get a new target in combat state");
-			player:getNextTarget()
+			targetnearestmob()
 			self.lastTargetTime = getTime();
-		elseif self.getNewTarget == false and	-- no targeting in combat but we have to defend
-		   player.InCombat and
+		elseif player.InCombat and
 		( deltaTime(getTime(), self.lastTargetTime) > self.getNewTargetTimer ) then
 			logger:log('debug',"still in combat, try to get the target in combat state");
-			player:getNextTarget()
+			targetnearestmob()
 			self.lastTargetTime = getTime();
 		end
 
