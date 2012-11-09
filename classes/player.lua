@@ -74,14 +74,14 @@ function Player:constructor()
 end
 
 function Player:stopMoving()
-	local proc = getProc();
+local proc = getProc()
 	-- Ensure we're not moving
 	memoryWriteInt(proc, addresses.moveForward, 0);
 	memoryWriteInt(proc, addresses.moveBackward, 0);
 end
 
 function Player:stopTurning()
-	local proc = getProc();
+local proc = getProc()
 	-- Ensure we're not turning
 	memoryWriteInt(proc, addresses.turnLeft, 0);
 	memoryWriteInt(proc, addresses.turnRight, 0);
@@ -89,9 +89,9 @@ function Player:stopTurning()
 end
 
 function Player:move(direction, dist)
+local proc = getProc()
 	local stop = false
-	local proc = getProc()
-	dist = dist or 100
+	dist = dist or 10
 	
 	local deltatime
 	if direction == "left" or direction == "right" then
@@ -103,7 +103,7 @@ function Player:move(direction, dist)
 	if deltaTime(self.curtime, self.movementLastUpdate) > deltatime then
 		memoryWriteInt(proc, addresses.turnRight, 0);	
 		memoryWriteInt(proc, addresses.turnLeft, 0);
-		if 200 > dist then 
+		if 20 > dist then 
 			memoryWriteInt(proc, addresses.moveForward, 0);
 			memoryWriteInt(proc, addresses.moveBackward, 0);
 		end
@@ -115,12 +115,12 @@ function Player:move(direction, dist)
 			memoryWriteInt(proc, addresses.turnRight, 1);
 		end
 		if( direction == "forward" ) then
-			if 20 > distance(self.LastX,self.LastZ,self.X,self.Z) then
+			if 1 > distance(self.LastX,self.LastZ,self.X,self.Z) then
 				if not self.notMovingTime then
 					self.notMovingTime = getTime()
 				end
 				if deltaTime(getTime(), self.notMovingTime ) > 5000 then 	-- we stick for more then 5 sec, stop the bot
-					error('we dont move since more then 5 seconds. We stop the bot',0)
+					--error('we dont move since more then 5 seconds. We stop the bot',0)
 				elseif deltaTime(getTime(), self.notMovingTime ) > 200 then -- TODO: unstick state
 					logger:log('info',"not moving");
 					-- deal with not moving here.
@@ -147,7 +147,7 @@ function Player:facedirection(x, z, _angle, dist)
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
-	_angle = _angle or 0.4
+	_angle = _angle or 0.1
 	-- Check our angle to the waypoint.
 	local angle = math.atan2(z - self.Z, x - self.X) + math.pi;
 	local angleDif = angleDifference(angle, self.Angle);
@@ -171,17 +171,30 @@ function Player:facedirection(x, z, _angle, dist)
 end
 
 function Player:moveTo_step(x, z, _dist)
-	_dist = _dist or SETTINGS['WPaccuracy'];
+	local proc = getProc()
+	_dist = _dist or 5
 	coordsupdate()
 	x = x or 0;
 	z = z or 0;
 	local angle
 	local dist = distance(self.X, self.Z, x, z)
 	
-	if 400 > dist then angle = 0.5 else angle = 0.2 end
+	if 15 > dist then 
+		angle = 0.5 
+	else 
+		angle = 0.2 
+	end
 
 	logger:log('debug-moving',"at Player:moveTo_step: Distance %d from WP (%d,%d)", dist, x, z);
 	if self:facedirection(x, z, angle, dist) then
+		if dist > 10 and memoryReadInt(proc, addresses.moveForward) == 1 then 
+			local tar = targetnearestmob()
+			if tar then 
+				self:stopMoving()
+				stateman:pushState(FirstattackState()) 
+				return
+			end
+		end
 		if dist > _dist then
 			self:move("forward")
 		else
@@ -262,7 +275,7 @@ function Player:getNextTarget(_dist)
 end
 
 function Player:useSkills(_heal)
-
+local proc = getProc()
 -- FIX until memwrite works for all classes
 	if ( SETTINGS['useKeypress'] ) then
 		self:useSkillsKeypress(_heal)
@@ -271,17 +284,10 @@ function Player:useSkills(_heal)
 
 --	emergency heal?
 	if (_heal) and
-	   player.HP/player.MaxHP*100 < profile['healEmergency']  then
-		self.lastSkillTimer = 0   
+	   profile['healEmergency'] > player.HP/player.MaxHP*100 then
+		self.lastSkillTimer = 0
 	end
 
-	-- check there is still a skill used/channeled 
-	if deltaTime(getTime(), self.lastSkilluseTime ) < self.lastSkillTimer then	-- still other cast channeling?
---		logger:log('debug',"still casting: %d < %d)\n", deltaTime(getTime(), self.lastSkilluseTime ), self.lastSkillTimer );
-		return
-	end
-
-	local proc = getProc()
 	if _heal then
 		if profile['skill6use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x9C, 0x40, 0x4C, 0xA}) == 0x300000) then
 			logger:log('info',"use heal skills at %d/%d health (healing startes at %d percent)\n", self.HP, self.MaxHP, self.Heal);
@@ -290,9 +296,7 @@ function Player:useSkills(_heal)
 				keyboardPress(keySettings['skillheal'])
 			end
 			cprintf(cli.green,"heal key %s with ID %s\n", getKeyName(keySettings['skillheal']), self.skill[6])
-			self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer
-			self.lastSkillTimer = profile['skill6casttime']*1000		-- Casttime of used Spell			
---			yrest(profile['skill6casttime']*1000)
+			yrest(profile['skill6casttime']*1000)
 		end
 		return
 	end
@@ -305,97 +309,78 @@ function Player:useSkills(_heal)
 	if os.difftime(os.time(),self.skill1used) > 1 then
 		keyboardPress(keySettings['skillweapon1'])
 		cprintf(cli.green,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon1']), self.skill[1])
-		self.lastSkillTimer = profile['skill1casttime'] or 0.75
-		self.lastSkillTimer = self.lastSkillTimer  * 1000
-		self.lastSkilluseTime = getTime()			-- last time we used a skill/ to calculate casting timer				
 		self.skill1used = os.time()	
 	end
-	if profile['skill2use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x6C, 0x40, 0x4C, 0xA}) == 0x300000) then
+	if profile['skill2use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x84, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillweapon2'])
 		if profile['skill2ground'] == true then
 			keyboardPress(keySettings['skillweapon2'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon2']), self.skill[2])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill2casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill2casttime']*1000)
+		yrest(profile['skill2casttime']*1000)
 		return
 	end
-	if profile['skill3use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x78, 0x40, 0x4C, 0xA}) == 0x300000) then
+	if profile['skill3use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x84, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillweapon3'])
 		if profile['skill3ground'] == true then
 			keyboardPress(keySettings['skillweapon3'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon3']), self.skill[3])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill3casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill3casttime']*1000)
+		yrest(profile['skill3casttime']*1000)
 		return
 	end
-	if profile['skill4use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x84, 0x40, 0x4C, 0xA}) == 0x300000) then
+	if profile['skill4use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0x9C, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillweapon4'])	
 		if profile['skill4ground'] == true then
 			keyboardPress(keySettings['skillweapon4'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon4']), self.skill[4])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill4casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill4casttime']*1000)
+		yrest(profile['skill4casttime']*1000)
 		return
 	end	
-	if profile['skill5use'] == true and (memoryReadRepeat("intptr", proc, 0x153E7A4 ,{0x54, 0x160, 0x24,0x14,0xA}) == 0x300000) then
+	if profile['skill5use'] == true and (memoryReadRepeat("intptr", proc, 0x155D8AC ,{0x54, 0x160, 0x24,0x14,0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillweapon5'])
 		if profile['skill5ground'] == true then
 			keyboardPress(keySettings['skillweapon5'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillweapon5']), self.skill[5])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill5casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill5casttime']*1000)
+		yrest(profile['skill5casttime']*1000)
 		return
 	end
-	if profile['skill7use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xA8, 0x40, 0x4C, 0xA}) == 0x300000) then
+	if profile['skill7use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xC0, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillhelp1'])
 		if profile['skill7ground'] == true then
 			keyboardPress(keySettings['skillhelp1'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp1']), self.skill[7])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill7casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill7casttime']*1000)
+		yrest(profile['skill7casttime']*1000)
 		return
 	end
-	if profile['skill8use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xB4, 0x40, 0x4C, 0xA}) == 0x300000) then
+	if profile['skill8use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xCC, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillhelp2'])
 		if profile['skill8ground'] == true then
 			keyboardPress(keySettings['skillhelp2'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp2']), self.skill[8])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill8casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill8casttime']*1000)
+		yrest(profile['skill8casttime']*1000)
 		return
 	end
-	if profile['skill9use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xC0, 0x40, 0x4C, 0xA}) == 0x300000) then
+	if profile['skill9use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xD8, 0x40, 0x4C, 0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillhelp3'])
 		if profile['skill9ground'] == true then
 			keyboardPress(keySettings['skillhelp3'])
 		end
 		cprintf(cli.red,"using skill key %s with ID %s\n", getKeyName(keySettings['skillhelp3']), self.skill[9])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill9casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill9casttime']*1000)
+		yrest(profile['skill9casttime']*1000)
 		return
 	end
-	if profile['skill0use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xC0, 0x174, 0x54, 0xA}) == 0x300000) then
+	if profile['skill0use'] == true and (memoryReadRepeat("intptr", proc, addresses.skillCDaddress,{0xB0, 0xCC, 0x174, 0x54, 0xA}) == 0x300000) then
 		keyboardPress(keySettings['skillelite'])
 		if profile['skill0ground'] == true then
 			keyboardPress(keySettings['skillelite'])
 		end
 		cprintf(cli.red,"using eliteskill key %s with ID %s\n", getKeyName(keySettings['skillelite']), self.skill[0])
-		self.lastSkilluseTime = getTime()							-- last time we used a skill/ to calculate casting timer
-		self.lastSkillTimer = profile['skill0casttime']*1000		-- Casttime of used Spell			
---		yrest(profile['skill0casttime']*1000)
+		yrest(profile['skill0casttime']*1000)
 		return
 	end	
 	

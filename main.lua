@@ -14,10 +14,11 @@ end
 include("classes/logger.lua");
 include("classes/player.lua");
 include("classes/target.lua");
-
+include("classes/pet.lua");
 
 attach(getWin());
 player = Player();
+pet = Pet();
 target = Target();
 bot = {}
 bot.startTimeBot = os.time();			-- remember start time of the bot
@@ -111,8 +112,8 @@ local function updates()
 	end
 
 -- we need a rest out of combat
-	if player.HP/player.MaxHP*100 < player.Heal and	-- need a rest
- 	   player.HP ~= 0	and							-- but only if alive
+	if player.Heal > player.HP/player.MaxHP*100 and	-- need a rest
+ 	   player.Alive	and							-- but only if alive
 	   not player.InCombat then						-- still targeting if already in combat (to avoid standing still while being attacked without target)
 		local runningState = stateman:getState();
 		if runningState.name ~= "Rest" then
@@ -141,10 +142,7 @@ registerTimer("setwindow", secondsToTimer(1), _windowname);
 
 
 function main()
-	local defaultState = nil;
-	local wpName = nil;
-	local multipathName = nil;
-
+	local defaultState, wpName, multipathName, pathName
 	stateman = StateManager();
 	for i = 2,#args do
 		local foundpos = string.find(args[i], ":", 1, true);
@@ -154,6 +152,9 @@ function main()
 			if( var == "path" ) then
 				wpName = val;
 			end
+			if( var == "paths" ) then
+				pathName = val;
+			end			
 			if( var == "multipath" ) then
 				multipathName = val;
 			end
@@ -229,8 +230,10 @@ function main()
 		stateman:pushState(defaultState);
 	elseif ( multipathName ) then				-- load file with multiple waypoint paths
 		stateman:pushState(MultipathState(multipathName));
-	else
+	elseif wpName then
 		stateman:pushState(WaypointState(wpName));
+	elseif pathName then
+		stateman:pushState(PathState(pathName));
 	end
 
 	print("Version: "..version)

@@ -20,9 +20,10 @@ function logInfo(_address,_name)
 	end
 	file:close()
 end
-
+local prevmob = {}
+local npc = {}
 function targetnearestmob(_range)
-	_range = _range or 50
+	_range = _range or 35
 	local function mobstats(_arg1)
 		local lvl, adjlvl, X, Z, Y, id, hostile, name, targetingID
 		name = memoryReadUStringPtr(proc,_arg1 + 0x30,0x0)
@@ -33,9 +34,11 @@ function targetnearestmob(_range)
 		maxhp = memoryReadFloatPtr(proc, _arg1 + 0x150,0xC)
 		
 		local b4 = memoryReadIntPtr(proc, _arg1 + 0x44,{0x1C,0x5C})
-		X = memoryReadFloat(proc, b4 + 0x44)
-		Z = memoryReadFloat(proc, b4 + 0x48)
-		Y = memoryReadFloat(proc, b4 + 0x4C)
+		if b4 then
+			X = memoryReadFloat(proc, b4 + 0x44)
+			Z = memoryReadFloat(proc, b4 + 0x48)
+			Y = memoryReadFloat(proc, b4 + 0x4C)
+		end
 		
 		return lvl, X, Z, Y, hostile, name, targetingID, hp, maxhp
 	end
@@ -43,23 +46,25 @@ function targetnearestmob(_range)
 	local _time = getTime()
 	count = 0
 	local size = memoryReadIntPtr(proc, addresses.objectArray, 0x1C)
-	--print("The size of the array is "..size)
 	local one = memoryReadIntPtr(proc, addresses.objectArray,0x14)
+	--print("The size of the array is "..size)
 	for i = 0, size-1 do
 		local two = memoryReadInt(proc, one + (i*4))
 		if two ~= 0 then
 			coordsupdate()
 			count = count +1
 			lvl, X, Z, Y, hostile, name, targetingID, hp, maxhp = mobstats(two)
-			dist = distance(player.ServX,player.ServZ,player.ServY,X,Z,Y)	
-			if (hostile == 2 or hostile == 1) and lvl ~= 1 then
-				table.insert(mobs,{lvl = lvl, X=X, Z=Z, Y=Y, hostile=hostile,tarID = targetingID, dist = dist, HP = hp, MaxHP = maxhp, baseaddress = two,})
+			if X ~= nil then 
+				dist = distance(player.ServX,player.ServZ,player.ServY,X,Z,Y)
+				if (hostile == 2 or hostile == 1) and lvl ~= 1 then
+					table.insert(mobs,{lvl = lvl, X=X, Z=Z, Y=Y, hostile=hostile,tarID = targetingID, dist = dist, HP = hp, MaxHP = maxhp, baseaddress = two,})
+				end
 			end
 		end
 	end
-	--print(count)
-	--print(deltaTime(getTime(), _time))
-
+	print(count)
+	print(deltaTime(getTime(), _time))
+	table.print(npc)
 	local function Sort(tab1, tab2)
 		if( tab1.dist < tab2.dist ) then
 			return true;
@@ -68,17 +73,17 @@ function targetnearestmob(_range)
 	end
 	table.sort(mobs,Sort)
 	print("distance to closest mob "..mobs[1].dist)
-	
-	if _range >= mobs[1].dist and mobs[1].HP ~= 0 then
-		printf("HP: %d, MaxHP: %d\n",mobs[1].HP,mobs[1].MaxHP)
-		memoryWriteInt( proc, addresses.TargetAll,mobs[1].tarID)
-		yrest(500)
-		return mobs[1]
-	else
-		print("no mob in range to kill")
-		return
+	for i = 1,3 do
+		if mobs[i].HP ~= 0 and _range >= mobs[i].dist and mobs[i].tarID ~= prevmob.tarID then
+			printf("HP: %d, MaxHP: %d\n",mobs[i].HP,mobs[i].MaxHP)
+			memoryWriteInt( proc, addresses.TargetAll,mobs[i].tarID)
+			yrest(100)
+			prevmob = mobs[i]
+			return mobs[i]
+		end
 	end
-	
+	print("no mob in range to kill")
+	return
 end
 
 
@@ -142,3 +147,28 @@ function mob()
 	printf("\nTarget all value: %x\n",player.TargetAll)
 end
 ]]
+
+function followcharname(_name)
+	local function playerstats2(_arg1)
+		name = memoryReadUStringPtr(proc, addresses.objectArray,{0x28,_arg1,0x30,0x0})
+		X = memoryReadFloatPtr(proc, addresses.objectArray,{0x28,_arg1,0xC,0x44,0x1C,0x5C,0xB4})
+		Z = memoryReadFloatPtr(proc, addresses.objectArray,{0x28,_arg1,0xC,0x44,0x1C,0x5C,0xB8})
+		Y = memoryReadFloatPtr(proc, addresses.objectArray,{0x28,_arg1,0xC,0x44,0x1C,0x5C,0xBC})
+		return X, Z, Y, name
+	end
+	npc = {}
+   local proc = getProc()
+   size = memoryReadRepeat("intptr", proc, addresses.objectArray, 0x30)
+   print("The size of the array is "..size)
+   for i = 1, size-1 do
+      if memoryReadRepeat("intptr", proc, addresses.objectArray,{0x28,i*4}) ~= 0 then
+         if memoryReadIntPtr(proc, addresses.objectArray,{0x28,i*4,0xC}) ~= 0 then
+            X, Z, Y, name = playerstats2(i*4)
+			table.insert(npc,{Name = name,X=X,Z=Z,Y=Y})
+			if _name == name then
+				return X,Z,Y
+			end
+         end
+      end
+   end
+end

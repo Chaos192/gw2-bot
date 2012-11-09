@@ -16,15 +16,9 @@ function FirstattackState:update()
 	targetupdate()
 	coordsupdate()
 	if player.TargetMob ~= 0 then
-		if profile['maxdistance'] > distance(player.X, player.Z, target.TargetX, target.TargetZ) then
-			if player:moveTo_step(target.TargetX, target.TargetZ, profile['fightdistance']) then
-				self.starttime = os.time()
-				keyboardPress(key.VK_1)
-				yrest(1000)
-			end	
-		else
-			stateman:popState("Target to far away") keyboardPress(key.VK_ESCAPE)
-		end
+		self.starttime = os.time()
+		keyboardPress(key.VK_1)
+		yrest(1000)
 	else
 		stateman:popState("first attack popped") return -- returned from combat or loot
 	end

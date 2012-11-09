@@ -14,9 +14,9 @@ function targetupdate()
 end
 
 function coordsupdate()
-	player.X = memoryReadRepeat("float", proc, addresses.playerX) or player.X;
-	player.Z = memoryReadRepeat("float", proc, addresses.playerZ) or player.Z;
-	player.Y = memoryReadRepeat("float", proc, addresses.playerY) or player.Y;
+	player.X = memoryReadRepeat("floatptr", proc, addresses.playerbasehp,addresses.playerServX) or player.X;
+	player.Z = memoryReadRepeat("floatptr", proc, addresses.playerbasehp,addresses.playerServZ) or player.Z;
+	player.Y = memoryReadRepeat("floatptr", proc, addresses.playerbasehp,addresses.playerServY) or player.Y;
 	player.Dir1 = memoryReadRepeat("float", proc, addresses.playerDir1) or player.Dir1;
 	player.Dir2 = memoryReadRepeat("float", proc, addresses.playerDir2) or player.Dir2;
 	player.Angle = math.atan2(player.Dir2, player.Dir1) + math.pi;
@@ -62,7 +62,7 @@ function statusupdate()
 	if( stateman and player.InCombat and not last_combat  and
 	  SETTINGS['combatstate'] == true) then		-- allow entercombat state pushed automaticly if incombat
 		local n = debug.getinfo(2);
-		stateman:pushEvent("entercombat", n.name);
+		stateman:pushState(CombatState(), n.name);
 	end
 	player.Ftext = "" -- reset it as the text doesn't change in memory if no "F" on screen	
 	player.Fid = 0
