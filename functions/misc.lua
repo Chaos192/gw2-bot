@@ -69,7 +69,7 @@ function setSpeed(_speed)
 	
 	local timer = 500
 	local proc = getProc()
-	local speed = _speed or SETTINGS['speed'] 	-- 9.1 is standard speed
+	local speed = _speed or SETTINGS['speed'] 	-- 9.1875 is standard speed
 
 	if not timerLastSpeedSet then
 		timerLastSpeedSet = getTime()	-- if never done we do it now

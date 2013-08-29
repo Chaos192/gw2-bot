@@ -28,7 +28,6 @@ function Player:constructor()
 	self.Angle = 0
 	self.TargetMob = 0
 	self.TargetAll = 0
-	self.Loot = false
 	self.Interaction = false
 	self.InteractionId = 0;
 	self.InCombat = false
