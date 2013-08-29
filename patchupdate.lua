@@ -106,7 +106,7 @@ local updatePatterns =
 	},
 	playerbasecoords = {
 		pattern = string.char(
-		0x00, 0x00, 0x80, 0x00, 0x89, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xC3, 0xCC, 
+		0x00, 0x00, 0x08, 0x00, 0x89, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xC3, 0xCC, 
 		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC),
 		mask = "xxxxxx????xxxxxxxxxxxx",
 		offset = 6,
@@ -178,7 +178,21 @@ local updatePatterns =
 		offset = 8,
 		startloc = 0xb56000,
 		adjustment = 0x10
-	},	
+	},
+
+	FtextAddress = {
+		pattern = string.char(
+		0x66, 0x0F, 0x62, 0xD9,
+		0x66, 0x0F, 0x62, 0xD0,
+		0x66, 0x0F, 0x62, 0xDA,
+		0x0F, 0x29, 0x1D, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xC3, 
+		0xCC),
+		mask = "xxxxxxxxxxxxxxx????xx",
+		offset = 15,
+		startloc = 0x128A500,
+		adjustment = -0x44
+	},
 }
 addresses = include("addresses.lua", true);
 print("Addresses:", addresses);
@@ -254,7 +268,7 @@ function findOffsets()
 		end
 
 		if tmp[1] == 0x90 then
-			error("Patch bytes = 0x90. Please restart the game before trying to run \"GW2\update\" again.")
+			error("Patch bytes = 0x90. Please restart the game before trying to run \"GW2 update\" again.")
 		end
 
 		printf(readBytesUpdateMsg, name, address, bytesString)
@@ -324,47 +338,58 @@ function rewriteAddresses()
 	addresses['playerX'] = addresses['playerbasecoords'] + 0x2C;
 	addresses['playerZ'] = addresses['playerbasecoords'] + 0x30;
 	addresses['playerY'] = addresses['playerbasecoords'] + 0x34;
-
-	addresses['playerHPoffset'] = {0x150,0x8};
-	addresses['playerMaxHPoffset'] = {0x150,0xC};
-	addresses['playerKarmaoffset'] = {0x1B0, 0x4, 0x1B4};
-	addresses['playerGoldoffset'] = {0x154, 0x50};
-	addresses['playerInCombat'] = addresses['playerbasehp'] - 0x1C0;
-	addresses['playerDowned'] = addresses['playerbasehp'] - 0x6D4;
-
 	addresses['playerAccount'] = addresses['playerName'] + 0xD0;
-	addresses['loadingbase'] = addresses['playerName'] + 0x14A8;
-	addresses['loadingOffset'] = {0xC8, 0x4, 0x0, 0x3BC};
-
-	--addresses['FtextOffset'] = {0x0, 0x94, 0x14, 0x22};
+	
+	addresses['playerHPoffset'] = {0x4, 0x168,0x8};
+	addresses['playerMaxHPoffset'] = {0x4, 0x168,0xC};
 
 	addresses['Finteraction'] = addresses['playerbaseui'] + 0x60;
 	addresses['TargetMob'] = addresses['playerbaseui'] + 0x78;
 	addresses['TargetAll'] = addresses['playerbaseui'] + 0x90;
-	addresses['mousewinX'] = addresses['playerbaseui'] + 0x98;
-	addresses['mousewinZ'] = addresses['playerbaseui'] + 0x9C;
-	addresses['mousepointX'] = addresses['playerbaseui'] + 0xB8;
-	addresses['mousepointZ'] = addresses['playerbaseui'] + 0xBC;
-	addresses['mousepointY'] = addresses['playerbaseui'] + 0xC0;
+	addresses['mousewinX'] = addresses['playerbaseui'] + 0x9C;
+	addresses['mousewinZ'] = addresses['playerbaseui'] + 0xA0;
+	addresses['mousepointX'] = addresses['playerbaseui'] + 0xBC;
+	addresses['mousepointZ'] = addresses['playerbaseui'] + 0xC0;
+	addresses['mousepointY'] = addresses['playerbaseui'] + 0xC4;
+	addresses['objectArray'] = addresses['playerbaseui'] + 0x80;	
+	addresses['speed'] = addresses['playerbaseui'] + 0x108;
+	addresses['speedOffset'] = {0x44, 0x1C, 0x170};
+	
+	addresses['moveForward'] = addresses['FtextAddress']  - 0xDC;
+	addresses['moveBackward'] = addresses['FtextAddress']  - 0xD8; 
+	addresses['turnLeft'] = addresses['FtextAddress']  - 0xCC;
+	addresses['turnRight'] = addresses['FtextAddress']  - 0xC8;
+	
+	addresses['actlvlOffset'] = 0x84;
+	addresses['adjlvlOffset'] = 0xAC;
+	
+	
+	
+	addresses['FidOffset'] = {0x0, 0x94, 0x14, 0x8};	
+	addresses['FtextOffset'] = {0x0, 0x94, 0x14, 0x22};		
+	-- start here broken
+	
+	addresses['playerKarmaoffset'] = {0x1B0, 0x4, 0x1B4};
+	addresses['playerGoldoffset'] = {0x4, 0x16C, 0x50};	
+	addresses['playerInCombat'] = addresses['playerbasehp'] - 0x4CB34;
+	addresses['playerDowned'] = addresses['playerbasehp'] - 0x6D4;	
+	addresses['loadingbase'] = addresses['playerName'] + 0x14A8;
+	addresses['loadingOffset'] = {0xC8, 0x4, 0x0, 0x3BC};	
 	addresses['XPbase'] = addresses['playerbaseui'] - 0x89C;
 	addresses['xpOffset'] = {0x80, 0x120, 0x14, 0x4};
 	addresses['xpnextlvlOffset'] = {0x80, 0x120, 0x14, 0xC};
-	addresses['targetbaseAddress'] = addresses['playerbaseui'] + 0x182c;
-	addresses['targetXoffset'] = {0x30, 0x58, 0x108};
-	addresses['targetZoffset'] = {0x30, 0x58, 0x10c};
-	addresses['targetYoffset'] = {0x30, 0x58, 0x110};
-	addresses['moveForward'] = addresses['playerbaseui'] + 0x18f8;
-	addresses['moveBackward'] = addresses['playerbaseui'] + 0x18fc;
-	addresses['turnLeft'] = addresses['playerbaseui'] + 0x1908;
-	addresses['turnRight'] = addresses['playerbaseui'] + 0x190c;
-	addresses['FtextAddress'] = addresses['playerbaseui'] + 0x19d4;
-	addresses['FtextOffset'] = {0x0, 0xC4, 0x22};
-	addresses['FidOffset'] = {0x0, 0xC4, 0x8};
+
+	addresses['targetbaseAddress'] = addresses['playerbaseui'] - 0xCCE10;
+	addresses['targetXoffset'] = {0x8, 0x2C, 0x104};
+	addresses['targetZoffset'] = {0x8, 0x2C, 0x108};
+	addresses['targetYoffset'] = {0x8, 0x2C, 0x10c};	
 	
-	addresses['actlvlOffset'] = 0x7C;
-	addresses['adjlvlOffset'] = 0xA0;
 	
-	addresses['objectArray'] = addresses['playerbaseui'] + 0xFC;
+	-- end here broken
+	
+	
+	
+
 
 	-- Attempts to replace an entry in the template.
 	-- If successful, removes it from addresses.new
@@ -443,110 +468,6 @@ function rewriteAddresses()
 	-- Finally, reload our addresses (in case we needed anything from the addresses table)
 	addresses = include("addresses.lua",true);
 
-	--[[
-		file:write(
-		sprintf("-- Auto-generated by update.lua\n") ..
-		"addresses = {\n"
-	);
-
-	for i,v in pairs(addresses_new) do
-		local comment = "";
-		if( updatePatterns[v.index] ) then
-			local tmp = updatePatterns[v.index].comment;
-			if( tmp ) then
-				comment = "\t-- " .. tmp .. " ]";
-			end
-		end
-
-			-- Index part
-		if v.index ~= "playerbasecoords" and v.index ~= "playerbaseui" then
-			file:write( sprintf("\t%s = ", v.index))
-
-			-- Value part
-			if type(v.value) == "table" then -- if it's a table of bytes
-				file:write( sprintf("{"))
-				for i = 1, #v.value do
-					if i ~= 1 then file:write( sprintf(", ")) end
-					file:write( sprintf("0x%02X", v.value[i]))
-				end
-				file:write( sprintf("},"))
-			else                             -- if it's an address or offset
-				file:write( sprintf("0x%X,", v.value))
-			end
-		end		
-		
-		
-		--=== assumptions as offsets of other addresses ===--
-		--=== also offsets for pointers ===--
-		
-		if v.index == "playerbasecoords" then
-			file:write(sprintf("\tplayerDir1 = 0x%X,\n",v.value + 0x10))
-			file:write(sprintf("\tplayerDir2 = 0x%X,\n", v.value + 0x14))
-			file:write(sprintf("\tplayerX = 0x%X,\n", v.value + 0x28))
-			file:write(sprintf("\tplayerZ = 0x%X,\n", v.value + 0x2C))
-			file:write(sprintf("\tplayerY = 0x%X,\n",v.value + 0x30))
-		end
-		if v.index == "playerbasehp" then
-			file:write("\n\tplayerHPoffset = {0x150,0x3C,0x10},\n")	
-			file:write("\tplayerMaxHPoffset = {0x150,0x3C,0x14},\n")
-			file:write("\tplayerKarmaoffset = {0x1B0, 0x4, 0x1B4},\n")
-			file:write("\tplayerGoldoffset = {0x154, 0x50},\n")
-			file:write(sprintf("\tplayerInCombat = 0x%X,\n",v.value - 0x1AC))
-			file:write(sprintf("\tplayerDowned = 0x%X,\n",v.value - 0x6C0))
-		end	
-		if v.index == "playerName" then
-			file:write(sprintf("\n\tplayerAccount = 0x%X,\n",v.value + 0xD0))
-			file:write(sprintf("\tloadingbase = 0x%X,\n",v.value + 0x14A8))
-			file:write("\tloadingOffset = {0xC8, 0x4, 0x0, 0x3BC},\n")
-			
-		end
-		if v.index == "FtextAddress" then
-			file:write("\n\tFtextOffset = {0x0, 0x94, 0x14, 0x22},\n")
-		end
-		if v.index == "playerbaseui" then
-			file:write(sprintf("\tFinteraction = 0x%X,\n",v.value + 0x60))
-			file:write(sprintf("\tTargetMob = 0x%X,\n", v.value + 0x78))
-			file:write(sprintf("\tTargetAll = 0x%X,\n", v.value + 0x90))	
-			file:write(sprintf("\tmousewinX = 0x%X,\n", v.value + 0x98))
-			file:write(sprintf("\tmousewinZ = 0x%X,\n", v.value + 0x9C))
-			file:write(sprintf("\tmousepointX = 0x%X,\n", v.value + 0xB8))
-			file:write(sprintf("\tmousepointZ = 0x%X,\n", v.value + 0xBC))
-			file:write(sprintf("\tmousepointY = 0x%X,\n\n", v.value + 0xC0))
-			--file:write(sprintf("\tmonthxpcountbase = 0x%X,\n", v.value + 0xFC))
-			--file:write("\tmonthxpcountoffset = {0x3C, 0x284, 0x1E4, 0x5C, 0x34},\n\n")
-			file:write(sprintf("\n\tXPbase = 0x%X,\n", v.value - 0x89C))
-			file:write("\txpOffset = {0x80, 0x120, 0x14, 0x4},\n")
-			file:write("\txpnextlvlOffset = {0x80, 0x120, 0x14, 0xC},\n\n")	
-			
-			file:write(sprintf("\ttargetbaseAddress = 0x%X,\n", v.value + 0x181C))
-			file:write("\ttargetXoffset = {0x30, 0x5C, 0x110},\n")
-			file:write("\ttargetZoffset = {0x30, 0x5C, 0x114},\n")
-			file:write("\ttargetYoffset = {0x30, 0x5C, 0x118},\n")
-
-			file:write(sprintf("\n\tmoveForward = 0x%X,\n", v.value + 0x18E8))
-			file:write(sprintf("\tmoveBackward = 0x%X,\n", v.value + 0x18EC))			
-			file:write(sprintf("\tturnLeft = 0x%X,\n", v.value + 0x18F8))
-			file:write(sprintf("\tturnRight = 0x%X,\n", v.value + 0x18FC))
-			
-			file:write(sprintf("\n\tFtextAddress = 0x%X,\n", v.value + 0x19C4))
-			file:write("\tFtextOffset = {0x0, 0xC4, 0x22},\n")
-		
-		
-		end
-		
-		if v.index == "statbase" then
-			file:write("\n\tactlvlOffset = 0x7C,\n")
-			file:write("\tadjlvlOffset = 0xA0,\n")
-
-		end
-		-- Comment part
-		file:write( sprintf("%s\n", comment) );
-	end
-	
-	file:write("}\n");
-
-	file:close();
-]]
 end
 rewriteAddresses();
 
@@ -589,7 +510,6 @@ print("Dir1: "..player.Dir1)
 print("Dir2: "..player.Dir2)
 printf("TargetMob: %x\n",player.TargetMob)
 printf("TargetAll: %x\n",player.TargetAll)
-printf("Loot: ") print(player.Loot)
 printf("Interaction: ") print(player.Interaction)
 printf("InCombat: ") print(player.InCombat)
 printf("Downed: ") print(player.Downed)
@@ -600,3 +520,4 @@ print("target Y: "..target.TargetY)
 --print("Monthly Ach XP: "..player.monthlyXP)
 printf("F ID: %x\n",player.Fid)
 print("F text: "..player.Ftext)
+print("Current Speed: "..speed("get"))
