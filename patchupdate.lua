@@ -332,34 +332,40 @@ function rewriteAddresses()
 		return false;
 	end
 	table.sort(addresses_new, addressSort);
+	
 
+	
 	addresses['playerDir1'] = addresses['playerbasecoords'] + 0x14;
 	addresses['playerDir2'] = addresses['playerbasecoords'] + 0x18;
 	addresses['playerX'] = addresses['playerbasecoords'] + 0x2C;
 	addresses['playerZ'] = addresses['playerbasecoords'] + 0x30;
 	addresses['playerY'] = addresses['playerbasecoords'] + 0x34;
-	addresses['playerAccount'] = addresses['playerName'] + 0xD0;
 	
 	addresses['playerHPoffset'] = {0x4, 0x168,0x8};
 	addresses['playerMaxHPoffset'] = {0x4, 0x168,0xC};
 
+	addresses['playerAccount'] = addresses['playerName'] + 0x12C;	
+	
+	
 	addresses['Finteraction'] = addresses['playerbaseui'] + 0x60;
 	addresses['TargetMob'] = addresses['playerbaseui'] + 0x78;
+
 	addresses['TargetAll'] = addresses['playerbaseui'] + 0x90;
 	addresses['mousewinX'] = addresses['playerbaseui'] + 0x9C;
 	addresses['mousewinZ'] = addresses['playerbaseui'] + 0xA0;
 	addresses['mousepointX'] = addresses['playerbaseui'] + 0xBC;
 	addresses['mousepointZ'] = addresses['playerbaseui'] + 0xC0;
 	addresses['mousepointY'] = addresses['playerbaseui'] + 0xC4;
-	addresses['objectArray'] = addresses['playerbaseui'] + 0x80;	
+	
+	addresses['objectArray'] = addresses['playerbaseui'] + 0x100;	
+	
 	addresses['speed'] = addresses['playerbaseui'] + 0x108;
 	addresses['speedOffset'] = {0x44, 0x1C, 0x170};
 	
-	addresses['moveForward'] = addresses['FtextAddress']  - 0xDC;
-	addresses['moveBackward'] = addresses['FtextAddress']  - 0xD8; 
-	addresses['turnLeft'] = addresses['FtextAddress']  - 0xCC;
-	addresses['turnRight'] = addresses['FtextAddress']  - 0xC8;
+
+
 	
+
 	addresses['actlvlOffset'] = 0x84;
 	addresses['adjlvlOffset'] = 0xAC;
 	
@@ -369,6 +375,11 @@ function rewriteAddresses()
 	addresses['FtextOffset'] = {0x0, 0x94, 0x14, 0x22};		
 	-- start here broken
 	
+	addresses['moveForward'] = addresses['FtextAddress']  - 0xDC;
+	addresses['moveBackward'] = addresses['FtextAddress']  - 0xD8; 
+	addresses['turnLeft'] = addresses['FtextAddress']  - 0xCC;
+	addresses['turnRight'] = addresses['FtextAddress']  - 0xC8;
+		
 	addresses['playerKarmaoffset'] = {0x1B0, 0x4, 0x1B4};
 	addresses['playerGoldoffset'] = {0x4, 0x16C, 0x50};	
 	addresses['playerInCombat'] = addresses['playerbasehp'] - 0x4CB34;

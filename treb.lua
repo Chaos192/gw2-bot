@@ -13,7 +13,7 @@ function main()
 
 	while(true) do
 		keyboardHold(key.VK_2)
-		yrest(6300)
+		yrest(10000)
 		keyboardRelease(key.VK_2)
 		yrest(6000)
 		
