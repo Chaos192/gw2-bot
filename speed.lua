@@ -7,7 +7,7 @@ include("functions/update.lua")
 attach(getWin());
 
 local proc = getProc()
-
+keyboardBufferClear();
 function Ftext()
 	return (memoryReadRepeat("int", proc, addresses.Finteraction) ~= 0) 
 	--[[
@@ -35,7 +35,7 @@ function main()
 	local _time = os.time()
 	while(true) do
 		
-		if Ftext() and os.time() - _time >= 1 then keyboardPress(key.VK_C) _time = os.time() end
+		if Ftext() and os.time() - _time >= 1 then keyboardPress(key.VK_F8) _time = os.time() end
 		--[[
 		local Ftext = Ftext()
 		if Ftext ~= "" then
