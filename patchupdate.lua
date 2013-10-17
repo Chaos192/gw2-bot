@@ -341,8 +341,8 @@ function rewriteAddresses()
 	addresses['playerZ'] = addresses['playerbasecoords'] + 0x30;
 	addresses['playerY'] = addresses['playerbasecoords'] + 0x34;
 	
-	addresses['playerHPoffset'] = {0x4, 0x168,0x8};
-	addresses['playerMaxHPoffset'] = {0x4, 0x168,0xC};
+	addresses['playerHPoffset'] = {0x168,0x8};
+	addresses['playerMaxHPoffset'] = {0x168,0xC};
 
 	addresses['playerAccount'] = addresses['playerName'] + 0x12C;	
 	
@@ -375,10 +375,10 @@ function rewriteAddresses()
 	addresses['FtextOffset'] = {0x0, 0x94, 0x14, 0x22};		
 	-- start here broken
 	
-	addresses['moveForward'] = addresses['FtextAddress']  - 0xDC;
-	addresses['moveBackward'] = addresses['FtextAddress']  - 0xD8; 
-	addresses['turnLeft'] = addresses['FtextAddress']  - 0xCC;
-	addresses['turnRight'] = addresses['FtextAddress']  - 0xC8;
+	addresses['moveForward'] = addresses['playerbaseui'] + 0x2908
+	addresses['moveBackward'] = addresses['playerbaseui'] + 0x290C 
+	addresses['turnLeft'] = addresses['playerbaseui'] + 0x2918
+	addresses['turnRight'] = addresses['playerbaseui'] + 0x291C
 		
 	addresses['playerKarmaoffset'] = {0x1B0, 0x4, 0x1B4};
 	addresses['playerGoldoffset'] = {0x4, 0x16C, 0x50};	
