@@ -20,15 +20,18 @@ function main()
 	print("Numpad 5: pause - 500")
 	print("Numpad 7: end changing times")
 	print("Numpad 8: Begin changing times")
+	cprintf(cli.yellow,"adjust time then press 7 to start\n")
 	while(true) do
-		if go then
-			print("hold: "..hold.."\n pause"..pause)
+		if go == true then
+			print("hold: "..hold)
 			keyboardHold(key.VK_2)
 			yrest(hold)
 			keyboardRelease(key.VK_2)
+			cprintf(cli.yellow,"pause: "..pause.."\n")
 			yrest(pause)
 		else
-			print("hold: "..hold.."\n pause"..pause)
+			print("hold: "..hold)
+			cprintf(cli.yellow,"pause: "..pause.."\n")
 			repeat
 				if( keyPressed(key.VK_NUMPAD1) ) then
 					hold = hold + 500
@@ -40,14 +43,15 @@ function main()
 				end
 				if( keyPressed(key.VK_NUMPAD4) ) then
 					pause = pause + 500
-					print("pause: "..pause)
+					cprintf(cli.yellow,"pause: "..pause.."\n")
 				end
 				if( keyPressed(key.VK_NUMPAD5) ) then
 					pause = pause - 500
-					print("pause: "..pause)
+					cprintf(cli.yellow,"pause: "..pause.."\n")
 				end
 				if( keyPressed(key.VK_NUMPAD7) ) then
 					go = true
+					cprintf(cli.red,"Starting to fire.\n")
 				end
 				yrest(100)
 			until go == true
