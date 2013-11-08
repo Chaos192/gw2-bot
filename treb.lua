@@ -32,6 +32,7 @@ function main()
 		else
 			print("hold: "..hold)
 			cprintf(cli.yellow,"pause: "..pause.."\n")
+			cprintf(cli.red,"Start changing the times.\n")
 			repeat
 				if( keyPressed(key.VK_NUMPAD1) ) then
 					hold = hold + 500
