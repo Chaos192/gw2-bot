@@ -56,7 +56,7 @@ function main()
 			setWindowName(getHwnd(),speed("get"))
 		end
 		if( keyPressed(key.VK_NUMPAD2) ) then
-			speed(speed("get")*1.5)
+			speed(speed("get")*1.33)
 			yrest(1000)
 			setWindowName(getHwnd(),speed("get"))
 		end	
