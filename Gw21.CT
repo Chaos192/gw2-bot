@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="14">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>30</ID>
+      <Description>"player"</Description>
+      <Options moHideChildren="1"/>
+      <Color>80000008</Color>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>13</ID>
+          <Description>"dir1"</Description>
+          <Options moHideChildren="1"/>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17A4430</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>14</ID>
+          <Description>"dir2"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17A4434</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>0</ID>
+          <Description>"x"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17A4448</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>6</ID>
+          <Description>"z"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17A444C</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>7</ID>
+          <Description>"y"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17A4450</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>10</ID>
+          <Description>"actual lvl"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>16EBE78</Address>
+          <Offsets>
+            <Offset>84</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>11</ID>
+          <Description>"adjusted lvl"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>16EBE78</Address>
+          <Offsets>
+            <Offset>AC</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5</ID>
+          <Description>"hp"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>1715B70</Address>
+          <Offsets>
+            <Offset>8</Offset>
+            <Offset>168</Offset>
+            <Offset>4</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>12</ID>
+          <Description>"max hp"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>1715B70</Address>
+          <Offsets>
+            <Offset>C</Offset>
+            <Offset>168</Offset>
+            <Offset>4</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>9</ID>
+          <Description>"gold"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>16A24A0</Address>
+          <Offsets>
+            <Offset>50</Offset>
+            <Offset>16C</Offset>
+            <Offset>4</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>29</ID>
+      <Description>"target"</Description>
+      <Options moHideChildren="1"/>
+      <Color>80000008</Color>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>28</ID>
+          <Description>"target mob"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EB100</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>27</ID>
+          <Description>"target all"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EB118</Address>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>31</ID>
+      <Description>"interaction"</Description>
+      <Options moHideChildren="1"/>
+      <Color>80000008</Color>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>18</ID>
+          <Description>"F Text"</Description>
+          <Color>80000008</Color>
+          <VariableType>String</VariableType>
+          <Length>10</Length>
+          <Unicode>1</Unicode>
+          <ZeroTerminate>1</ZeroTerminate>
+          <Address>"Gw2.exe"+01373E0C</Address>
+          <Offsets>
+            <Offset>22</Offset>
+            <Offset>14</Offset>
+            <Offset>94</Offset>
+            <Offset>0</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>24</ID>
+          <Description>"f Interaction, obj address"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EB0E8</Address>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>38</ID>
+      <Description>"movement"</Description>
+      <Options moHideChildren="1"/>
+      <Color>80000008</Color>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>36</ID>
+          <Description>"turn left"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EECA0</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>40</ID>
+          <Description>"turn right"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EECA4</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>47</ID>
+          <Description>"Autorun"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EEC8c</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>37</ID>
+          <Description>"move forward"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EEC90</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>39</ID>
+          <Description>"move backward"</Description>
+          <Color>80000008</Color>
+          <VariableType>4 Bytes</VariableType>
+          <Address>17EEC94</Address>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>43</ID>
+      <Description>"Mouse"</Description>
+      <Options moHideChildren="1"/>
+      <Color>80000008</Color>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>23</ID>
+          <Description>"mouse X"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17EB144</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>41</ID>
+          <Description>"mouse Z"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17EB148</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>42</ID>
+          <Description>"mouse Y"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17EB14C</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>44</ID>
+          <Description>"mouse win X"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17EB124</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>45</ID>
+          <Description>"mouse win Z"</Description>
+          <Color>80000008</Color>
+          <VariableType>Float</VariableType>
+          <Address>17EB128</Address>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+</CheatTable>
