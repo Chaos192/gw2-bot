@@ -1,0 +1,1 @@
+A MicroMacro-based set of Lua scripts to automate just about anything in Guild Wars 2
